@@ -1,0 +1,50 @@
+/* el-dialog */
+.el-dialog__header {
+    padding: 16px 16px !important;
+    background: #efefef;
+}
+.el-dialog__headerbtn {
+    top: 8px !important;
+    right: 8px !important;
+}
+.el-dialog__body {
+    padding: 20px 35px !important;
+}
+.el-dialog__header .el-dialog__title {
+    font-size: 14px;
+    float: left;
+    margin-top: -10px;
+}
+.el-dialog__footer {
+    margin-top: -24px;
+    text-align: right !important;
+}
+/* el-table */
+.el-table {
+    position: inherit;
+    top: 0;
+    bottom: 0;
+}
+.el-table .on-row {
+    background: #f0f9eb;
+}
+.el-table .off-row {
+    background: oldlace;
+}
+.el-table__header thead th {
+    background: #F5F6FA;
+    font-size: 13px;
+    color:black;
+    text-align: center;
+}
+.el-table__body tbody td {
+    padding: 0px
+}
+/* el-message */
+.el-message-box__headerbtn {
+    top: 12px !important;
+    right: 12px !important;
+}
+.el-message-box__content {
+    font-size: 16px !important;
+}
