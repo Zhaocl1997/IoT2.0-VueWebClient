@@ -35,10 +35,10 @@ export default {
     };
   },
   components: {
-    "v-head": vHead,
-    "v-foot": vFoot,
-    "v-sidebar": vSidebar,
-    "v-tags": vTags
+    vHead,
+    vFoot,
+    vSidebar,
+    vTags
   },
   mounted() {
     this.createBeforeunloadHandler();
@@ -112,5 +112,6 @@ export default {
 }
 .main_container-collapse {
   left: 65px;
+  transition: 0.5s;
 }
 </style>

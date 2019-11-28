@@ -22,7 +22,7 @@
         @click="onToggleSelection()"
         icon="el-icon-remove-outline"
       >取消</el-button>
-      <el-button size="small" type="text" @click="onMultipleDel()" icon="el-icon-delete">删除</el-button>
+      <el-button size="small" type="text" @click="onMultipleDel" icon="el-icon-delete">删除</el-button>
     </div>
 
     <div class="tablecontent" id="tablecontent">
@@ -93,25 +93,25 @@
       </el-table>
     </div>
 
-    <pagination
+    <v-page
       :pagenum="reqData.pagenum"
       :pagerow="reqData.pagerow"
       :total="total"
       @paginationEvent="onPage"
     />
-    <devDialog
+    <v-dialog
       :dialogVisible="dialogVisible"
       :dialogFormData="dialogData"
       :dialogTitle="dialogTitle"
-      @cancel="onCancel()"
-      @save="onSave()"
+      @cancel="onCancel"
+      @save="onSave"
     />
   </div>
 </template>
 
 <script>
-import pagination from "@/components/pagination";
-import addeditform from "./components/addeditform.vue";
+import vPage from "@/components/pagination";
+import vDialog from "./components/form.vue";
 import { deviceService } from "@/services";
 import { tableMixins } from "@/mixins";
 import { checkBox, tip } from "@/components/MessageBox";
@@ -119,10 +119,10 @@ import { format } from "@/helper/public";
 
 export default {
   mixins: [tableMixins],
-  name: "device",
+  name: "v-device",
   components: {
-    devDialog: addeditform,
-    pagination: pagination
+    vDialog,
+    vPage
   },
   methods: {
     // 初始化

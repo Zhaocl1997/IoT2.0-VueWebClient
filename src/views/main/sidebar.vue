@@ -9,7 +9,7 @@
         router
         background-color="#252a2f"
         text-color="#fff"
-        active-text-color="#ffd04b"
+        active-text-color="#00BFFF"
       >
         <!-- 循环 -->
         <template v-for="item in items">

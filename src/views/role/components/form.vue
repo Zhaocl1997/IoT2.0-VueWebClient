@@ -52,8 +52,8 @@
     </el-form>
 
     <span slot="footer" class="dialog-footer">
-      <el-button size="small" @click="onCancel()">取&#32;消</el-button>
-      <el-button size="small" type="primary" @click="onConfirm()">确&#32;定</el-button>
+      <el-button size="small" @click="onCancel">取&#32;消</el-button>
+      <el-button size="small" type="primary" @click="onConfirm">确&#32;定</el-button>
     </span>
   </el-dialog>
 </template>
@@ -66,7 +66,7 @@ import { arr_diffA } from "@/helper/public";
 
 export default {
   mixins: [formMixins],
-  name: "RoleAddEditForm",
+  name: "roleForm",
   data() {
     return {
       treeData: [],
@@ -104,27 +104,33 @@ export default {
         this.treeKeys.push(element._id);
       }
 
+      console.log(this.treeKeys);
+
       // 如果角色有菜单字段
       if (this.dialogFormData.menu) {
         // 设置默认展开的ID和默认选中的ID
+
         for (let i = 0; i < this.dialogFormData.menu.length; i++) {
-          const element = this.dialogFormData.menu[i];
+          let element = this.dialogFormData.menu[i];
           this.treeCheckedKey.push(element);
-          this.treeExpandedKey.push(element);
-          // for (let j = 0; j < this.treeKeys.length; j++) {
-          //   const ele = this.treeKeys[j];
-          //   if (element === ele) {
-          //     // 有子节点被选中的父节点ID，即默认展开ID
-          //     this.treeExpandedKey.push(ele);
-          //   }
-          // }
+          //this.treeExpandedKey.push(element);
+          for (let j = 0; j < this.treeKeys.length; j++) {
+            let ele = this.treeKeys[j];
+            if (element === ele) {
+              // 有子节点被选中的父节点ID，即默认展开ID
+              this.treeExpandedKey.push(ele);
+            }
+          }
         }
 
-        // // 把父节点ID通过数组去重去掉
-        // this.treeCheckedKey = fun.arr_diffA(
-        //   this.treeCheckedKey,
-        //   this.treeExpandedKey
-        // );
+        // 把父节点ID通过数组去重去掉;
+        this.treeCheckedKey = arr_diffA(
+          this.treeCheckedKey,
+          this.treeExpandedKey
+        );
+
+        console.log(this.treeCheckedKey);
+        console.log(this.treeExpandedKey);
 
         // 调用nextTick防止undefined
         this.$nextTick(() => {
@@ -148,24 +154,6 @@ export default {
     // 处理权限选择
     onCheck(data, currentChecked) {
       const { checkedKeys, halfCheckedKeys } = currentChecked;
-
-      // let a = [];
-      // const t = fun.arr_concat(checkedNodes, halfCheckedNodes);
-      // for (let i = 0; i < t.length; i++) {
-      //   let y = t[i];
-      //   if (!y.subs) {
-      //     a.push(y);
-      //   }
-      // }
-      // const u = fun.arr_diffA(t, a);
-      // console.log(a); // 所有选中的二级
-      // console.log(u); // 所有选中的一级
-
-      // for (let k = 0; k < u.length; k++) {
-      //   let o = u[k];
-
-      // }
-
       const keys = arr_diffA(checkedKeys, halfCheckedKeys);
       this.dialogFormData.menu = keys;
     },

@@ -39,13 +39,14 @@ export const formMixins = {
         },
         // 取消
         onCancel() {
-            this.$refs["dialogform"].clearValidate();
+            this.$refs.dialogform.clearValidate();
+            this.$refs.dialogform.resetFields()
             this.$emit("cancel");
         },
         // 确定
         onConfirm() {
-            this.$refs["dialogform"].validate().then(result => {
-                if (result === true) {
+            this.$refs.dialogform.validate().then(valid => {
+                if (valid === true) {
                     this.onAction().then(res => {
                         if (res === true) {
                             this.$emit("save");

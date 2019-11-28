@@ -24,38 +24,40 @@
  
 <script>
 export default {
+  name: "userBirthDay",
   props: {
     birth: {
-      type: Object
+      type: Object,
+      required: true
     }
   },
   data() {
     return {
-      yearsModel: null,
+      yearsModel: 0,
       years: [],
-      monthsModel: null,
+      monthsModel: 0,
       months: [],
-      daysModel: null,
+      daysModel: 0,
       days: []
     };
   },
   mounted() {
-    setTimeout(() => {
-      this.init();
-    }, 100);
+    this.init();
   },
   methods: {
     init() {
-      var myDate = new Date();
-      var year = myDate.getFullYear(); // 获取当前年
-      var month = myDate.getMonth() + 1; // 获取当前月
-      var day = myDate.getDate(); // 获取当前日
+      let myDate = new Date();
+      let year = myDate.getFullYear(); // 获取当前年
+      let month = myDate.getMonth() + 1; // 获取当前月
+      let day = myDate.getDate(); // 获取当前日
 
       if (this.birth) {
+        // 有参数传进来绑定传进来的参数
         this.yearsModel = this.birth.year;
         this.monthsModel = this.birth.month;
         this.daysModel = this.birth.day;
       } else {
+        // 没有参数绑定今天日期
         this.yearsModel = year;
         this.monthsModel = month;
         this.daysModel = day;
@@ -64,13 +66,6 @@ export default {
       this.initSelectYear(year);
       this.initSelectMonth();
       this.initSelectDay(year, month);
-
-      let obj = {
-        year: this.yearsModel,
-        month: this.monthsModel,
-        day: this.daysModel
-      };
-      this.$emit("birthEvent", obj);
     },
     initSelectYear(year) {
       // 50年选择项
@@ -88,9 +83,9 @@ export default {
     },
     initSelectDay(year, month) {
       // 日期选择项
-      var maxDay = this.getMaxDay(year, month);
+      let maxDay = this.getMaxDay(year, month);
       this.days = [];
-      for (var i = 1; i <= maxDay; i++) {
+      for (let i = 1; i <= maxDay; i++) {
         this.days.push({ value: i, label: i + "日" });
       }
     },
@@ -118,14 +113,14 @@ export default {
 
     // 获取一个月的天数
     getMaxDay(year, month) {
-      var new_year = year; // 取当前的年份
-      var new_month = month++; // 取下一个月的第一天，方便计算（最后一天不固定）
+      let new_year = year; // 取当前的年份
+      let new_month = month++; // 取下一个月的第一天，方便计算（最后一天不固定）
       if (month > 12) {
         // 如果当前大于12月，则年份转到下一年
         new_month -= 12; // 月份减
         new_year++; // 年份增
       }
-      var new_date = new Date(new_year, new_month, 1); // 取当年当月中的第一天
+      let new_date = new Date(new_year, new_month, 1); // 取当年当月中的第一天
       return new Date(new_date.getTime() - 1000 * 60 * 60 * 24).getDate(); // 获取当月最后一天日期
     }
   }

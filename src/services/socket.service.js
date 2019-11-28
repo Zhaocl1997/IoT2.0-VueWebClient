@@ -10,10 +10,10 @@ function initSocket(item) {
     });
 
     // 监听'data:save:macAddress'事件
-    socket.on(`data:save:${item.macAddress}`, function (data) {
+    socket.on(`data:save:${item.macAddress}`, (data) => {
         // 摄像头
-        if (data.data.fname) {
-            store.state.dataState.f = data.data.fname
+        if (data.data.url) {
+            store.state.dataState.f = data.data.url
         }
 
         // 温湿度传感器

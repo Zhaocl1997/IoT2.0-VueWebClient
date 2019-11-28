@@ -8,8 +8,8 @@ export const avatarMixins = {
             avatarURL: "", // 不带时间戳的头像地址
         }
     },
-    mounted() {
-        this.init();
+    async mounted() {
+        await this.init();
     },
     computed: {
         onAvatarFirstChange() {
@@ -20,9 +20,9 @@ export const avatarMixins = {
         }
     },
     watch: {
-        onAvatarMoreChange: function (val, oldVal) {
+        onAvatarMoreChange: async function (val, oldVal) {
             if (val != 0 && val !== oldVal) {
-                this.init();
+                await this.init();
             }
         }
     },

@@ -1,6 +1,6 @@
 import { userService } from '../services'
 import router from '../router'
-import Message from 'element-ui/packages/message';
+import { tip } from '../components/MessageBox';
 
 let user = JSON.parse(localStorage.getItem('p1'));
 let state = user
@@ -23,7 +23,7 @@ const actions = {
         const result = await userService.login(params)
         if (result.status === true) {
             commit('loginSuccess', result.data.user);
-            Message.success('登录成功')
+            tip.success('登录成功')
 
             setTimeout(() => {
                 router.push('/default');
@@ -45,7 +45,7 @@ const actions = {
         const result = await userService.register(params)
         if (result.status === true) {
             commit('registerok');
-            Message.success('注册成功')
+            tip.success('注册成功')
             setTimeout(() => {
                 router.push('/login');
             }, 2000)

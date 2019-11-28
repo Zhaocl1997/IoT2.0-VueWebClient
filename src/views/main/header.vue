@@ -3,37 +3,40 @@
     <div class="header_con">
       <div class="header_con-left">
         <!-- 收起侧面菜单按钮 -->
-        <div class="header_con-left-btn" @click="handleSidebarCollapse">
-          <img src="/img/logo.png" />
+        <div class="header_con-left-btn" @click="onSidebarCollapse">
+          <img src="/icon/logo.png" />
         </div>
 
-        <div class="header_con-left-title">IOT管理中心</div>
+        <div class="header_con-left-title">物联网管理中心</div>
       </div>
 
       <div class="header_con-right">
         <div class="header-user-con">
           <div
             class="header_con-right-weather"
-            @mouseover="displayWeather('y')"
-            @mouseout="displayWeather('n')"
+            @mouseover="onWeather('y')"
+            @mouseout="onWeather('n')"
           >
-            <span>天气</span>
-            <div class="header_con-right-info" v-if="displayWeatherDiv">多云</div>
+            <img id="weather" class="header_con-right-weather-icon" :src="wSrc" />
+            <div v-if="!(this.usercity)">
+              <span class="header_con-right-info" v-if="onWeatherDiv">请选择所在城市~</span>
+            </div>
+
+            <div v-else>
+              <div class="header_con-right-info" v-if="onWeatherDiv">{{ weather }}</div>
+            </div>
           </div>
 
-          <div
-            class="header_con-right-contact"
-            @mouseover="displayVX('y')"
-            @mouseout="displayVX('n')"
-          >
-            <span>联系</span>
-            <div class="header_con-right-img" v-if="displayVXDiv">
+          <div class="header_con-right-contact" @mouseover="onVX('y')" @mouseout="onVX('n')">
+            <img class="header_con-right-contact-icon" src="/icon/vx.png" />
+            <!-- <span>联系</span> -->
+            <div class="header_con-right-img" v-if="onVXDiv">
               <img src="/img/vx.jpg" style="width:108px;height:108px" />
             </div>
           </div>
 
           <!-- 用户名下拉菜单 -->
-          <el-dropdown class="header_con-right-name" @command="handleCommand">
+          <el-dropdown class="header_con-right-name" @command="onCommand">
             <span class="header_con-right-dropdown">
               {{ username }}
               <i class="el-icon-caret-bottom"></i>
@@ -52,7 +55,7 @@
               v-if="this.avatarURL || this.onAvatarFirstChange"
               :src="imgURL"
               :key="imgURL"
-              :fit="fit"
+              :fit="imgFit"
             ></el-avatar>
             <el-avatar v-if="!(this.avatarURL)" :size="size">{{ userrole }}</el-avatar>
           </div>
@@ -67,67 +70,151 @@ import bus from "./bus";
 import { mapActions } from "vuex";
 import { checkBox } from "@/components/MessageBox";
 import { avatarMixins } from "@/mixins";
+import { userService } from "@/services";
 
 export default {
   mixins: [avatarMixins],
   name: "v-header",
   data() {
     return {
-      size: 48, // 头像大小
-      fit: "cover", // 头像自适应
-      username: JSON.parse(localStorage.getItem("p1")).name,
+      size: 45, // 头像大小
+      imgFit: "cover", // 头像自适应
+      username: "",
       userrole: JSON.parse(localStorage.getItem("p1")).role,
+      usercity: "",
       sidebarCollapse: false,
-      displayVXDiv: false,
-      displayWeatherDiv: false
+      onVXDiv: false,
+      onWeatherDiv: false,
+      wType: "",
+      wHigh: "",
+      wLow: "",
+      wFengli: "",
+      wFengXiang: "",
+      wSrc: ""
     };
   },
-  mounted() {
-    if (document.body.clientWidth < 1500) {
-      this.handleSidebarCollapse();
+  computed: {
+    weather() {
+      return (
+        "今日天气：" +
+        this.wType +
+        "\n今日风力：" +
+        this.wFengli +
+        "\n今日风向：" +
+        this.wFengXiang +
+        "\n最高温度：" +
+        this.wHigh +
+        "\n最低温度：" +
+        this.wLow
+      );
+    },
+    onCityChange() {
+      return this.$store.state.dataState.b;
     }
+  },
+  watch: {
+    onCityChange: async function(val, oldVal) {
+      if (val != 0 && val !== oldVal) {
+        await this.getHeaderInfo();
+        await this.getWeather();
+      }
+    }
+  },
+  async mounted() {
+    if (document.body.clientWidth < 1500) {
+      this.onSidebarCollapse();
+    }
+    await this.getHeaderInfo();
+    await this.getWeather();
   },
   methods: {
     ...mapActions("userState", ["logout"]),
 
+    async getHeaderInfo() {
+      const result = await userService.read();
+      this.usercity = result.area[2];
+      this.username = result.name;
+    },
+
+    async getWeather() {
+      if (this.usercity) {
+        const result = await userService.weather({ city: this.usercity });
+        if (result) {
+          this.wType = result.type;
+          this.wHigh = result.high.split("温")[1];
+          this.wLow = result.low.split("温")[1];
+          this.wFengli = result.fengli.split("[")[2].split("]")[0];
+          this.wFengXiang = result.fengxiang;
+
+          switch (this.wType) {
+            case "晴":
+              this.wSrc = "/icon/clear.png";
+              break;
+
+            case "阴":
+              this.wSrc = "/icon/overcast.png";
+              break;
+
+            case "多云":
+              this.wSrc = "/icon/cloud.png";
+              break;
+
+            case "小雨":
+              this.wSrc = "/icon/rain.png";
+              break;
+
+            case "小雪":
+              this.wSrc = "/icon/snow.png";
+              break;
+
+            default:
+              break;
+          }
+        } else {
+          this.wSrc = "/icon/weather.png";
+        }
+      }
+    },
+
     // 菜单折叠按钮
-    handleSidebarCollapse() {
+    onSidebarCollapse() {
       this.sidebarCollapse = !this.sidebarCollapse;
       // 发布sidebarCollapse事件
       bus.$emit("sidebarCollapse", this.sidebarCollapse);
     },
 
     onAvatar() {
-      this.$router.push("/personmanage");
+      this.$router.push("/infomanage");
     },
 
     // 用户名下拉菜单选择事件
-    handleCommand(command) {
+    onCommand(command) {
       if (command == "logout") {
         checkBox("您真的要退出吗?").then(action => {
           if (action === true) {
             this.logout();
             this.$store.state.dataState.a = "";
+            this.$store.state.dataState.b = "";
           }
         });
       }
     },
 
     // 天气
-    displayWeather(value) {
+    onWeather(value) {
       if (value === "y") {
-        this.displayWeatherDiv = true;
+        this.onWeatherDiv = true;
       } else {
-        this.displayWeatherDiv = false;
+        this.onWeatherDiv = false;
       }
     },
 
     // vx
-    displayVX(value) {
+    onVX(value) {
       if (value === "y") {
-        this.displayVXDiv = true;
+        this.onVXDiv = true;
       } else {
-        this.displayVXDiv = false;
+        this.onVXDiv = false;
       }
     }
   }
@@ -147,7 +234,7 @@ export default {
 }
 .header_con-left-btn {
   float: left;
-  padding: 0 10px;
+  padding: 0 5px;
   cursor: pointer;
   line-height: 60px;
 }
@@ -172,16 +259,23 @@ export default {
 .header_con-right-weather {
   position: relative;
   font-size: 14px;
-  margin-right: 28px;
+  margin-right: 35px;
 }
-.header_con-right-weather span {
-  font-size: 14px;
-  color: white;
+.header_con-right-weather-icon {
+  position: absolute;
+  top: -13px;
+  right: 50px;
+  max-width: 25px;
+  max-height: 25px;
 }
 .header_con-right-info {
+  padding-left: 20px;
+  white-space: pre-wrap;
   color: black;
-  top: 50px;
-  right: 0;
+  background-color: lightblue;
+  width: 150px;
+  top: 30px;
+  right: -25px;
   z-index: 8888;
   position: absolute;
 }
@@ -200,13 +294,16 @@ export default {
   margin-left: 0px;
   margin-bottom: 6px;
 }
-.header_con-right-contact span {
-  font-size: 14px;
-  color: white;
+.header_con-right-contact-icon {
+  position: absolute;
+  top: -9px;
+  right: 17px;
+  max-width: 25px;
+  max-height: 25px;
 }
 .header_con-right-img {
-  top: 43px;
-  right: -40px;
+  top: 30px;
+  right: -30px;
   z-index: 8888;
   position: absolute;
 }

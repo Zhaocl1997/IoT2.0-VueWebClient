@@ -35,7 +35,7 @@
                 clearable
                 show-password
                 prefix-icon="el-icon-edit"
-                @keyup.enter.native="handleLogin()"
+                @keyup.enter.native="handleLogin"
               ></el-input>
             </el-form-item>
 
@@ -47,7 +47,7 @@
               type="primary"
               class="login__main-con-btn"
               @keyup.enter.native="submit"
-              @click="handleLogin()"
+              @click="handleLogin"
             >登&nbsp;录</el-button>
 
             <router-link to="/register" class="login__main-con-register">免费注册</router-link>

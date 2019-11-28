@@ -44,8 +44,8 @@
     </el-form>
 
     <span slot="footer" class="dialog-footer">
-      <el-button size="small" @click="onCancel()">取&#32;消</el-button>
-      <el-button size="small" type="primary" @click="onConfirm()">确&#32;定</el-button>
+      <el-button size="small" @click="onCancel">取&#32;消</el-button>
+      <el-button size="small" type="primary" @click="onConfirm">确&#32;定</el-button>
     </span>
   </el-dialog>
 </template>

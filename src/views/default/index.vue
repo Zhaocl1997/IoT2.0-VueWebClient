@@ -15,7 +15,7 @@
 
       <div class="default_con-foot">
         <a href="https://github.com/Zhaocl1997" target="_Blank">
-          <img src="/img/git.ico" style="cursor: pointer" />
+          <img src="/icon/github.png" style="cursor: pointer" />
         </a>
       </div>
     </div>
@@ -24,7 +24,7 @@
 
 <script>
 export default {
-  name: "default",
+  name: "v-default",
   data() {
     return {
       img: [

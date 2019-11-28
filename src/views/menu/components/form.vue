@@ -3,7 +3,6 @@
     center
     top="20vh"
     width="30%"
-    @open="onOpen"
     @close="onCancel"
     :title="dialogTitle"
     :close-on-click-modal="false"
@@ -24,20 +23,7 @@
           v-model="dialogFormData.title"
           placeholder="请输入菜单名称"
         />
-        <el-select
-          v-else
-          v-model="dialogFormData.title"
-          placeholder="请输入菜单名称"
-          @change="onSelect"
-          style="width: 100%;"
-        >
-          <el-option
-            v-for="item in options"
-            :key="item.meta.title"
-            :label="item.meta.title"
-            :value="item.meta.title"
-          />
-        </el-select>
+        <el-input v-else v-model="dialogFormData.title" placeholder="请输入菜单名称" style="width: 100%;" />
       </el-form-item>
 
       <el-form-item label="图标路径：" prop="icon">
@@ -50,15 +36,7 @@
           v-model="dialogFormData.index"
           placeholder="请输入菜单名称"
         />
-        <el-select v-else v-model="dialogFormData.index" placeholder="请输入页面路由" style="width: 100%;">
-          <el-option
-            v-for="item in options"
-            :key="item.path"
-            :label="item.path"
-            :value="item.path"
-            :disabled="true"
-          />
-        </el-select>
+        <el-input v-else v-model="dialogFormData.index" placeholder="请输入页面路由" style="width: 100%;" />
       </el-form-item>
     </el-form>
 
@@ -70,13 +48,13 @@
 </template>
 
 <script>
-import { menuService, routeService } from "@/services";
+import { menuService } from "@/services";
 import { formMixins } from "@/mixins";
 import { tip } from "@/components/MessageBox";
 
 export default {
   mixins: [formMixins],
-  name: "MenuAddEditForm",
+  name: "menuForm",
   data() {
     return {
       options: [],
@@ -95,18 +73,6 @@ export default {
   },
 
   methods: {
-    // 窗口打开时绑定路由option
-    async onOpen() {
-      const result = await routeService.options();
-      this.options = result;
-    },
-
-    // select绑定
-    onSelect(val) {
-      const newOptions = this.options.filter(o => o.meta.title === val);
-      this.dialogFormData.index = newOptions[0].path;
-    },
-
     // 请求
     async onAction() {
       if (this.dialogTitle == "编辑菜单") {

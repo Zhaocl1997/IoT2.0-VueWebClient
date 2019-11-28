@@ -10,7 +10,7 @@
       ></el-input>
     </el-form-item>
 
-    <div class="verifyCode__pic" v-html="svgcode" @click="captcha()"></div>
+    <div class="verifyCode__pic" v-html="svgcode" @click="captcha"></div>
   </div>
 </template>
 

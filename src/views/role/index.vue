@@ -84,26 +84,26 @@
       </el-table>
     </div>
 
-    <pagination
+    <v-page
       :pagenum="reqData.pagenum"
       :pagerow="reqData.pagerow"
       :total="total"
       @paginationEvent="onPage"
     />
 
-    <roleDialog
+    <v-dialog
       :dialogVisible="dialogVisible"
       :dialogFormData="dialogData"
       :dialogTitle="dialogTitle"
-      @cancel="onCancel()"
-      @save="onSave()"
+      @cancel="onCancel"
+      @save="onSave"
     />
   </div>
 </template>
 
 <script>
-import pagination from "@/components/pagination";
-import addeditform from "./components/addeditform.vue";
+import vPage from "@/components/pagination";
+import vDialog from "./components/form.vue";
 import { roleService } from "@/services";
 import { tableMixins } from "@/mixins";
 import { checkBox, tip } from "@/components/MessageBox";
@@ -111,10 +111,10 @@ import { format } from "@/helper/public";
 
 export default {
   mixins: [tableMixins],
-  name: "role",
+  name: "v-role",
   components: {
-    roleDialog: addeditform,
-    pagination: pagination
+    vDialog,
+    vPage
   },
   methods: {
     // 初始化

@@ -68,15 +68,11 @@ export const tableMixins = {
         // 处理窗体保存
         async onSave() {
             this.dialogVisible = false
-            this.dialogTitle = ''
-            this.dialogData = {}
             await this.init(this.reqData);
         },
         // 处理窗体取消
         onCancel() {
             this.dialogVisible = false
-            this.dialogTitle = ''
-            this.dialogData = {}
         }
     }
 }

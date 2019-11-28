@@ -59,14 +59,14 @@
       </el-table>
     </div>
 
-    <pagination
+    <v-page
       :pagenum="reqData.pagenum"
       :pagerow="reqData.pagerow"
       :total="total"
       @paginationEvent="onPage"
     />
 
-    <menuDialog
+    <v-dialog
       :dialogVisible="dialogVisible"
       :dialogFormData="dialogData"
       :dialogTitle="dialogTitle"
@@ -77,8 +77,8 @@
 </template>
 
 <script>
-import pagination from "@/components/pagination";
-import addeditform from "./components/addeditform.vue";
+import vPage from "@/components/pagination";
+import vDialog from "./components/form.vue";
 import { menuService } from "@/services";
 import { tableMixins } from "@/mixins";
 import { checkBox, tip } from "@/components/MessageBox";
@@ -87,8 +87,8 @@ export default {
   mixins: [tableMixins],
   name: "v-menu",
   components: {
-    menuDialog: addeditform,
-    pagination: pagination
+    vDialog,
+    vPage
   },
   methods: {
     // 一级菜单显示浅绿色,二级菜单显示浅米色

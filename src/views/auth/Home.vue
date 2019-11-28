@@ -47,7 +47,7 @@ export default {
   font-size: 12px;
   color: rgba(0, 0, 0, 0.8);
   position: absolute;
-  left: 45%;
+  left: 47%;
   bottom: 2%;
 }
 .btn,

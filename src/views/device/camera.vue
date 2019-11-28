@@ -30,7 +30,6 @@
 <script>
 import { format } from "@/helper/public";
 import { dataService, socketService } from "@/services";
-import config from "@/helper/config";
 
 export default {
   name: "cameraData",
@@ -70,7 +69,7 @@ export default {
       const data = result.data[0];
 
       // 最新数据
-      this.url = config.apiUrl + "camera/" + data.data.fname;
+      this.url =  data.data.url;
       this.size = data.data.size;
       this.time = format(data.createdAt, "YYYY/MM/DD HH:mm:ss");
       this.macAddress = data.macAddress;

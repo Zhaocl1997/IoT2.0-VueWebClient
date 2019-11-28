@@ -95,7 +95,7 @@
               type="primary"
               class="register__main-con-btn"
               @keyup.enter.native="submit"
-              @click="onRegister()"
+              @click="onRegister"
             >注册</el-button>
 
             <router-link to="/login" class="register__main-con-login">立即登录&rarr;</router-link>

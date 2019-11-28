@@ -146,11 +146,12 @@ export default {
   padding: 0 15px 0;
   font-size: 13px;
   cursor: pointer;
-  line-height: 25px;
+  line-height: 30px;
   display: inline-block;
 }
 .tags_con-li:not(.active):hover {
   background: #f8f8f8;
+  line-height: 30px;
 }
 .tags_con-li.active {
   background: #fbfdfe;

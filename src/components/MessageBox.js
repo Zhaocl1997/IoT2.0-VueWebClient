@@ -1,7 +1,6 @@
 import Message from 'element-ui/packages/message';
 import MessageBox from 'element-ui/packages/message-box';
 
-
 // 确认消息
 export function checkBox(content) {
   return MessageBox
@@ -47,6 +46,9 @@ export const tip = {
   },
   dS() {
     return Message.success('删除成功')
+  },
+  success(msg) {
+    return Message.success(msg)
   },
   error(msg) {
     return Message.error(msg)

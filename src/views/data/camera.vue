@@ -8,25 +8,24 @@
             <br />
             图片大小：{{ item.data.size }}KB
           </div>
-          <img :src="item.data.fname" alt="No image" class="pic_con-img" />
+          <img :src="item.data.url" alt="No image" class="pic_con-img" />
         </el-tooltip>
       </div>
     </div>
 
-    <pagination
+    <v-page
       :pagenum="reqData.pagenum"
       :pagerow="reqData.pagerow"
       :total="total"
       @paginationEvent="pageValue"
-    ></pagination>
+    />
   </div>
 </template>
 
 <script>
 import { dataService, socketService } from "@/services";
 import { format, countPicNum } from "@/helper/public";
-import pagination from "@/components/pagination";
-import config from "@/helper/config";
+import vPage from "@/components/pagination";
 
 export default {
   name: "cameraDataMore",
@@ -45,7 +44,7 @@ export default {
     };
   },
   components: {
-    pagination: pagination // 分页组件
+    vPage
   },
   mounted() {
     this.reqData.macAddress = this.$route.query.macAddress;
@@ -60,8 +59,6 @@ export default {
       this.imagesData = result.data;
       this.total = result.total;
       this.imagesData.forEach(element => {
-        element.data["fname"] =
-          config.apiUrl + "camera/" + element.data["fname"];
         element.data["size"] = Number.parseInt(element.data["size"] / 1024);
         element["createdAt"] = format(
           element["createdAt"],

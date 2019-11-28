@@ -1,5 +1,14 @@
 import axios from '../helper/axioshttp'
 
+// 获取天气
+async function weather(params) {
+    const url = '/api/v1/user/weather'
+    const result = await axios.post(url, params)
+    if (result.status === true) {
+        return result.data
+    }
+}
+
 // 上传头像
 async function avatar(params) {
     const url = '/api/v1/user/avatar'
@@ -27,7 +36,6 @@ async function login(params) {
         const user = {
             id: result.data.user._id,
             token: result.data.token,
-            name: result.data.user.name,
             role: result.data.user.role
         }
         localStorage.setItem('p1', JSON.stringify(user))
@@ -99,6 +107,7 @@ async function del(params) {
 }
 
 export const userService = {
+    weather,
     avatar,
     register,
     login,

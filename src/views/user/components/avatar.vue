@@ -37,7 +37,7 @@ import { tip } from "@/components/MessageBox";
 
 export default {
   mixins: [avatarMixins],
-  name: "upload",
+  name: "userAvatar",
   data() {
     return {
       imgData: {},
@@ -95,7 +95,7 @@ export default {
       userService.avatar(formData).then(res => {
         if (res === true) {
           this.$store.state.dataState.a = new Date().valueOf();
-          this.$message.success("上传成功");
+          tip.success("上传成功");
         }
       });
     }

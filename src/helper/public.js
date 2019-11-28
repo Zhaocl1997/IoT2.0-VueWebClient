@@ -125,3 +125,8 @@ export function isEmpty(value) {
 export function arr_diffA(a, b) {
     return a.filter(x => !(new Set(b).has(x)))
 }
+
+// 返回：拼接的新数组
+export function arr_concat(arr, ...args) {
+    return [].concat(arr, ...args).sort()
+}

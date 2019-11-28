@@ -2,7 +2,7 @@ import axiosOriginal from 'axios'
 import config from '../helper/config'
 import { authHeader } from '../helper/auth-header'
 import { aes, sign } from '@/helper/crypto';
-import Message from 'element-ui/packages/message';
+import { tip } from '../components/MessageBox';
 
 // 实例化axios对象
 const axios = axiosOriginal.create({
@@ -14,7 +14,6 @@ const axios = axiosOriginal.create({
 // 请求拦截器
 axios.interceptors.request.use(function (config) {
   config.headers = authHeader()
-
   return config;
 }, function (error) {
   return Promise.reject(error);
@@ -77,7 +76,7 @@ const errback = error => {
     error.message = '未知错误（' + error.message + '）'
   }
 
-  Message.error(error.message)
+  tip.error(error.message)
   return Promise.reject({ status: false, message: error.message })
 };
 

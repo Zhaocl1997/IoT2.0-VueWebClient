@@ -1,5 +1,10 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import NProgress from 'nprogress' // 进度条
+import 'nprogress/nprogress.css'
+
+NProgress.inc(0.2)
+NProgress.configure({ easing: 'ease', speed: 500, showSpinner: false })
 
 Vue.use(VueRouter)
 
@@ -104,12 +109,12 @@ const routes = [
         component: () => import(/* webpackChunkName: "cameraDataMore" */ '../views/data/camera.vue')
       },
       {
-        path: '/personmanage',
-        name: 'personmanage',
+        path: '/infomanage',
+        name: 'infomanage',
         meta: {
           title: '个人中心'
         },
-        component: () => import(/* webpackChunkName: "personmanage" */ '../views/user/person.vue')
+        component: () => import(/* webpackChunkName: "infomanage" */ '../views/user/info.vue')
       },
     ]
   }
@@ -119,6 +124,26 @@ const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes
+})
+
+// 挂载路由导航守卫,to表示将要访问的路径，from表示从哪里来，next是下一个要做的操作
+router.beforeEach((to, from, next) => {
+  NProgress.start()
+
+  if (to.path === '/login')
+    return next();
+
+  try {
+    let token = JSON.parse(localStorage.getItem('p1')).token;
+    if (token) next()
+  } catch (e) {
+    return next();
+  }
+  next();
+})
+
+router.afterEach(() => {
+  NProgress.done()
 })
 
 export default router
