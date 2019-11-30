@@ -19,7 +19,7 @@ export default {
 <style scoped>
 /* 全局 */
 .home {
-  padding: 30px 30px 10px;
+  padding: 20px 20px 0;
 }
 /* 主体 */
 .home_main {
@@ -33,8 +33,8 @@ export default {
   background-size: cover;
   background-position: bottom;
   position: relative;
-  -webkit-clip-path: polygon(0 0, 100% 0, 100% 80vh, 0 100%);
-  clip-path: polygon(0 0, 100% 0, 100% 80vh, 0 100%);
+  -webkit-clip-path: polygon(0 0, 100% 0, 100% 85vh, 0 100%);
+  clip-path: polygon(0 0, 100% 0, 100% 85vh, 0 100%);
 }
 .home_main-con {
   position: absolute;
@@ -48,7 +48,6 @@ export default {
   color: rgba(0, 0, 0, 0.8);
   position: absolute;
   left: 47%;
-  bottom: 2%;
 }
 .btn,
 .btn:link,

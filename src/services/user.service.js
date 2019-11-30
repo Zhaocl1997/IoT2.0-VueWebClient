@@ -48,7 +48,7 @@ async function logout() {
     const url = '/api/v1/user/logout'
     const result = await axios.post(url)
     if (result.status === true) {
-        localStorage.clear()
+        localStorage.removeItem('p1')
     }
 }
 

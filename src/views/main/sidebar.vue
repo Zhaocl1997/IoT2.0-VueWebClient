@@ -3,13 +3,12 @@
     <div class="siderbar_con">
       <el-menu
         class="el-menu-vertical-demo"
-        :default-active="onRoutes"
         :collapse="sidebarCollapse"
         unique-opened
         router
         background-color="#252a2f"
         text-color="#fff"
-        active-text-color="#00BFFF"
+        active-text-color="#ffd04b"
       >
         <!-- 循环 -->
         <template v-for="item in items">

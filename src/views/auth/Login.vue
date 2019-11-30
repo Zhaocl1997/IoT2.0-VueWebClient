@@ -132,7 +132,7 @@ export default {
               // 传入手机号，密码，和保存天数3个参数
               this.setCookie(this.loginData.phone, this.loginData.password, 1);
             } else {
-              //清空Cookie
+              // 清空Cookie
               this.clearCookie();
             }
 
@@ -146,7 +146,7 @@ export default {
               // 传入邮箱，密码，和保存天数3个参数
               this.setCookie(this.loginData.email, this.loginData.password, 1);
             } else {
-              //清空Cookie
+              // 清空Cookie
               this.clearCookie();
             }
 

@@ -17,14 +17,8 @@
             @mouseover="onWeather('y')"
             @mouseout="onWeather('n')"
           >
-            <img id="weather" class="header_con-right-weather-icon" :src="wSrc" />
-            <div v-if="!(this.usercity)">
-              <span class="header_con-right-info" v-if="onWeatherDiv">请选择所在城市~</span>
-            </div>
-
-            <div v-else>
-              <div class="header_con-right-info" v-if="onWeatherDiv">{{ weather }}</div>
-            </div>
+            <img class="header_con-right-weather-icon" :src="wSrc" />
+            <div class="header_con-right-info" v-if="onWeatherDiv">{{ weather }}</div>
           </div>
 
           <div class="header_con-right-contact" @mouseover="onVX('y')" @mouseout="onVX('n')">
@@ -81,7 +75,7 @@ export default {
       imgFit: "cover", // 头像自适应
       username: "",
       userrole: JSON.parse(localStorage.getItem("p1")).role,
-      usercity: "",
+      userIP: localStorage.getItem("clientIP"),
       sidebarCollapse: false,
       onVXDiv: false,
       onWeatherDiv: false,
@@ -90,13 +84,16 @@ export default {
       wLow: "",
       wFengli: "",
       wFengXiang: "",
-      wSrc: ""
+      wSrc: "",
+      wCity: ""
     };
   },
   computed: {
     weather() {
       return (
-        "今日天气：" +
+        "所在城市：" +
+        this.wCity +
+        "\n今日天气：" +
         this.wType +
         "\n今日风力：" +
         this.wFengli +
@@ -108,71 +105,85 @@ export default {
         this.wLow
       );
     },
-    onCityChange() {
+    onNameChange() {
       return this.$store.state.dataState.b;
     }
   },
   watch: {
-    onCityChange: async function(val, oldVal) {
+    onNameChange: async function(val, oldVal) {
       if (val != 0 && val !== oldVal) {
-        await this.getHeaderInfo();
+        await this.getName();
         await this.getWeather();
       }
     }
   },
-  async mounted() {
+  mounted() {
     if (document.body.clientWidth < 1500) {
       this.onSidebarCollapse();
     }
-    await this.getHeaderInfo();
-    await this.getWeather();
+    this.getName();
+    this.getWeather();
   },
   methods: {
     ...mapActions("userState", ["logout"]),
 
-    async getHeaderInfo() {
+    async getName() {
       const result = await userService.read();
-      this.usercity = result.area[2];
       this.username = result.name;
     },
 
     async getWeather() {
-      if (this.usercity) {
-        const result = await userService.weather({ city: this.usercity });
-        if (result) {
-          this.wType = result.type;
-          this.wHigh = result.high.split("温")[1];
-          this.wLow = result.low.split("温")[1];
-          this.wFengli = result.fengli.split("[")[2].split("]")[0];
-          this.wFengXiang = result.fengxiang;
+      const result = await userService.weather({ IP: this.userIP });
+      if (result) {
+        this.wType = result.today.type;
+        this.wHigh = result.today.high.split("温")[1];
+        this.wLow = result.today.low.split("温")[1];
+        this.wFengli = result.today.fengli.split("[")[2].split("]")[0];
+        this.wFengXiang = result.today.fengxiang;
+        this.wCity = result.city;
 
-          switch (this.wType) {
-            case "晴":
-              this.wSrc = "/icon/clear.png";
-              break;
+        switch (this.wType) {
+          case "晴":
+            this.wSrc = "/icon/clear.png";
+            break;
 
-            case "阴":
-              this.wSrc = "/icon/overcast.png";
-              break;
+          case "阴":
+            this.wSrc = "/icon/overcast.png";
+            break;
 
-            case "多云":
-              this.wSrc = "/icon/cloud.png";
-              break;
+          case "多云":
+            this.wSrc = "/icon/cloud.png";
+            break;
 
-            case "小雨":
-              this.wSrc = "/icon/rain.png";
-              break;
+          case "小雨":
+            this.wSrc = "/icon/smallrain.png";
+            break;
 
-            case "小雪":
-              this.wSrc = "/icon/snow.png";
-              break;
+          case "中雨":
+            this.wSrc = "/icon/mediumrain.png";
+            break;
 
-            default:
-              break;
-          }
-        } else {
-          this.wSrc = "/icon/weather.png";
+          case "大雨":
+            this.wSrc = "/icon/bigrain.png";
+            break;
+
+          case "小雪":
+            this.wSrc = "/icon/smallsnow.png";
+            break;
+
+          case "中雪":
+            this.wSrc = "/icon/mediumsnow.png";
+            break;
+
+          case "大雪":
+            this.wSrc = "/icon/bigsnow.png";
+            break;
+
+          default:
+            break;
         }
+      } else {
+        this.wSrc = "/icon/weather.png";
       }
     },
 

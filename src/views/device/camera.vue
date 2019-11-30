@@ -46,8 +46,8 @@ export default {
       return Number.parseInt(this.size / 1024);
     },
     newUrl() {
-      // 监听新的fname
-      return this.$store.state.dataState.f;
+      // 监听新的f
+      return this.$store.state.dataState.mac;
     }
   },
   watch: {

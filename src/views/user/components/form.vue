@@ -7,8 +7,7 @@
     @close="onCancel"
     :title="dialogTitle"
     :close-on-click-modal="false"
-    :visible.sync="dialogVisible"
-    :before-close="onDialogClose"
+    :visible="dialogVisible"
   >
     <el-form
       ref="dialogform"
@@ -34,7 +33,7 @@
         <el-input v-model="dialogFormData.phone" placeholder="请输入手机号码" clearable />
       </el-form-item>
 
-      <el-form-item label="用户身份：" prop="role">
+      <!-- <el-form-item label="用户身份：" prop="role">
         <el-select v-model="dialogFormData.role" placeholder="请选择用户身份" style="width: 100%;">
           <el-option
             v-for="item in options"
@@ -43,6 +42,12 @@
             :value="item.name"
           />
         </el-select>
+      </el-form-item>-->
+
+      <el-form-item label="用户身份：" prop="role">
+        <el-radio-group v-model="dialogFormData.role" placeholder="请选择用户身份">
+          <el-radio v-for="item in options" :key="item.name" :label="item.name">{{ item.describe }}</el-radio>
+        </el-radio-group>
       </el-form-item>
 
       <el-form-item label="用户状态： " prop="status">

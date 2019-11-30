@@ -6,8 +6,7 @@
     @close="onCancel"
     :title="dialogTitle"
     :close-on-click-modal="false"
-    :visible.sync="dialogVisible"
-    :before-close="onDialogClose"
+    :visible="dialogVisible"
   >
     <el-form
       ref="dialogform"

@@ -6,8 +6,7 @@
     @close="onCancel"
     :title="dialogTitle"
     :close-on-click-modal="false"
-    :visible.sync="dialogVisible"
-    :before-close="onDialogClose"
+    :visible="dialogVisible"
   >
     <el-form
       ref="dialogform"
@@ -25,7 +24,7 @@
         <el-input v-model="dialogFormData.macAddress" placeholder="请输入mac地址" />
       </el-form-item>
 
-      <el-form-item label="设备种类：" prop="type">
+      <!-- <el-form-item label="设备种类：" prop="type">
         <el-select v-model="dialogFormData.type" placeholder="请选择设备种类" style="width: 100%;">
           <el-option
             v-for="item in options"
@@ -34,6 +33,12 @@
             :value="item.value"
           />
         </el-select>
+      </el-form-item>-->
+
+      <el-form-item label="设备种类：" prop="type">
+        <el-radio-group v-model="dialogFormData.type" placeholder="请选择设备种类">
+          <el-radio v-for="item in options" :key="item.value" :label="item.value">{{ item.label }}</el-radio>
+        </el-radio-group>
       </el-form-item>
 
       <el-form-item label="设备状态: " prop="status">
@@ -63,7 +68,7 @@ export default {
       options: [
         {
           value: "sensor",
-          label: "温湿度传感器"
+          label: "传感器"
         },
         {
           value: "camera",

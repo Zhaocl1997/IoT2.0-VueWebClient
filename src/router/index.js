@@ -3,6 +3,8 @@ import VueRouter from 'vue-router'
 import NProgress from 'nprogress' // 进度条
 import 'nprogress/nprogress.css'
 
+import { localTake } from "../helper/public";
+
 NProgress.inc(0.2)
 NProgress.configure({ easing: 'ease', speed: 500, showSpinner: false })
 
@@ -48,7 +50,8 @@ const routes = [
         path: '/default',
         name: 'default',
         meta: {
-          title: '默认页'
+          title: '默认页',
+          needLogin: true
         },
         component: () => import(/* webpackChunkName: "default" */ '../views/default/index.vue')
       },
@@ -56,7 +59,8 @@ const routes = [
         path: '/menumanage',
         name: 'menumanage',
         meta: {
-          title: '菜单管理'
+          title: '菜单管理',
+          needLogin: true
         },
         component: () => import(/* webpackChunkName: "menumanage" */ '../views/menu/index.vue')
       },
@@ -64,7 +68,8 @@ const routes = [
         path: '/rolemanage',
         name: 'rolemanage',
         meta: {
-          title: '角色管理'
+          title: '角色管理',
+          needLogin: true
         },
         component: () => import(/* webpackChunkName: "rolemanage" */ '../views/role/index.vue')
       },
@@ -72,7 +77,8 @@ const routes = [
         path: '/usermanage',
         name: 'usermanage',
         meta: {
-          title: '用户管理'
+          title: '用户管理',
+          needLogin: true
         },
         component: () => import(/* webpackChunkName: "usermanage" */ '../views/user/index.vue')
       },
@@ -80,7 +86,8 @@ const routes = [
         path: '/devicemanage',
         name: 'devicemanage',
         meta: {
-          title: '设备管理'
+          title: '设备管理',
+          needLogin: true
         },
         component: () => import(/* webpackChunkName: "devicemanage" */ '../views/device/index.vue')
       },
@@ -88,7 +95,8 @@ const routes = [
         path: '/sensorData',
         name: 'sensorData',
         meta: {
-          title: '传感器实时数据'
+          title: '传感器实时数据',
+          needLogin: true
         },
         component: () => import(/* webpackChunkName: "sensorData" */ '../views/device/sensor.vue')
       },
@@ -96,7 +104,8 @@ const routes = [
         path: '/cameraData',
         name: 'cameraData',
         meta: {
-          title: '摄像头实时数据'
+          title: '摄像头实时数据',
+          needLogin: true
         },
         component: () => import(/* webpackChunkName: "cameraData" */ '../views/device/camera.vue')
       },
@@ -104,7 +113,8 @@ const routes = [
         path: '/cameraDataMore',
         name: 'cameraDataMore',
         meta: {
-          title: '摄像头照片库'
+          title: '摄像头照片库',
+          needLogin: true
         },
         component: () => import(/* webpackChunkName: "cameraDataMore" */ '../views/data/camera.vue')
       },
@@ -112,7 +122,8 @@ const routes = [
         path: '/infomanage',
         name: 'infomanage',
         meta: {
-          title: '个人中心'
+          title: '个人中心',
+          needLogin: true
         },
         component: () => import(/* webpackChunkName: "infomanage" */ '../views/user/info.vue')
       },
@@ -120,30 +131,40 @@ const routes = [
   }
 ]
 
+// 实例化router
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes
 })
 
-// 挂载路由导航守卫,to表示将要访问的路径，from表示从哪里来，next是下一个要做的操作
+// 挂载路由导航守卫，to表示将要访问的路径，from表示从哪里来，next是下一个要做的操作
 router.beforeEach((to, from, next) => {
   NProgress.start()
 
-  if (to.path === '/login')
-    return next();
-
-  try {
-    let token = JSON.parse(localStorage.getItem('p1')).token;
-    if (token) next()
-  } catch (e) {
-    return next();
+  let isLogin = localTake('p1')
+  if (to.meta.needLogin) {  // 判断该路由是否需要登录权限
+    if (isLogin) { // 判断是否已经登录
+      next()
+    } else {
+      next({
+        path: '/login',
+        query: { redirect: to.fullPath }  // 将跳转的路由path作为参数，登录成功后跳转到该路由
+      })
+    }
+  } else {
+    next()
   }
-  next();
 })
 
 router.afterEach(() => {
   NProgress.done()
 })
+
+// 重写路由的push方法
+const routerPush = VueRouter.prototype.push
+VueRouter.prototype.push = function push(location) {
+  return routerPush.call(this, location).catch(error => error)
+}
 
 export default router

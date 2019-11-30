@@ -66,14 +66,16 @@ export default {
   methods: {
     // 添加beforeunload监听事件
     createBeforeunloadHandler() {
-      window.addEventListener("beforeunload", e => this.beforeunloadHandler(e));
+      window.addEventListener("beforeunload", e => {
+        this.beforeunloadHandler(e);
+      });
     },
 
     // 移除beforeunload事件
     destroyedBeforeunloadHandler() {
-      window.removeEventListener("beforeunload", e =>
-        this.beforeunloadHandler(e)
-      );
+      window.removeEventListener("beforeunload", e => {
+        this.beforeunloadHandler(e);
+      });
     },
 
     // beforeunload监听事件

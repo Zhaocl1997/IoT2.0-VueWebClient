@@ -7,8 +7,7 @@
     @close="onClose"
     :title="dialogTitle"
     :close-on-click-modal="false"
-    :visible.sync="dialogVisible"
-    :before-close="onDialogClose"
+    :visible="dialogVisible"
   >
     <el-form
       ref="dialogform"
@@ -46,6 +45,18 @@
         />
       </el-form-item>
 
+      <!-- <el-form-item label="角色权限：" prop="menu">
+        <el-cascader
+          :options="treeData"
+          v-model="treeCheckedKey"
+          :props="props"
+          collapse-tags
+          clearable
+          @change="onChange"
+          ref="cascader"
+        ></el-cascader>
+      </el-form-item> -->
+
       <el-form-item label="角色状态: " prop="status">
         <el-switch v-model="dialogFormData.status" />
       </el-form-item>
@@ -69,6 +80,12 @@ export default {
   name: "roleForm",
   data() {
     return {
+      // props: {
+      //   multiple: true,
+      //   children: "subs",
+      //   label: "title",
+      //   value: "index"
+      // },
       treeData: [],
       treeKeys: [],
       treeCheckedKey: [],
@@ -100,11 +117,9 @@ export default {
       const result = await menuService.index();
       this.treeData = result;
       for (let i = 0; i < this.treeData.length; i++) {
-        const element = this.treeData[i];
+        let element = this.treeData[i];
         this.treeKeys.push(element._id);
       }
-
-      console.log(this.treeKeys);
 
       // 如果角色有菜单字段
       if (this.dialogFormData.menu) {
@@ -116,7 +131,7 @@ export default {
           //this.treeExpandedKey.push(element);
           for (let j = 0; j < this.treeKeys.length; j++) {
             let ele = this.treeKeys[j];
-            if (element === ele) {
+            if (element == ele) {
               // 有子节点被选中的父节点ID，即默认展开ID
               this.treeExpandedKey.push(ele);
             }
@@ -128,9 +143,6 @@ export default {
           this.treeCheckedKey,
           this.treeExpandedKey
         );
-
-        console.log(this.treeCheckedKey);
-        console.log(this.treeExpandedKey);
 
         // 调用nextTick防止undefined
         this.$nextTick(() => {
@@ -149,6 +161,7 @@ export default {
       this.$nextTick(function() {
         this.$refs.tree.setCheckedKeys([]);
       });
+      this.$emit("cancel");
     },
 
     // 处理权限选择

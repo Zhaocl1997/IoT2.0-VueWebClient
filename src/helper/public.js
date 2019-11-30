@@ -130,3 +130,13 @@ export function arr_diffA(a, b) {
 export function arr_concat(arr, ...args) {
     return [].concat(arr, ...args).sort()
 }
+
+// 检验local是否有内容
+export function localTake(localName) {
+    let isLogin = isEmpty(JSON.parse(localStorage.getItem(localName)));
+    if (isLogin) {
+        return false
+    } else {
+        return true
+    }
+}

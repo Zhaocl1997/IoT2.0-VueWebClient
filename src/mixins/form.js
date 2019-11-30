@@ -1,6 +1,3 @@
-import { tip } from '../components/MessageBox';
-import { isEmpty } from "../helper/public";
-
 export const formMixins = {
     data() {
         return {
@@ -22,21 +19,6 @@ export const formMixins = {
         }
     },
     methods: {
-        // 窗口关闭前的回调
-        onDialogClose() {
-            delete this.dialogFormData.status
-            if (!(isEmpty(this.dialogFormData))) {
-                this.$confirm("你会失去现在已经输入的内容哦，确定要关闭吗?")
-                    .then(() => {
-                        this.$emit("cancel");
-                    })
-                    .catch(() => {
-                        tip.cancel()
-                    });
-            } else {
-                this.$emit("cancel");
-            }
-        },
         // 取消
         onCancel() {
             this.$refs.dialogform.clearValidate();
