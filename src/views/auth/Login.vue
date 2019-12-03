@@ -63,6 +63,7 @@
 import vcode from "./components/verifycode";
 import { mapActions } from "vuex";
 import { aes } from "@/helper/crypto";
+import { getIP2 } from "@/helper/public";
 
 export default {
   name: "login",
@@ -115,6 +116,7 @@ export default {
     };
   },
   mounted() {
+    getIP2();
     this.getCookie();
   },
   components: {
@@ -125,6 +127,8 @@ export default {
 
     // 提交登陆表单
     handleLogin() {
+      localStorage.setItem("ip", window.returnCitySN["cip"]);
+
       this.$refs["loginForm"].validate(valid => {
         if (valid) {
           if (this.loginData.phone !== "") {

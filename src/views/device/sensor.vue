@@ -42,9 +42,9 @@ export default {
     return {
       LEDstatus: false,
       macAddress: "",
-      temp: "",
-      humi: "",
-      time: "",
+      temp: "" || 0,
+      humi: "" || 0,
+      time: "" || format(new Date(), "YYYY/MM/DD HH:mm:ss"),
 
       // chart视图数据
       planetChartData: {
@@ -148,19 +148,24 @@ export default {
         document.querySelector("#sensor_chart-con").appendChild(canvas);
 
         // 重新请求
-        this.init({ macAddress: this.macAddress, pagerow: 20 });
+        this.init();
       }
     }
   },
   mounted() {
     this.macAddress = this.$route.query.macAddress;
-    this.init({ macAddress: this.macAddress, pagerow: 20 });
+    this.init();
     socketService.initSocket({ macAddress: this.macAddress });
   },
   methods: {
     // 初始化
-    async init(item) {
-      const result = await dataService.index(item);
+    async init() {
+      const result = await dataService.index({
+        macAddress: this.macAddress,
+        pagerow: 20
+      });
+
+      if (result.data.length === 0) return;
 
       // 最新数据
       this.temp = result.data[0].data.t;
@@ -200,7 +205,7 @@ export default {
 
     // 改变LED状态
     async onSwitch(value) {
-      await dataService.onLED({ l: value });
+      await dataService.onLED({ status: value, macAddress: this.macAddress });
     }
   }
 };

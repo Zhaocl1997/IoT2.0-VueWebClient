@@ -19,10 +19,10 @@
 
     <div class="marquee">
       <div class="marquee_title">
-        <span>最新消息</span>
+        <span>推送消息</span>
       </div>
       <div class="marquee_box">
-        <ul class="marquee_list" :class="{marquee_top:animate}">
+        <ul class="marquee_list" :class="{ marquee_top:animate }">
           <li v-for="item in newsList" :key="item.id">
             <span>{{ item.msg }}</span>
           </li>

@@ -1,5 +1,5 @@
 <template>
-  <div class="container" id="container">
+  <div class="table-con" id="table-con">
     <div class="pics_con">
       <div v-for="item in imagesData" :key="item._id" class="pic_con">
         <el-tooltip placement="right-start">
@@ -8,7 +8,7 @@
             <br />
             图片大小：{{ item.data.size }}KB
           </div>
-          <img :src="item.data.url" alt="No image" class="pic_con-img" />
+          <img :src="item.data.url" alt="暂无图片" class="pic_con-img" />
         </el-tooltip>
       </div>
     </div>
@@ -56,15 +56,17 @@ export default {
     // 初始化
     async init(item) {
       const result = await dataService.index(item);
-      this.imagesData = result.data;
-      this.total = result.total;
-      this.imagesData.forEach(element => {
-        element.data["size"] = Number.parseInt(element.data["size"] / 1024);
-        element["createdAt"] = format(
-          element["createdAt"],
-          "YYYY/MM/DD HH:mm:ss"
-        );
-      });
+      if (result) {
+        this.imagesData = result.data;
+        this.total = result.total;
+        this.imagesData.forEach(element => {
+          element.data["size"] = Number.parseInt(element.data["size"] / 1024);
+          element["createdAt"] = format(
+            element["createdAt"],
+            "YYYY/MM/DD HH:mm:ss"
+          );
+        });
+      }
     },
 
     // 分页参数

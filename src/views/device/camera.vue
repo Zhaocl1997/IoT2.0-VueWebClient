@@ -11,14 +11,14 @@
       </tr>
       <tr align="center">
         <td height="50">照片大小</td>
-        <td>{{ picSize }}KB</td>
+        <td>{{ size }}KB</td>
         <td>采集时间</td>
         <td>{{ time }}</td>
       </tr>
     </table>
 
     <div class="camera_con">
-      <img :src="url" alt="No image" class="camera_con-img" />
+      <img :src="url" alt="暂无图片" class="camera_con-img" />
     </div>
 
     <div class="camera_more">
@@ -36,18 +36,15 @@ export default {
   data() {
     return {
       macAddress: "",
-      url: "",
-      time: "",
-      size: ""
+      url: "" || "/img/none.jpg",
+      time: "" || format(new Date(), "YYYY/MM/DD HH:mm:ss"),
+      size: "" || 0
     };
   },
   computed: {
-    picSize() {
-      return Number.parseInt(this.size / 1024);
-    },
     newUrl() {
       // 监听新的f
-      return this.$store.state.dataState.mac;
+      return this.$store.state.dataState.f;
     }
   },
   watch: {
@@ -66,11 +63,13 @@ export default {
   methods: {
     async init(item) {
       const result = await dataService.index(item);
+      if (result.data.length === 0) return;
+
       const data = result.data[0];
 
       // 最新数据
-      this.url =  data.data.url;
-      this.size = data.data.size;
+      this.url = data.data.url;
+      this.size = Number.parseInt(data.data.size / 1024);
       this.time = format(data.createdAt, "YYYY/MM/DD HH:mm:ss");
       this.macAddress = data.macAddress;
     }

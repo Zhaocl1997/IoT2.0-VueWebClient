@@ -1,15 +1,16 @@
 <template>
-  <div class="container">
-    <div class="command-box">
+  <div class="table-con">
+    <div class="table-box">
       <el-button
         size="small"
         type="text"
         @click="onDialog(0, 'add')"
         icon="el-icon-circle-plus-outline"
       >新建一级菜单</el-button>
+      <el-button size="small" type="text" @click="onFresh" icon="el-icon-refresh">刷新</el-button>
     </div>
 
-    <div class="tablecontent" id="tablecontent">
+    <div class="table-main" id="table-main">
       <el-table
         border
         empty-text
@@ -17,20 +18,25 @@
         row-key="_id"
         :data="tableData"
         ref="multipleTable"
-        default-expand-all
         tooltip-effect="dark"
         :row-class-name="tableRowClassName"
-        :tree-props="{children: 'subs', hasChildren: 'hasChildren'}"
+        :tree-props="treeProp"
       >
-        <el-table-column type="index" label="序号" align="center">
+        <el-table-column type="index" label="序号" align="center" :resizable="false">
           <template slot-scope="scope">
-            <span>{{(reqData.pagenum - 1) * reqData.pagerow + scope.$index + 1}}</span>
+            <span>{{ (reqData.pagenum - 1) * reqData.pagerow + scope.$index + 1 }}</span>
           </template>
         </el-table-column>
 
         <el-table-column prop="title" label="菜单名称" align="center" show-overflow-tooltip />
         <el-table-column prop="icon" label="图标路径" align="center" show-overflow-tooltip />
-        <el-table-column prop="index" label="页面路由" align="center" show-overflow-tooltip />
+        <el-table-column
+          prop="index"
+          label="页面路由"
+          align="center"
+          show-overflow-tooltip
+          :resizable="false"
+        />
 
         <el-table-column label="操作" align="center" width="180">
           <template slot-scope="scope">
@@ -59,12 +65,12 @@
       </el-table>
     </div>
 
-    <v-page
+    <!-- <v-page
       :pagenum="reqData.pagenum"
       :pagerow="reqData.pagerow"
       :total="total"
       @paginationEvent="onPage"
-    />
+    />-->
 
     <v-dialog
       :dialogVisible="dialogVisible"
@@ -77,7 +83,7 @@
 </template>
 
 <script>
-import vPage from "@/components/pagination";
+// import vPage from "@/components/pagination";
 import vDialog from "./components/form.vue";
 import { menuService } from "@/services";
 import { tableMixins } from "@/mixins";
@@ -86,9 +92,14 @@ import { checkBox, tip } from "@/components/MessageBox";
 export default {
   mixins: [tableMixins],
   name: "v-menu",
+  data() {
+    return {
+      treeProp: { children: "subs", hasChildren: "hasChildren" }
+    };
+  },
   components: {
-    vDialog,
-    vPage
+    vDialog
+    // vPage
   },
   methods: {
     // 一级菜单显示浅绿色,二级菜单显示浅米色
@@ -101,10 +112,9 @@ export default {
     },
 
     // 初始化
-    async init(item) {
-      const result = await menuService.index(item);
+    async init() {
+      const result = await menuService.options();
       this.tableData = result;
-      // this.total = result.total;
     },
 
     // 处理新建编辑
@@ -141,7 +151,7 @@ export default {
           menuService.del({ _id: id }).then(value => {
             if (value === true) {
               tip.dS();
-              this.init(this.reqData);
+              this.init();
             }
           });
         } else {

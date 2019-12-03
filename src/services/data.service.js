@@ -18,7 +18,17 @@ async function onLED(params) {
     }
 }
 
+// 删除
+async function del(params) {
+    const url = '/api/v1/data/delete'
+    const result = await axios.post(url, params)
+    if (result.status === true) {
+        return result.status
+    }
+}
+
 export const dataService = {
     index,
-    onLED
+    onLED,
+    del
 }

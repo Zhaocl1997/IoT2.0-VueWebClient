@@ -1,6 +1,6 @@
 <template>
-  <div class="container">
-    <div class="command-box">
+  <div class="table-con">
+    <div class="table-box">
       <el-input
         size="small"
         style="width: 25%; margin-right: 10px;"
@@ -19,13 +19,14 @@
       <el-button
         size="small"
         type="text"
-        @click="onToggleSelection()"
+        @click="onToggleSelection"
         icon="el-icon-remove-outline"
       >取消</el-button>
+      <el-button size="small" type="text" @click="onFresh" icon="el-icon-refresh">刷新</el-button>
       <el-button size="small" type="text" @click="onMultipleDel" icon="el-icon-delete">删除</el-button>
     </div>
 
-    <div class="tablecontent" id="tablecontent">
+    <div class="table-main" id="table-main">
       <el-table
         border
         empty-text
@@ -36,44 +37,73 @@
         @sort-change="onSort"
         :row-class-name="tableRowClassName"
         @selection-change="onSelectionChange"
-        :default-sort="{prop: 'status', order: 'descending'}"
       >
         <el-table-column type="selection" width="40" />
-        <el-table-column type="index" label="序号" align="center">
+        <el-table-column type="index" label="序号" align="center" :resizable="false">
           <template slot-scope="scope">
-            <span>{{(reqData.pagenum - 1) * reqData.pagerow + scope.$index + 1}}</span>
+            <span>{{ (reqData.pagenum - 1) * reqData.pagerow + scope.$index + 1 }}</span>
           </template>
         </el-table-column>
-
         <el-table-column prop="name" label="设备名称" align="center" show-overflow-tooltip />
         <el-table-column prop="macAddress" label="mac地址" align="center" show-overflow-tooltip />
-        <el-table-column prop="type" label="设备种类" align="center" show-overflow-tooltip />
         <el-table-column
-          prop="createdAt"
-          label="创建时间"
+          prop="dataCount"
+          label="数据数量"
           align="center"
-          :formatter="onFormat"
           show-overflow-tooltip
-          sortable
+          :formatter="onFormat"
         />
         <el-table-column
-          prop="updatedAt"
-          label="最后更新"
+          prop="type"
+          label="设备种类"
           align="center"
-          :formatter="onFormat"
           show-overflow-tooltip
           sortable
+          :sort-orders="['ascending', 'descending']"
         />
         <el-table-column
-          prop="createdBy"
+          prop="createdBy.name"
           label="所有者"
           align="center"
           show-overflow-tooltip
           sortable
+          :sort-orders="['ascending', 'descending']"
         />
-        <el-table-column prop="status" label="设备状态" align="center" :formatter="onFormat" sortable />
+        <el-table-column
+          prop="createdAt"
+          label="创建时间"
+          align="center"
+          :formatter="onTimeFormat"
+          show-overflow-tooltip
+          sortable
+          :sort-orders="['ascending', 'descending']"
+        />
+        <el-table-column
+          prop="updatedAt"
+          label="更新时间"
+          align="center"
+          :formatter="onTimeFormat"
+          show-overflow-tooltip
+          sortable
+          :sort-orders="['ascending', 'descending']"
+        />
+        <el-table-column
+          prop="status"
+          label="设备状态"
+          align="center"
+          :resizable="false"
+          sortable
+          :sort-orders="['ascending', 'descending']"
+        >
+          <template slot-scope="scope">
+            <el-switch
+              v-model="scope.row.status"
+              @change="onStatus(scope.row._id, scope.row.status)"
+            />
+          </template>
+        </el-table-column>
 
-        <el-table-column label="操作" align="center" width="180">
+        <el-table-column label="操作" align="center" width="200">
           <template slot-scope="scope">
             <el-button
               size="small"
@@ -99,6 +129,7 @@
       :total="total"
       @paginationEvent="onPage"
     />
+
     <v-dialog
       :dialogVisible="dialogVisible"
       :dialogFormData="dialogData"
@@ -115,7 +146,7 @@ import vDialog from "./components/form.vue";
 import { deviceService } from "@/services";
 import { tableMixins } from "@/mixins";
 import { checkBox, tip } from "@/components/MessageBox";
-import { format } from "@/helper/public";
+import { countLineNum } from "@/helper/public";
 
 export default {
   mixins: [tableMixins],
@@ -126,10 +157,19 @@ export default {
   },
   methods: {
     // 初始化
-    async init(item) {
-      const result = await deviceService.index(item);
+    async init() {
+      this.reqData.pagerow = countLineNum();
+      const result = await deviceService.index(this.reqData);
       this.tableData = result.data;
       this.total = result.total;
+    },
+
+    // 状态改变
+    async onStatus(id, status) {
+      const result = await deviceService.update({ _id: id, status });
+      if (result === true) {
+        tip.uS();
+      }
     },
 
     // 处理新建编辑
@@ -150,8 +190,7 @@ export default {
             _id: index._id,
             name: index.name,
             macAddress: index.macAddress,
-            type: index.type,
-            status: index.status
+            type: index.type
           };
           break;
       }
@@ -164,7 +203,7 @@ export default {
           deviceService.del({ _id: id }).then(value => {
             if (value === true) {
               tip.dS();
-              this.init(this.reqData);
+              this.init();
             }
           });
         } else {
@@ -184,48 +223,45 @@ export default {
                 count = count + 1;
                 if (this.multipleSelection.length === count) {
                   tip.dS();
-                  this.init(this.reqData);
+                  this.init();
                 }
               }
             });
           });
         } else {
           tip.cancel();
-          this.init(this.reqData);
+          this.$refs.multipleTable.clearSelection();
         }
       });
     },
 
     // 显示数据页面
     onCheck(e) {
-      if (e.type === "sensor") {
-        this.$router.push({
-          path: "/sensorData",
-          query: { name: e.name, macAddress: e.macAddress }
-        });
-      } else if (e.type === "camera") {
-        this.$router.push({
-          path: "/cameraData",
-          query: { name: e.name, macAddress: e.macAddress }
-        });
+      switch (e.type) {
+        case "sensor":
+          this.$router.push({
+            path: "/sensorData",
+            query: { name: e.name, macAddress: e.macAddress }
+          });
+          break;
+
+        case "camera":
+          this.$router.push({
+            path: "/cameraData",
+            query: { name: e.name, macAddress: e.macAddress }
+          });
+          break;
+
+        default:
+          break;
       }
     },
 
     // 处理格式化显示
     onFormat(row, column) {
       switch (column.label) {
-        case "创建时间":
-          return format(row.createdAt, "YYYY/MM/DD HH:mm:ss");
-
-        case "最后更新":
-          return format(row.updatedAt, "YYYY/MM/DD HH:mm:ss");
-
-        case "设备状态":
-          return row.status === true
-            ? "启用"
-            : row.status === false
-            ? "停用"
-            : "未知";
+        case "数据数量":
+          return `${row.dataCount} 条数据`;
       }
     }
   }

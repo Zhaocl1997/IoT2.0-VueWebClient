@@ -74,8 +74,6 @@ export default {
       size: 45, // 头像大小
       imgFit: "cover", // 头像自适应
       username: "",
-      userrole: JSON.parse(localStorage.getItem("p1")).role,
-      userIP: localStorage.getItem("clientIP"),
       sidebarCollapse: false,
       onVXDiv: false,
       onWeatherDiv: false,
@@ -89,6 +87,12 @@ export default {
     };
   },
   computed: {
+    userIP() {
+      return localStorage.getItem("ip");
+    },
+    userrole() {
+      return JSON.parse(localStorage.getItem("p1")).role;
+    },
     weather() {
       return (
         "所在城市：" +
@@ -113,16 +117,16 @@ export default {
     onNameChange: async function(val, oldVal) {
       if (val != 0 && val !== oldVal) {
         await this.getName();
-        await this.getWeather();
+        // await this.getWeather();
       }
     }
   },
   mounted() {
+    this.getName();
+    // this.getWeather();
     if (document.body.clientWidth < 1500) {
       this.onSidebarCollapse();
     }
-    this.getName();
-    this.getWeather();
   },
   methods: {
     ...mapActions("userState", ["logout"]),

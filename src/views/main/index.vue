@@ -31,7 +31,7 @@ export default {
   data() {
     return {
       tagsList: [],
-      sidebarCollapse: true
+      sidebarCollapse: false
     };
   },
   components: {

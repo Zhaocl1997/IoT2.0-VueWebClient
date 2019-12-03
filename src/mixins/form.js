@@ -22,7 +22,6 @@ export const formMixins = {
         // 取消
         onCancel() {
             this.$refs.dialogform.clearValidate();
-            this.$refs.dialogform.resetFields()
             this.$emit("cancel");
         },
         // 确定

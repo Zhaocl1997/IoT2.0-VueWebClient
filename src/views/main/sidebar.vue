@@ -63,7 +63,7 @@ export default {
   name: "v-sidebar",
   data() {
     return {
-      sidebarCollapse: true,
+      sidebarCollapse: false,
       items: []
     };
   },

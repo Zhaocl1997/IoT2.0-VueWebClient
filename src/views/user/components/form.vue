@@ -33,33 +33,16 @@
         <el-input v-model="dialogFormData.phone" placeholder="请输入手机号码" clearable />
       </el-form-item>
 
-      <!-- <el-form-item label="用户身份：" prop="role">
-        <el-select v-model="dialogFormData.role" placeholder="请选择用户身份" style="width: 100%;">
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.describe"
-            :value="item.name"
-          />
-        </el-select>
-      </el-form-item>-->
-
       <el-form-item label="用户身份：" prop="role">
         <el-radio-group v-model="dialogFormData.role" placeholder="请选择用户身份">
           <el-radio v-for="item in options" :key="item.name" :label="item.name">{{ item.describe }}</el-radio>
         </el-radio-group>
       </el-form-item>
-
-      <el-form-item label="用户状态： " prop="status">
-        <el-tooltip :content="'用户状态: ' + dialogFormData.status" placement="top">
-          <el-switch v-model="dialogFormData.status" />
-        </el-tooltip>
-      </el-form-item>
     </el-form>
 
     <span slot="footer" class="dialog-footer">
-      <el-button size="small" @click="onCancel">取&#32;消</el-button>
       <el-button size="small" type="primary" @click="onConfirm">确&#32;定</el-button>
+      <el-button size="small" @click="onCancel">取&#32;消</el-button>
     </span>
   </el-dialog>
 </template>

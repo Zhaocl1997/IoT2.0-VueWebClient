@@ -1,6 +1,6 @@
 <template>
-  <div class="container">
-    <div class="command-box">
+  <div class="table-con">
+    <div class="table-box">
       <el-input
         size="small"
         style="width: 25%; margin-right: 10px;"
@@ -22,10 +22,11 @@
         @click="onToggleSelection"
         icon="el-icon-remove-outline"
       >取消</el-button>
+      <el-button size="small" type="text" @click="onFresh" icon="el-icon-refresh">刷新</el-button>
       <el-button size="small" type="text" @click="onMultipleDel" icon="el-icon-delete">删除</el-button>
     </div>
 
-    <div class="tablecontent" id="tablecontent">
+    <div class="table-main" id="table-main">
       <el-table
         border
         empty-text
@@ -36,17 +37,22 @@
         @sort-change="onSort"
         :row-class-name="tableRowClassName"
         @selection-change="onSelectionChange"
-        :default-sort="{prop: 'status', order: 'descending'}"
       >
         <el-table-column type="selection" width="40" />
         <el-table-column type="index" label="序号" align="center" :resizable="false">
           <template slot-scope="scope">
-            <span>{{(reqData.pagenum - 1) * reqData.pagerow + scope.$index + 1}}</span>
+            <span>{{ (reqData.pagenum - 1) * reqData.pagerow + scope.$index + 1 }}</span>
           </template>
         </el-table-column>
-
         <el-table-column prop="name" label="用户名" align="center" show-overflow-tooltip />
-        <el-table-column prop="role" label="用户身份" align="center" show-overflow-tooltip sortable />
+        <el-table-column prop="role.name" label="用户身份" align="center" show-overflow-tooltip />
+        <el-table-column
+          prop="devCount"
+          label="设备数量"
+          align="center"
+          show-overflow-tooltip
+          :formatter="onFormat"
+        />
         <el-table-column prop="email" label="邮箱" align="center" show-overflow-tooltip />
         <el-table-column prop="phone" label="手机号" align="center" show-overflow-tooltip />
         <el-table-column
@@ -54,25 +60,34 @@
           label="创建时间"
           align="center"
           show-overflow-tooltip
-          :formatter="onFormat"
+          :formatter="onTimeFormat"
           sortable
+          :sort-orders="['ascending', 'descending']"
         />
         <el-table-column
           prop="updatedAt"
           label="更新时间"
           align="center"
           show-overflow-tooltip
-          :formatter="onFormat"
+          :formatter="onTimeFormat"
           sortable
+          :sort-orders="['ascending', 'descending']"
         />
         <el-table-column
           prop="status"
           label="用户状态"
           align="center"
-          show-overflow-tooltip
-          :formatter="onFormat"
+          :resizable="false"
           sortable
-        />
+          :sort-orders="['ascending', 'descending']"
+        >
+          <template slot-scope="scope">
+            <el-switch
+              v-model="scope.row.status"
+              @change="onStatus(scope.row._id, scope.row.status)"
+            />
+          </template>
+        </el-table-column>
 
         <el-table-column label="操作" align="center" width="150">
           <template slot-scope="scope">
@@ -116,7 +131,7 @@ import vDialog from "./components/form.vue";
 import { userService } from "@/services";
 import { tableMixins } from "@/mixins";
 import { checkBox, tip } from "@/components/MessageBox";
-import { format } from "@/helper/public";
+import { countLineNum } from "@/helper/public";
 
 export default {
   mixins: [tableMixins],
@@ -127,10 +142,19 @@ export default {
   },
   methods: {
     // 初始化
-    async init(item) {
-      const result = await userService.index(item);
+    async init() {
+      this.reqData.pagerow = countLineNum();
+      const result = await userService.index(this.reqData);
       this.tableData = result.data;
       this.total = result.total;
+    },
+
+    // 状态改变
+    async onStatus(id, status) {
+      const result = await userService.update({ _id: id, status });
+      if (result === true) {
+        tip.uS();
+      }
     },
 
     // 处理新建编辑
@@ -150,10 +174,9 @@ export default {
           this.dialogData = {
             _id: index._id,
             name: index.name,
-            role: index.role,
+            role: index.role.name,
             email: index.email,
-            phone: index.phone,
-            status: index.status
+            phone: index.phone
           };
           break;
       }
@@ -166,7 +189,7 @@ export default {
           userService.del({ _id: id }).then(value => {
             if (value === true) {
               tip.dS();
-              this.init(this.reqData);
+              this.init();
             }
           });
         } else {
@@ -186,33 +209,22 @@ export default {
                 count = count + 1;
                 if (this.multipleSelection.length === count) {
                   tip.dS();
-                  this.init(this.reqData);
+                  this.init();
                 }
               }
             });
           });
         } else {
           tip.cancel();
-          this.init(this.reqData);
+          this.$refs.multipleTable.clearSelection();
         }
       });
     },
-
     // 处理格式化显示
     onFormat(row, column) {
       switch (column.label) {
-        case "创建时间":
-          return format(row.createdAt, "YYYY/MM/DD HH:mm:ss");
-
-        case "更新时间":
-          return format(row.updatedAt, "YYYY/MM/DD HH:mm:ss");
-
-        case "用户状态":
-          return row.status === true
-            ? "启用"
-            : row.status === false
-            ? "停用"
-            : "未知";
+        case "设备数量":
+          return `${row.devCount} 个设备`;
       }
     }
   }

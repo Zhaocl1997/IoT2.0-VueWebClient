@@ -1,5 +1,15 @@
 import axios from '../helper/axioshttp'
 
+// 获取所有菜单
+async function options(params) {
+    const url = '/api/v1/menu/options'
+    const result = await axios.post(url, params)
+    if (result.status === true) {
+        return result.data
+    }
+}
+
+
 // 获取指定用户菜单
 async function index(params) {
     const url = '/api/v1/menu/index'
@@ -46,6 +56,7 @@ async function del(params) {
 }
 
 export const menuService = {
+    options,
     index,
     create,
     read,

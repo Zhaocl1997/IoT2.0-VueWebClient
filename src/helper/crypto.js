@@ -4,11 +4,11 @@
 * @author: ldy
 */
 import CryptoJS from 'crypto-js';
+
 const KP = {
   key: '1234567812345678', // 秘钥 16*n:
   iv: '1234567812345678'  // 偏移量
 };
-
 
 function getAesString(data, key, iv) { // 加密
   key = CryptoJS.enc.Utf8.parse(key);

@@ -9,9 +9,9 @@ async function options() {
 }
 
 // 获取角色
-async function index() {
+async function index(params) {
     const url = '/api/v1/role/index'
-    const result = await axios.post(url)
+    const result = await axios.post(url, params)
     if (result.status === true) {
         return result.data
     }

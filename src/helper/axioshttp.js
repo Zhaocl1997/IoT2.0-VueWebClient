@@ -3,6 +3,7 @@ import config from '../helper/config'
 import { authHeader } from '../helper/auth-header'
 import { aes, sign } from '@/helper/crypto';
 import { tip } from '../components/MessageBox';
+import router from "../router";
 
 // 实例化axios对象
 const axios = axiosOriginal.create({
@@ -12,12 +13,14 @@ const axios = axiosOriginal.create({
 })
 
 // 请求拦截器
-axios.interceptors.request.use(function (config) {
-  config.headers = authHeader()
-  return config;
-}, function (error) {
-  return Promise.reject(error);
-});
+axios.interceptors.request.use(
+  config => {
+    config.headers = authHeader()
+    return config;
+  },
+  error => {
+    return Promise.reject(error);
+  });
 
 /**
 * get方式请求，url传参
@@ -74,6 +77,10 @@ const errback = error => {
     error.message = '操作失败（' + error.message + '）'
   } else {
     error.message = '未知错误（' + error.message + '）'
+  }
+
+  if (error.message === '操作失败（您在进行未认证访问哦）') {
+    router.push('/')
   }
 
   tip.error(error.message)

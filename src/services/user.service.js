@@ -61,6 +61,15 @@ async function captcha() {
     }
 }
 
+// 获取用户options
+async function options() {
+    const url = '/api/v1/user/options'
+    const result = await axios.post(url)
+    if (result.status === true) {
+        return result.data
+    }
+}
+
 // 获取所有用户信息
 async function index(params) {
     const url = '/api/v1/user/index'
@@ -114,6 +123,7 @@ export const userService = {
     logout,
     captcha,
 
+    options,
     index,
     create,
     read,

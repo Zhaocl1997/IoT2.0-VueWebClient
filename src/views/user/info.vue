@@ -78,6 +78,7 @@ export default {
       const result = await userService.read();
       this.flag = true;
       this.form = result;
+      this.form.role = result.role.name;
     },
     onBirth(data) {
       this.form.birth = data;

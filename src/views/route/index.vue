@@ -1,12 +1,27 @@
 <template>
   <div class="table-con">
     <div class="table-box">
+      <el-input
+        size="small"
+        style="width: 25%; margin-right: 10px;"
+        v-model="reqData.filters"
+        @input="onFilter"
+        placeholder="输入查询信息"
+        maxlength="10"
+        clearable
+      />
       <el-button
         size="small"
         type="text"
         @click="onDialog(0, 'add')"
         icon="el-icon-circle-plus-outline"
       >新建</el-button>
+      <el-button
+        size="small"
+        type="text"
+        @click="onToggleSelection"
+        icon="el-icon-remove-outline"
+      >取消</el-button>
       <el-button size="small" type="text" @click="onFresh" icon="el-icon-refresh">刷新</el-button>
     </div>
 
@@ -26,28 +41,37 @@
             <span>{{ (reqData.pagenum - 1) * reqData.pagerow + scope.$index + 1 }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="name" label="角色名称" align="center" show-overflow-tooltip />
-        <el-table-column prop="describe" label="角色描述" align="center" show-overflow-tooltip />
-        <el-table-column
-          prop="userCount"
-          label="用户数量"
-          align="center"
-          show-overflow-tooltip
-          :formatter="onFormat"
-        />
-        <el-table-column
-          prop="menu"
-          label="角色权限"
-          align="center"
-          show-overflow-tooltip
-          :formatter="onFormat"
-        />
+        <el-table-column prop="name" label="路由名称" align="center" show-overflow-tooltip />
+        <el-table-column prop="path" label="路由路径" align="center" show-overflow-tooltip />
+        <el-table-column label="路由元信息" align="center">
+          <el-table-column prop="meta.title" label="路由标题" align="center" show-overflow-tooltip></el-table-column>
+          <el-table-column
+            prop="meta.needLogin"
+            label="是否需要登录"
+            align="center"
+            show-overflow-tooltip
+            sortable
+            :sort-orders="['ascending', 'descending']"
+          >
+            <template slot-scope="scope">
+              <el-switch
+                v-model="scope.row.meta.needLogin"
+                @change="onStatus(scope.row._id, scope.row.meta)"
+              />
+            </template>
+          </el-table-column>
+        </el-table-column>
+
+        <el-table-column prop="package" label="打包名称" align="center" show-overflow-tooltip />
+
+        <el-table-column prop="component" label="路由组件" align="center" show-overflow-tooltip />
+
         <el-table-column
           prop="createdAt"
           label="创建时间"
           align="center"
-          show-overflow-tooltip
           :formatter="onTimeFormat"
+          show-overflow-tooltip
           sortable
           :sort-orders="['ascending', 'descending']"
         />
@@ -55,27 +79,11 @@
           prop="updatedAt"
           label="更新时间"
           align="center"
-          show-overflow-tooltip
           :formatter="onTimeFormat"
+          show-overflow-tooltip
           sortable
           :sort-orders="['ascending', 'descending']"
         />
-        <el-table-column
-          prop="status"
-          label="角色状态"
-          align="center"
-          show-overflow-tooltip
-          :resizable="false"
-          sortable
-          :sort-orders="['ascending', 'descending']"
-        >
-          <template slot-scope="scope">
-            <el-switch
-              v-model="scope.row.status"
-              @change="onStatus(scope.row._id, scope.row.status)"
-            />
-          </template>
-        </el-table-column>
 
         <el-table-column label="操作" align="center" width="150">
           <template slot-scope="scope">
@@ -90,7 +98,6 @@
               type="text"
               @click="onSingleDel(scope.row._id)"
               icon="el-icon-delete"
-              :disabled="true"
             >删除</el-button>
           </template>
         </el-table-column>
@@ -117,30 +124,45 @@
 <script>
 import vPage from "@/components/pagination";
 import vDialog from "./components/form.vue";
-import { roleService } from "@/services";
+import { routeService } from "@/services";
 import { tableMixins } from "@/mixins";
 import { checkBox, tip } from "@/components/MessageBox";
 import { countLineNum } from "@/helper/public";
 
 export default {
   mixins: [tableMixins],
-  name: "v-role",
+  name: "v-route",
   components: {
     vDialog,
     vPage
   },
   methods: {
+    // 一级菜单显示浅绿色,二级菜单显示浅米色
+    tableRowClassName({ row }) {
+      if (row.meta.needLogin === true) {
+        return "on-row";
+      } else {
+        return "off-row";
+      }
+    },
+
     // 初始化
     async init() {
       this.reqData.pagerow = countLineNum();
-      const result = await roleService.index(this.reqData);
+      const result = await routeService.index(this.reqData);
       this.tableData = result.data;
       this.total = result.total;
     },
 
     // 状态改变
-    async onStatus(id, status) {
-      const result = await roleService.update({ _id: id, status });
+    async onStatus(id, meta) {
+      const result = await routeService.update({
+        _id: id,
+        meta: {
+          title: meta.title,
+          needLogin: meta.needLogin
+        }
+      });
       if (result === true) {
         tip.uS();
       }
@@ -150,21 +172,24 @@ export default {
     onDialog(index, operation) {
       switch (operation) {
         case "add":
-          this.dialogTitle = "新建角色";
+          this.dialogTitle = "新建路由";
           this.dialogVisible = true;
           this.dialogData = {
-            status: true
+            needLogin: true
           };
           break;
 
         case "edit":
-          this.dialogTitle = "编辑角色";
+          this.dialogTitle = "编辑路由";
           this.dialogVisible = true;
           this.dialogData = {
             _id: index._id,
             name: index.name,
-            describe: index.describe,
-            menu: index.menu
+            path: index.path,
+            title: index.meta.title,
+            needLogin: index.meta.needLogin,
+            package: index.package,
+            component: index.component
           };
           break;
       }
@@ -172,9 +197,9 @@ export default {
 
     // 处理单个删除
     onSingleDel(id) {
-      checkBox("是否删除该角色?").then(action => {
+      checkBox("是否删除该路由?").then(action => {
         if (action === true) {
-          roleService.del({ _id: id }).then(value => {
+          routeService.del({ _id: id }).then(value => {
             if (value === true) {
               tip.dS();
               this.init();
@@ -184,17 +209,6 @@ export default {
           tip.cancel();
         }
       });
-    },
-
-    // 处理格式化显示
-    onFormat(row, column) {
-      switch (column.label) {
-        case "角色权限":
-          return `${row.menu.length} 项权限`;
-
-        case "用户数量":
-          return `${row.userCount} 个用户`;
-      }
     }
   }
 };

@@ -4,11 +4,11 @@
       <ul>
         <li
           class="tags_con-li"
-          v-for="(item,index) in tagsList"
+          v-for="(item, index) in tagsList"
           :class="{'active': isActive(item.path)}"
           :key="index"
         >
-          <router-link :to="item.path" class="tags_con-li-title">{{item.title}}</router-link>
+          <router-link :to="item.path" class="tags_con-li-title">{{ item.title }}</router-link>
           <span class="tags_con-li-icon" @click="closeTags(index)">
             <i class="el-icon-close" v-if="item.title !== '默认页'"></i>
           </span>
@@ -16,7 +16,7 @@
       </ul>
 
       <div class="tag_con-close-box">
-        <el-dropdown @command="handleTags">
+        <el-dropdown @command="onTags">
           <el-button size="mini" type="text">
             标签选项
             <i class="el-icon-arrow-down el-icon--right"></i>
@@ -59,14 +59,15 @@ export default {
     isActive(path) {
       return path === this.$route.fullPath;
     },
+
     // 关闭单个标签
     closeTags(index) {
       if (index === 0) {
-        this.$router.push("/default");
+        this.$router.push("default");
       }
       const delItem = this.tagsList.splice(index, 1)[0];
 
-      //当前选项卡
+      // 当前选项卡
       const item = this.tagsList[index]
         ? this.tagsList[index]
         : this.tagsList[index - 1];
@@ -75,7 +76,7 @@ export default {
         delItem.path === this.$route.fullPath;
         this.$router.push(item.path);
       } else {
-        this.$router.push("/default");
+        this.$router.push("default");
       }
     },
 
@@ -101,20 +102,16 @@ export default {
     },
 
     // 处理dropdown
-    handleTags(command) {
+    onTags(command) {
       command === "other" ? this.closeOther() : this.closeAll();
     },
+
     // 关闭全部标签
     closeAll() {
-      this.tagsList = [
-        {
-          name: "default",
-          path: "/default",
-          title: "默认页"
-        }
-      ];
-      this.$router.push("/default");
+      this.tagsList = [];
+      this.$router.push("default");
     },
+
     // 关闭其他标签
     closeOther() {
       const curItem = this.tagsList.filter(item => {
@@ -127,20 +124,6 @@ export default {
 </script>
 
  <style scoped>
-/* .tag_con {
-  margin-left: 16px;
-  position: relative;
-  overflow: hidden;
-  background: #e6e8ed;
-  border-bottom: 1px solid #c0c5d3;
-  box-sizing: border-box;
-} */
-/* .tags ul {
-  height: 29px;
-  overflow-x: hidden;
-  overflow-y: hidden;
-  white-space: nowrap;
-} */
 .tags_con-li {
   margin: 1px;
   padding: 0 15px 0;
@@ -159,9 +142,6 @@ export default {
   margin: 3px;
 }
 .tags_con-li-title {
-  /* float: left;
-  max-width: 80px;
-  overflow: hidden; */
   white-space: nowrap;
   text-overflow: ellipsis;
   margin-right: 16px;

@@ -24,33 +24,16 @@
         <el-input v-model="dialogFormData.macAddress" placeholder="请输入mac地址" />
       </el-form-item>
 
-      <!-- <el-form-item label="设备种类：" prop="type">
-        <el-select v-model="dialogFormData.type" placeholder="请选择设备种类" style="width: 100%;">
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
-        </el-select>
-      </el-form-item>-->
-
       <el-form-item label="设备种类：" prop="type">
         <el-radio-group v-model="dialogFormData.type" placeholder="请选择设备种类">
           <el-radio v-for="item in options" :key="item.value" :label="item.value">{{ item.label }}</el-radio>
         </el-radio-group>
       </el-form-item>
-
-      <el-form-item label="设备状态: " prop="status">
-        <el-tooltip :content="'设备状态: ' + dialogFormData.status" placement="top">
-          <el-switch v-model="dialogFormData.status" />
-        </el-tooltip>
-      </el-form-item>
     </el-form>
 
     <span slot="footer" class="dialog-footer">
-      <el-button size="small" @click="onCancel">取&#32;消</el-button>
       <el-button size="small" type="primary" @click="onConfirm">确&#32;定</el-button>
+      <el-button size="small" @click="onCancel">取&#32;消</el-button>
     </span>
   </el-dialog>
 </template>
@@ -88,12 +71,7 @@ export default {
             trigger: "blur"
           }
         ],
-        type: [
-          { required: true, message: "设备种类不能为空", trigger: "blur" }
-        ],
-        status: [
-          { required: true, message: "设备状态不能为空", trigger: "blur" }
-        ]
+        type: [{ required: true, message: "设备种类不能为空", trigger: "blur" }]
       }
     };
   },

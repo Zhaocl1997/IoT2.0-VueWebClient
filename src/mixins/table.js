@@ -1,4 +1,4 @@
-import { countLineNum } from '../helper/public'
+import { format } from "../helper/public";
 
 export const tableMixins = {
     data() {
@@ -23,25 +23,31 @@ export const tableMixins = {
         };
     },
     mounted() {
-        this.reqData.pagerow = countLineNum();
-        this.init(this.reqData);
+        this.init();
     },
     methods: {
         // 分页参数
-        async onPage(data) {
+        onPage(data) {
             this.reqData.pagenum = data;
-            await this.init(this.reqData);
+            this.init();
         },
         // 查询参数
-        async onFilter(data) {
+        onFilter(data) {
             this.reqData.filters = data;
-            await this.init(this.reqData);
+            this.init();
         },
         // 排序参数
-        async onSort(e) {
+        onSort(e) {
             this.reqData.sortField = e.prop;
             this.reqData.sortOrder = e.order;
-            await this.init(this.reqData);
+            this.init();
+        },
+        // 刷新
+        onFresh() {
+            this.$refs.multipleTable.clearSort()
+            this.reqData.sortField = "status";
+            this.reqData.sortOrder = "descending";
+            this.init();
         },
         // 启用显示浅绿色,关闭显示浅米色
         tableRowClassName({ row }) {
@@ -66,13 +72,23 @@ export const tableMixins = {
             }
         },
         // 处理窗体保存
-        async onSave() {
+        onSave() {
             this.dialogVisible = false
-            await this.init(this.reqData);
+            this.init();
         },
         // 处理窗体取消
         onCancel() {
             this.dialogVisible = false
+        },
+        // 处理格式化显示
+        onTimeFormat(row, column) {
+            switch (column.label) {
+                case "创建时间":
+                    return format(row.createdAt, "YYYY/MM/DD HH:mm:ss");
+
+                case "更新时间":
+                    return format(row.updatedAt, "YYYY/MM/DD HH:mm:ss");
+            }
         }
     }
 }

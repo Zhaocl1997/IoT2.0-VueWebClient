@@ -19,14 +19,14 @@ const getters = {
 
 const actions = {
     // 登入
-    async login({ /* dispatch,  */commit }, params) {
+    async login({ /* dispatch */ commit }, params) {
         const result = await userService.login(params)
         if (result.status === true) {
             commit('loginSuccess', result.data.user);
             tip.success('登录成功')
 
             setTimeout(() => {
-                router.push('/default');
+                router.push('/main/default');
             }, 2000)
         } else {
             commit('loginFailure', result);

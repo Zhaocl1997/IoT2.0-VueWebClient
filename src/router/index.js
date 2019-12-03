@@ -47,7 +47,7 @@ const routes = [
     component: () => import(/* webpackChunkName: "main" */ '../views/main/index.vue'),
     children: [
       {
-        path: '/default',
+        path: 'default',
         name: 'default',
         meta: {
           title: '默认页',
@@ -56,7 +56,7 @@ const routes = [
         component: () => import(/* webpackChunkName: "default" */ '../views/default/index.vue')
       },
       {
-        path: '/menumanage',
+        path: 'menumanage',
         name: 'menumanage',
         meta: {
           title: '菜单管理',
@@ -65,7 +65,7 @@ const routes = [
         component: () => import(/* webpackChunkName: "menumanage" */ '../views/menu/index.vue')
       },
       {
-        path: '/rolemanage',
+        path: 'rolemanage',
         name: 'rolemanage',
         meta: {
           title: '角色管理',
@@ -74,7 +74,7 @@ const routes = [
         component: () => import(/* webpackChunkName: "rolemanage" */ '../views/role/index.vue')
       },
       {
-        path: '/usermanage',
+        path: 'usermanage',
         name: 'usermanage',
         meta: {
           title: '用户管理',
@@ -83,7 +83,7 @@ const routes = [
         component: () => import(/* webpackChunkName: "usermanage" */ '../views/user/index.vue')
       },
       {
-        path: '/devicemanage',
+        path: 'devicemanage',
         name: 'devicemanage',
         meta: {
           title: '设备管理',
@@ -92,7 +92,43 @@ const routes = [
         component: () => import(/* webpackChunkName: "devicemanage" */ '../views/device/index.vue')
       },
       {
-        path: '/sensorData',
+        path: 'infomanage',
+        name: 'infomanage',
+        meta: {
+          title: '信息管理',
+          needLogin: true
+        },
+        component: () => import(/* webpackChunkName: "infomanage" */ '../views/user/info.vue')
+      },
+      {
+        path: 'datamanage',
+        name: 'datamanage',
+        meta: {
+          title: '数据管理',
+          needLogin: true
+        },
+        component: () => import(/* webpackChunkName: "datamanage" */ '../views/data/index.vue')
+      },
+      {
+        path: 'logmanage',
+        name: 'logmanage',
+        meta: {
+          title: '日志管理',
+          needLogin: true
+        },
+        component: () => import(/* webpackChunkName: "logmanage" */ '../views/log/index.vue')
+      },
+      {
+        path: 'routemanage',
+        name: 'routemanage',
+        meta: {
+          title: '路由管理',
+          needLogin: true
+        },
+        component: () => import(/* webpackChunkName: "routemanage" */ '../views/route/index.vue')
+      },
+      {
+        path: 'sensorData',
         name: 'sensorData',
         meta: {
           title: '传感器实时数据',
@@ -101,7 +137,7 @@ const routes = [
         component: () => import(/* webpackChunkName: "sensorData" */ '../views/device/sensor.vue')
       },
       {
-        path: '/cameraData',
+        path: 'cameraData',
         name: 'cameraData',
         meta: {
           title: '摄像头实时数据',
@@ -110,25 +146,23 @@ const routes = [
         component: () => import(/* webpackChunkName: "cameraData" */ '../views/device/camera.vue')
       },
       {
-        path: '/cameraDataMore',
+        path: 'cameraDataMore',
         name: 'cameraDataMore',
         meta: {
           title: '摄像头照片库',
           needLogin: true
         },
         component: () => import(/* webpackChunkName: "cameraDataMore" */ '../views/data/camera.vue')
-      },
-      {
-        path: '/infomanage',
-        name: 'infomanage',
-        meta: {
-          title: '个人中心',
-          needLogin: true
-        },
-        component: () => import(/* webpackChunkName: "infomanage" */ '../views/user/info.vue')
-      },
+      }
     ]
-  }
+  },
+  {
+    path: '*',
+    component: () => import(/* webpackChunkName: "404" */ '../views/404.vue'),
+    meta: {
+      title: '未知地址'
+    }
+  },
 ]
 
 // 实例化router

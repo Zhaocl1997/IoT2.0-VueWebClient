@@ -1,9 +1,10 @@
 import config from '../helper/config'
+import axios from "axios";
 
 // 计算页面中表格行数
 export function countLineNum() {
     try {
-        const tableHeight = document.getElementById("tablecontent").clientHeight - config.tableHeadHeight
+        const tableHeight = document.getElementById("table-main").clientHeight - config.tableHeadHeight
         const lineNum = parseInt(tableHeight / config.tableLineHeight)
         return lineNum
     } catch (error) {
@@ -14,8 +15,8 @@ export function countLineNum() {
 // 计算页面中照片个数
 export function countPicNum() {
     try {
-        const perHeight = Math.floor(document.getElementById("container").clientWidth / 240)
-        const perWidth = Math.floor(document.getElementById("container").clientHeight / 180)
+        const perHeight = Math.floor(document.getElementById("table-con").clientWidth / 240)
+        const perWidth = Math.floor(document.getElementById("table-con").clientHeight / 180)
         const total = perHeight * perWidth
         return total
     } catch (error) {
@@ -139,4 +140,24 @@ export function localTake(localName) {
     } else {
         return true
     }
+}
+
+// 获取当前客户IP
+export function getIP() {
+    return new Promise((resolve, reject) => {
+        axios('https://pv.sohu.com/cityjson')
+            .then(res => {
+                resolve(res.data.split('"')[3])
+            })
+            .catch((err) => {
+                reject(err)
+            });
+    })
+}
+
+export function getIP2() {
+    let script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = "https://pv.sohu.com/cityjson";
+    document.head.appendChild(script);
 }

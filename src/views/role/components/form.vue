@@ -30,35 +30,21 @@
       </el-form-item>
 
       <el-form-item label="角色权限：" prop="menu">
-        <el-tree
-          ref="tree"
-          :data="treeData"
-          show-checkbox
-          accordion
-          node-key="_id"
-          :default-checked-keys="treeCheckedKey"
-          :default-expanded-keys="treeExpandedKey"
-          :check-strictly="false"
-          :props="treeProps"
-          @check="onCheck"
-          highlight-current
-        />
-      </el-form-item>
-
-      <!-- <el-form-item label="角色权限：" prop="menu">
-        <el-cascader
-          :options="treeData"
-          v-model="treeCheckedKey"
-          :props="props"
-          collapse-tags
-          clearable
-          @change="onChange"
-          ref="cascader"
-        ></el-cascader>
-      </el-form-item> -->
-
-      <el-form-item label="角色状态: " prop="status">
-        <el-switch v-model="dialogFormData.status" />
+        <div style="overflow-y: scroll;overflow-x: hidden; max-height: 250px;">
+          <el-tree
+            ref="tree"
+            :data="treeData"
+            show-checkbox
+            accordion
+            node-key="_id"
+            :default-checked-keys="treeCheckedKey"
+            :default-expanded-keys="treeExpandedKey"
+            :check-strictly="false"
+            :props="treeProps"
+            @check="onCheck"
+            highlight-current
+          />
+        </div>
       </el-form-item>
     </el-form>
 
@@ -80,14 +66,8 @@ export default {
   name: "roleForm",
   data() {
     return {
-      // props: {
-      //   multiple: true,
-      //   children: "subs",
-      //   label: "title",
-      //   value: "index"
-      // },
       treeData: [],
-      treeKeys: [],
+      treeOneKeys: [],
       treeCheckedKey: [],
       treeExpandedKey: [],
       treeProps: {
@@ -103,9 +83,6 @@ export default {
         describe: [
           { required: true, message: "角色描述不能为空", trigger: "blur" },
           { min: 2, max: 10, message: "角色描述长度在2到10位", trigger: "blur" }
-        ],
-        status: [
-          { required: true, message: "角色状态不能为空", trigger: "blur" }
         ]
       }
     };
@@ -114,40 +91,38 @@ export default {
     // 窗口打开时绑定tree
     async onOpen() {
       // 绑定tree数据
-      const result = await menuService.index();
+      const result = await menuService.options();
       this.treeData = result;
-      for (let i = 0; i < this.treeData.length; i++) {
-        let element = this.treeData[i];
-        this.treeKeys.push(element._id);
-      }
+
+      // 一级菜单ID
+      this.treeData.map(menu => {
+        this.treeOneKeys.push(menu._id);
+      });
 
       // 如果角色有菜单字段
-      if (this.dialogFormData.menu) {
-        // 设置默认展开的ID和默认选中的ID
-
+      if (this.dialogFormData.menu && this.dialogFormData.menu.length !== 0) {
+        // 设置默认展开的ID
         for (let i = 0; i < this.dialogFormData.menu.length; i++) {
           let element = this.dialogFormData.menu[i];
-          this.treeCheckedKey.push(element);
-          //this.treeExpandedKey.push(element);
-          for (let j = 0; j < this.treeKeys.length; j++) {
-            let ele = this.treeKeys[j];
-            if (element == ele) {
-              // 有子节点被选中的父节点ID，即默认展开ID
-              this.treeExpandedKey.push(ele);
-            }
-          }
+          this.treeExpandedKey.push(element);
         }
 
-        // 把父节点ID通过数组去重去掉;
-        this.treeCheckedKey = arr_diffA(
-          this.treeCheckedKey,
-          this.treeExpandedKey
-        );
+        // 设置默认选中的ID
+        const arr = arr_diffA(this.dialogFormData.menu, this.treeOneKeys);
+        for (let j = 0; j < arr.length; j++) {
+          let element = arr[j];
+          this.treeCheckedKey.push(element);
+        }
 
         // 调用nextTick防止undefined
         this.$nextTick(() => {
           this.$refs.tree.setCheckedKeys(this.treeCheckedKey);
         });
+      } else {
+        for (let j = 0; j < result.length; j++) {
+          const menu = result[j];
+          this.treeExpandedKey.push(menu._id);
+        }
       }
     },
 
@@ -155,6 +130,7 @@ export default {
     onClose() {
       // 关闭窗口时清空已有权限数组
       this.treeData = [];
+      this.treeOneKeys = [];
       this.treeExpandedKey = [];
       this.treeCheckedKey = [];
       // 调用nextTick防止undefined
@@ -167,7 +143,7 @@ export default {
     // 处理权限选择
     onCheck(data, currentChecked) {
       const { checkedKeys, halfCheckedKeys } = currentChecked;
-      const keys = arr_diffA(checkedKeys, halfCheckedKeys);
+      const keys = checkedKeys.concat(halfCheckedKeys);
       this.dialogFormData.menu = keys;
     },
 

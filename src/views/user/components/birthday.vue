@@ -27,17 +27,16 @@ export default {
   name: "userBirthDay",
   props: {
     birth: {
-      type: Object,
-      required: true
+      type: Object
     }
   },
   data() {
     return {
-      yearsModel: 0,
+      yearsModel: "",
       years: [],
-      monthsModel: 0,
+      monthsModel: "",
       months: [],
-      daysModel: 0,
+      daysModel: "",
       days: []
     };
   },
@@ -49,18 +48,13 @@ export default {
       let myDate = new Date();
       let year = myDate.getFullYear(); // 获取当前年
       let month = myDate.getMonth() + 1; // 获取当前月
-      let day = myDate.getDate(); // 获取当前日
+      // let day = myDate.getDate(); // 获取当前日
 
       if (this.birth) {
         // 有参数传进来绑定传进来的参数
         this.yearsModel = this.birth.year;
         this.monthsModel = this.birth.month;
         this.daysModel = this.birth.day;
-      } else {
-        // 没有参数绑定今天日期
-        this.yearsModel = year;
-        this.monthsModel = month;
-        this.daysModel = day;
       }
 
       this.initSelectYear(year);
@@ -95,7 +89,6 @@ export default {
       // 1年 2月 3日
       if (type == 1 || type == 2) {
         if (this.monthsModel == 0) {
-          this.daysModel = 0;
           this.initSelectDay(this.yearsModel, 1);
         } else {
           this.initSelectDay(this.yearsModel, this.monthsModel);
