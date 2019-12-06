@@ -1,5 +1,14 @@
 import axios from '../helper/axioshttp'
 
+// 选项
+async function options(params) {
+    const url = '/api/v1/device/options'
+    const result = await axios.post(url, params)
+    if (result.status === true) {
+        return result.data
+    }
+}
+
 // 获取指定用户所有设备信息
 async function index(params) {
     const url = '/api/v1/device/index'
@@ -46,6 +55,7 @@ async function del(params) {
 }
 
 export const deviceService = {
+    options,
     index,
     create,
     read,

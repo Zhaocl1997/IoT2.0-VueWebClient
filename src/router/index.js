@@ -127,6 +127,15 @@ const routes = [
         },
         component: () => import(/* webpackChunkName: "routemanage" */ '../views/route/index.vue')
       },
+      // {
+      //   path: 'articlemanange',
+      //   name: 'articlemanange',
+      //   meta: {
+      //     title: '文章管理',
+      //     needLogin: true
+      //   },
+      //   component: () => import(/* webpackChunkName: "articlemanange" */ '../views/article/index.vue')
+      // },
       {
         path: 'sensorData',
         name: 'sensorData',

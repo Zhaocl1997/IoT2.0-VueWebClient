@@ -23,7 +23,7 @@ async function register(params) {
     const url = '/api/v1/user/register'
     const result = await axios.post(url, params)
     if (result.status === true) {
-        return result
+        return result.status
     }
 }
 
@@ -36,7 +36,7 @@ async function login(params) {
         const user = {
             id: result.data.user._id,
             token: result.data.token,
-            role: result.data.user.role
+            role: result.data.user.role.name
         }
         localStorage.setItem('p1', JSON.stringify(user))
         return result
@@ -62,9 +62,9 @@ async function captcha() {
 }
 
 // 获取用户options
-async function options() {
+async function options(params) {
     const url = '/api/v1/user/options'
-    const result = await axios.post(url)
+    const result = await axios.post(url, params)
     if (result.status === true) {
         return result.data
     }

@@ -47,20 +47,6 @@ export function format(time, format) {
     })
 }
 
-// 获取当前时间
-export function getNow() {
-    let date_ob = new Date()
-    let date = ("0" + date_ob.getDate()).slice(-2)
-    let month = ("0" + (date_ob.getMonth() + 1)).slice(-2)
-    let year = date_ob.getFullYear()
-    let hours = date_ob.getHours()
-    let minutes = date_ob.getMinutes()
-    let seconds = date_ob.getSeconds()
-    // let mseconds = date_ob.getMilliseconds()
-    let result = year + "/" + month + "/" + date + " " + hours + ":" + minutes + ":" + seconds
-    return result
-}
-
 // 检查字符串强度
 export function checkStrong(val) {
     let modes = 0
@@ -160,4 +146,18 @@ export function getIP2() {
     script.type = "text/javascript";
     script.src = "https://pv.sohu.com/cityjson";
     document.head.appendChild(script);
+}
+
+// 获取当前时间
+export function getNow() {
+    let date_ob = new Date()
+    let date = ("0" + date_ob.getDate()).slice(-2)
+    let month = ("0" + (date_ob.getMonth() + 1)).slice(-2)
+    let year = date_ob.getFullYear()
+    let hours = date_ob.getHours()
+    let minutes = date_ob.getMinutes()
+    let seconds = date_ob.getSeconds()
+    // let mseconds = date_ob.getMilliseconds()
+    let result = year + "/" + month + "/" + date + " " + hours + ":" + minutes + ":" + seconds
+    return result
 }

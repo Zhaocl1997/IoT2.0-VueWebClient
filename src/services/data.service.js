@@ -1,5 +1,14 @@
 import axios from '../helper/axioshttp'
 
+// 选项
+async function options(params) {
+    const url = '/api/v1/data/options'
+    const result = await axios.post(url, params)
+    if (result.status === true) {
+        return result.data
+    }
+}
+
 // 返回设备数据
 async function index(params) {
     const url = '/api/v1/data/index'
@@ -28,6 +37,7 @@ async function del(params) {
 }
 
 export const dataService = {
+    options,
     index,
     onLED,
     del

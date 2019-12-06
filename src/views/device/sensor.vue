@@ -161,8 +161,9 @@ export default {
     // 初始化
     async init() {
       const result = await dataService.index({
-        macAddress: this.macAddress,
-        pagerow: 20
+        pagerow: 20,
+        type: "byMac",
+        condition: { macAddress: this.macAddress }
       });
 
       if (result.data.length === 0) return;

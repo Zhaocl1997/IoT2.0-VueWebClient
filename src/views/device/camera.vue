@@ -22,7 +22,9 @@
     </div>
 
     <div class="camera_more">
-      <router-link :to="{ path: '/cameraDataMore', query: { macAddress: this.macAddress }}">更多照片</router-link>
+      <router-link
+        :to="{ path: '/main/cameraDataMore', query: { macAddress: this.macAddress }}"
+      >更多照片</router-link>
     </div>
   </div>
 </template>
@@ -51,18 +53,22 @@ export default {
     // 检测数据变化
     newUrl: function(val, oldVal) {
       if (val != 0 && val !== oldVal) {
-        this.init({ macAddress: this.macAddress, pagerow: 1 });
+        this.init();
       }
     }
   },
   mounted() {
     this.macAddress = this.$route.query.macAddress;
-    this.init({ macAddress: this.macAddress, pagerow: 1 });
+    this.init();
     socketService.initSocket({ macAddress: this.macAddress });
   },
   methods: {
-    async init(item) {
-      const result = await dataService.index(item);
+    async init() {
+      const result = await dataService.index({
+        pagerow: 1,
+        type: "byMac",
+        condition: { macAddress: this.macAddress }
+      });
       if (result.data.length === 0) return;
 
       const data = result.data[0];

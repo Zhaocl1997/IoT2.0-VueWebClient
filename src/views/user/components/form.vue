@@ -64,7 +64,7 @@ export default {
     // 窗口打开时绑定角色option
     async onOpen() {
       const result = await roleService.options();
-      this.options = result;
+      this.options = result.data;
     },
 
     // 请求

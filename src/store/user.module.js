@@ -24,7 +24,6 @@ const actions = {
         if (result.status === true) {
             commit('loginSuccess', result.data.user);
             tip.success('登录成功')
-
             setTimeout(() => {
                 router.push('/main/default');
             }, 2000)
@@ -43,7 +42,7 @@ const actions = {
     // 注册
     async register({ commit }, params) {
         const result = await userService.register(params)
-        if (result.status === true) {
+        if (result === true) {
             commit('registerok');
             tip.success('注册成功')
             setTimeout(() => {

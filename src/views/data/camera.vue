@@ -35,7 +35,10 @@ export default {
       reqData: {
         pagenum: 1,
         pagerow: 1,
-        macAddress: ""
+        type: "byMac",
+        condition: {
+          macAddress: ""
+        }
       },
 
       // 返回数据
@@ -47,10 +50,10 @@ export default {
     vPage
   },
   mounted() {
-    this.reqData.macAddress = this.$route.query.macAddress;
+    this.reqData.condition.macAddress = this.$route.query.macAddress;
     this.reqData.pagerow = countPicNum();
     this.init(this.reqData);
-    socketService.initSocket({ macAddress: this.reqData.macAddress });
+    socketService.initSocket({ macAddress: this.reqData.condition.macAddress });
   },
   methods: {
     // 初始化
@@ -70,9 +73,9 @@ export default {
     },
 
     // 分页参数
-    async pageValue(data) {
+    pageValue(data) {
       this.reqData.pagenum = data;
-      await this.init(this.reqData);
+      this.init(this.reqData);
     }
   }
 };

@@ -8,8 +8,8 @@ export const avatarMixins = {
             avatarURL: "", // 不带时间戳的头像地址
         }
     },
-    async mounted() {
-        await this.init();
+    mounted() {
+        this.init();
     },
     computed: {
         onAvatarFirstChange() {
@@ -20,9 +20,9 @@ export const avatarMixins = {
         }
     },
     watch: {
-        onAvatarMoreChange: async function (val, oldVal) {
+        onAvatarMoreChange: function (val, oldVal) {
             if (val != 0 && val !== oldVal) {
-                await this.init();
+                this.init();
             }
         }
     },
@@ -30,7 +30,7 @@ export const avatarMixins = {
         // 获取头像URL
         async init() {
             const result = await userService.read();
-            this.avatarURL = result.avatar;
+            this.avatarURL = result.data.avatar;
             this.imgURL = addUrlTimeStamp(this.avatarURL);
         },
     }

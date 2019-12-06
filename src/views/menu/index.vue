@@ -37,6 +37,24 @@
           show-overflow-tooltip
           :resizable="false"
         />
+        <el-table-column
+          prop="createdAt"
+          label="创建时间"
+          align="center"
+          show-overflow-tooltip
+          :formatter="onTimeFormat"
+          sortable
+          :sort-orders="['ascending', 'descending']"
+        />
+        <el-table-column
+          prop="updatedAt"
+          label="更新时间"
+          align="center"
+          show-overflow-tooltip
+          :formatter="onTimeFormat"
+          sortable
+          :sort-orders="['ascending', 'descending']"
+        />
 
         <el-table-column label="操作" align="center" width="180">
           <template slot-scope="scope">
@@ -58,7 +76,7 @@
               type="text"
               @click="onSingleDel(scope.row._id)"
               icon="el-icon-delete"
-              :disabled="false"
+              :disabled="!!(scope.row.subs)"
             >删除</el-button>
           </template>
         </el-table-column>
@@ -114,7 +132,7 @@ export default {
     // 初始化
     async init() {
       const result = await menuService.options();
-      this.tableData = result;
+      this.tableData = result.data;
     },
 
     // 处理新建编辑

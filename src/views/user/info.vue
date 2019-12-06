@@ -77,8 +77,8 @@ export default {
     async init() {
       const result = await userService.read();
       this.flag = true;
-      this.form = result;
-      this.form.role = result.role.name;
+      this.form = result.data;
+      this.form.role = result.data.role.name;
     },
     onBirth(data) {
       this.form.birth = data;

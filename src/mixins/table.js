@@ -78,6 +78,7 @@ export const tableMixins = {
         },
         // 处理窗体取消
         onCancel() {
+            this.dialogData = {}
             this.dialogVisible = false
         },
         // 处理格式化显示

@@ -9,6 +9,7 @@
         placeholder="输入查询信息"
         maxlength="10"
         clearable
+        prefix-icon="el-icon-search"
       />
       <el-button
         size="small"

@@ -253,6 +253,7 @@ export default {
   position: absolute;
   top: 96px;
   right: 96px;
+  box-shadow: 5px 5px 5px black;
 }
 .register__main-con-content {
   position: relative;

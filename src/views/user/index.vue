@@ -9,6 +9,7 @@
         placeholder="输入查询信息"
         maxlength="10"
         clearable
+        prefix-icon="el-icon-search"
       />
       <el-button
         size="small"
@@ -19,7 +20,7 @@
       <el-button
         size="small"
         type="text"
-        @click="onToggleSelection"
+        @click="onToggleSelection()"
         icon="el-icon-remove-outline"
       >取消</el-button>
       <el-button size="small" type="text" @click="onFresh" icon="el-icon-refresh">刷新</el-button>
@@ -163,9 +164,7 @@ export default {
         case "add":
           this.dialogTitle = "新建用户";
           this.dialogVisible = true;
-          this.dialogData = {
-            status: true
-          };
+          this.dialogData = {};
           break;
 
         case "edit":

@@ -12,20 +12,17 @@
 
       <div class="header_con-right">
         <div class="header-user-con">
-          <div
-            class="header_con-right-weather"
-            @mouseover="onWeather('y')"
-            @mouseout="onWeather('n')"
-          >
-            <img class="header_con-right-weather-icon" :src="wSrc" />
-            <div class="header_con-right-info" v-if="onWeatherDiv">{{ weather }}</div>
+          <div class="header_con-right-weather" @mouseover="onWeather(1)" @mouseout="onWeather(0)">
+            <span>实时温度：{{ nowTemp }}</span>
           </div>
 
-          <div class="header_con-right-contact" @mouseover="onVX('y')" @mouseout="onVX('n')">
-            <img class="header_con-right-contact-icon" src="/icon/vx.png" />
-            <!-- <span>联系</span> -->
+          <!-- 天气控件 -->
+          <v-weather v-show="onSKYDiv" @nowTemp="onNowTemp"></v-weather>
+
+          <div class="header_con-right-contact" @mouseover="onVX(1)" @mouseout="onVX(0)">
+            <span>联系</span>
             <div class="header_con-right-img" v-if="onVXDiv">
-              <img src="/img/vx.jpg" style="width:108px;height:108px" />
+              <img src="/img/vx.jpg" />
             </div>
           </div>
 
@@ -65,6 +62,7 @@ import { mapActions } from "vuex";
 import { checkBox } from "@/components/MessageBox";
 import { avatarMixins } from "@/mixins";
 import { userService } from "@/services";
+import vWeather from "../user/components/weather";
 
 export default {
   mixins: [avatarMixins],
@@ -76,15 +74,12 @@ export default {
       username: "",
       sidebarCollapse: false,
       onVXDiv: false,
-      onWeatherDiv: false,
-      wType: "",
-      wHigh: "",
-      wLow: "",
-      wFengli: "",
-      wFengXiang: "",
-      wSrc: "",
-      wCity: ""
+      onSKYDiv: false,
+      nowTemp: ""
     };
+  },
+  components: {
+    vWeather
   },
   computed: {
     userIP() {
@@ -93,37 +88,19 @@ export default {
     userrole() {
       return JSON.parse(localStorage.getItem("p1")).role;
     },
-    weather() {
-      return (
-        "所在城市：" +
-        this.wCity +
-        "\n今日天气：" +
-        this.wType +
-        "\n今日风力：" +
-        this.wFengli +
-        "\n今日风向：" +
-        this.wFengXiang +
-        "\n最高温度：" +
-        this.wHigh +
-        "\n最低温度：" +
-        this.wLow
-      );
-    },
     onNameChange() {
       return this.$store.state.dataState.b;
     }
   },
   watch: {
-    onNameChange: async function(val, oldVal) {
+    onNameChange: function(val, oldVal) {
       if (val != 0 && val !== oldVal) {
-        await this.getName();
-        // await this.getWeather();
+        this.getName();
       }
     }
   },
   mounted() {
     this.getName();
-    // this.getWeather();
     if (document.body.clientWidth < 1500) {
       this.onSidebarCollapse();
     }
@@ -133,62 +110,11 @@ export default {
 
     async getName() {
       const result = await userService.read();
-      this.username = result.name;
+      this.username = result.data.name;
     },
 
-    async getWeather() {
-      const result = await userService.weather({ IP: this.userIP });
-      if (result) {
-        this.wType = result.today.type;
-        this.wHigh = result.today.high.split("温")[1];
-        this.wLow = result.today.low.split("温")[1];
-        this.wFengli = result.today.fengli.split("[")[2].split("]")[0];
-        this.wFengXiang = result.today.fengxiang;
-        this.wCity = result.city;
-
-        switch (this.wType) {
-          case "晴":
-            this.wSrc = "/icon/clear.png";
-            break;
-
-          case "阴":
-            this.wSrc = "/icon/overcast.png";
-            break;
-
-          case "多云":
-            this.wSrc = "/icon/cloud.png";
-            break;
-
-          case "小雨":
-            this.wSrc = "/icon/smallrain.png";
-            break;
-
-          case "中雨":
-            this.wSrc = "/icon/mediumrain.png";
-            break;
-
-          case "大雨":
-            this.wSrc = "/icon/bigrain.png";
-            break;
-
-          case "小雪":
-            this.wSrc = "/icon/smallsnow.png";
-            break;
-
-          case "中雪":
-            this.wSrc = "/icon/mediumsnow.png";
-            break;
-
-          case "大雪":
-            this.wSrc = "/icon/bigsnow.png";
-            break;
-
-          default:
-            break;
-        }
-      } else {
-        this.wSrc = "/icon/weather.png";
-      }
+    onNowTemp(val) {
+      this.nowTemp = val;
     },
 
     // 菜单折叠按钮
@@ -199,7 +125,7 @@ export default {
     },
 
     onAvatar() {
-      this.$router.push("/infomanage");
+      this.$router.push("infomanage");
     },
 
     // 用户名下拉菜单选择事件
@@ -217,16 +143,16 @@ export default {
 
     // 天气
     onWeather(value) {
-      if (value === "y") {
-        this.onWeatherDiv = true;
+      if (value === 1) {
+        this.onSKYDiv = true;
       } else {
-        this.onWeatherDiv = false;
+        this.onSKYDiv = false;
       }
     },
 
     // vx
     onVX(value) {
-      if (value === "y") {
+      if (value === 1) {
         this.onVXDiv = true;
       } else {
         this.onVXDiv = false;
@@ -237,6 +163,11 @@ export default {
 </script>
 
 <style scoped>
+.test {
+  height: 100%;
+  width: 100%;
+  background-color: red;
+}
 .header_con {
   height: 50px;
   font-size: 22px;
@@ -276,12 +207,8 @@ export default {
   font-size: 14px;
   margin-right: 35px;
 }
-.header_con-right-weather-icon {
-  position: absolute;
-  top: -13px;
-  right: 50px;
-  max-width: 25px;
-  max-height: 25px;
+.header_con-right-weather span {
+  margin-right: 20px;
 }
 .header_con-right-info {
   padding-left: 20px;
@@ -306,20 +233,20 @@ export default {
 }
 .header_con-right-contact {
   position: relative;
+  font-size: 14px;
   margin-left: 0px;
-  margin-bottom: 6px;
 }
-.header_con-right-contact-icon {
-  position: absolute;
-  top: -9px;
-  right: 17px;
-  max-width: 25px;
-  max-height: 25px;
+.header_con-right-contact {
+  margin-right: 20px;
 }
 .header_con-right-img {
-  top: 30px;
-  right: -30px;
+  top: 34px;
+  right: -40px;
   z-index: 8888;
   position: absolute;
+}
+.header_con-right-img img {
+  width: 108px;
+  height: 108px;
 }
 </style>

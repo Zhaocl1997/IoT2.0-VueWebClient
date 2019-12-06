@@ -32,8 +32,8 @@ ul {
 }
 .table-box {
   height: 42px;
-  margin-bottom: 6px;
-  margin-left: 20px;
+  margin-bottom: 4px;
+  margin-left: 10px;
 }
 .table-main {
   height: calc(100% - 82px);

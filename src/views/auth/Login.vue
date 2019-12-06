@@ -35,7 +35,7 @@
                 clearable
                 show-password
                 prefix-icon="el-icon-edit"
-                @keyup.enter.native="handleLogin"
+                @keyup.enter.native="onLogin"
               ></el-input>
             </el-form-item>
 
@@ -47,7 +47,7 @@
               type="primary"
               class="login__main-con-btn"
               @keyup.enter.native="submit"
-              @click="handleLogin"
+              @click="onLogin"
             >登&nbsp;录</el-button>
 
             <router-link to="/register" class="login__main-con-register">免费注册</router-link>
@@ -63,7 +63,6 @@
 import vcode from "./components/verifycode";
 import { mapActions } from "vuex";
 import { aes } from "@/helper/crypto";
-import { getIP2 } from "@/helper/public";
 
 export default {
   name: "login",
@@ -116,7 +115,6 @@ export default {
     };
   },
   mounted() {
-    getIP2();
     this.getCookie();
   },
   components: {
@@ -126,9 +124,7 @@ export default {
     ...mapActions("userState", ["login"]),
 
     // 提交登陆表单
-    handleLogin() {
-      localStorage.setItem("ip", window.returnCitySN["cip"]);
-
+    onLogin() {
       this.$refs["loginForm"].validate(valid => {
         if (valid) {
           if (this.loginData.phone !== "") {
@@ -242,6 +238,7 @@ export default {
   position: absolute;
   top: 96px;
   right: 96px;
+  box-shadow: 5px 5px 5px black;
 }
 .login__main-con-header {
   text-align: center;

@@ -9,6 +9,7 @@
         placeholder="输入查询信息"
         maxlength="10"
         clearable
+        prefix-icon="el-icon-search"
       />
       <el-button
         size="small"
@@ -19,7 +20,7 @@
       <el-button
         size="small"
         type="text"
-        @click="onToggleSelection"
+        @click="onToggleSelection()"
         icon="el-icon-remove-outline"
       >取消</el-button>
       <el-button size="small" type="text" @click="onFresh" icon="el-icon-refresh">刷新</el-button>
@@ -178,9 +179,7 @@ export default {
         case "add":
           this.dialogTitle = "新建设备";
           this.dialogVisible = true;
-          this.dialogData = {
-            status: false
-          };
+          this.dialogData = {};
           break;
 
         case "edit":
@@ -240,14 +239,14 @@ export default {
       switch (e.type) {
         case "sensor":
           this.$router.push({
-            path: "/sensorData",
+            path: "/main/sensorData",
             query: { name: e.name, macAddress: e.macAddress }
           });
           break;
 
         case "camera":
           this.$router.push({
-            path: "/cameraData",
+            path: "/main/cameraData",
             query: { name: e.name, macAddress: e.macAddress }
           });
           break;

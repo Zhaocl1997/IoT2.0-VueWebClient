@@ -5,3 +5,4 @@ export * from './user.service';
 export * from './device.service';
 export * from './data.service';
 export * from './route.service';
+export * from './article.service';

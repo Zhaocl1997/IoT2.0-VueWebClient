@@ -18,11 +18,7 @@
       :label-position="labelPosition"
     >
       <el-form-item label="角色名称：" prop="name">
-        <el-input
-          v-model="dialogFormData.name"
-          placeholder="请输入角色名称"
-          :disabled="this.dialogTitle ==='编辑角色'"
-        />
+        <el-input v-model="dialogFormData.name" placeholder="请输入角色名称" />
       </el-form-item>
 
       <el-form-item label="角色描述：" prop="describe">
@@ -30,7 +26,7 @@
       </el-form-item>
 
       <el-form-item label="角色权限：" prop="menu">
-        <div style="overflow-y: scroll;overflow-x: hidden; max-height: 250px;">
+        <div style="overflow-y: scroll;overflow-x: hidden; height: 250px;">
           <el-tree
             ref="tree"
             :data="treeData"
@@ -49,8 +45,8 @@
     </el-form>
 
     <span slot="footer" class="dialog-footer">
-      <el-button size="small" @click="onCancel">取&#32;消</el-button>
       <el-button size="small" type="primary" @click="onConfirm">确&#32;定</el-button>
+      <el-button size="small" @click="onCancel">取&#32;消</el-button>
     </span>
   </el-dialog>
 </template>
@@ -92,25 +88,19 @@ export default {
     async onOpen() {
       // 绑定tree数据
       const result = await menuService.options();
-      this.treeData = result;
+      this.treeData = result.data;
 
       // 一级菜单ID
       this.treeData.map(menu => {
         this.treeOneKeys.push(menu._id);
       });
 
-      // 如果角色有菜单字段
+      // 如果有菜单字段
       if (this.dialogFormData.menu && this.dialogFormData.menu.length !== 0) {
-        // 设置默认展开的ID
+        // 默认展开和默认选中
         for (let i = 0; i < this.dialogFormData.menu.length; i++) {
           let element = this.dialogFormData.menu[i];
           this.treeExpandedKey.push(element);
-        }
-
-        // 设置默认选中的ID
-        const arr = arr_diffA(this.dialogFormData.menu, this.treeOneKeys);
-        for (let j = 0; j < arr.length; j++) {
-          let element = arr[j];
           this.treeCheckedKey.push(element);
         }
 
@@ -118,11 +108,6 @@ export default {
         this.$nextTick(() => {
           this.$refs.tree.setCheckedKeys(this.treeCheckedKey);
         });
-      } else {
-        for (let j = 0; j < result.length; j++) {
-          const menu = result[j];
-          this.treeExpandedKey.push(menu._id);
-        }
       }
     },
 
@@ -143,8 +128,11 @@ export default {
     // 处理权限选择
     onCheck(data, currentChecked) {
       const { checkedKeys, halfCheckedKeys } = currentChecked;
+      // 一级ID和二级ID拼接
       const keys = checkedKeys.concat(halfCheckedKeys);
-      this.dialogFormData.menu = keys;
+      // 滤去一级ID
+      const result = arr_diffA(keys, this.treeOneKeys);
+      this.dialogFormData.menu = result;
     },
 
     // 请求
