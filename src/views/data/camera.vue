@@ -35,10 +35,7 @@ export default {
       reqData: {
         pagenum: 1,
         pagerow: 1,
-        type: "byMac",
-        condition: {
-          macAddress: ""
-        }
+        macAddress: ""
       },
 
       // 返回数据
@@ -50,26 +47,26 @@ export default {
     vPage
   },
   mounted() {
-    this.reqData.condition.macAddress = this.$route.query.macAddress;
+    this.reqData.macAddress = this.$route.query.macAddress;
     this.reqData.pagerow = countPicNum();
     this.init(this.reqData);
-    socketService.initSocket({ macAddress: this.reqData.condition.macAddress });
+    socketService.initSocket({ macAddress: this.reqData.macAddress });
   },
   methods: {
     // 初始化
     async init(item) {
-      const result = await dataService.index(item);
-      if (result) {
-        this.imagesData = result.data;
-        this.total = result.total;
-        this.imagesData.forEach(element => {
-          element.data["size"] = Number.parseInt(element.data["size"] / 1024);
-          element["createdAt"] = format(
-            element["createdAt"],
-            "YYYY/MM/DD HH:mm:ss"
-          );
-        });
-      }
+      const result = await dataService.indexByMac(item);
+      if (result.data.length === 0) return;
+
+      this.imagesData = result.data;
+      this.total = result.total;
+      this.imagesData.forEach(element => {
+        element.data["size"] = Number.parseInt(element.data["size"] / 1024);
+        element["createdAt"] = format(
+          element["createdAt"],
+          "YYYY/MM/DD HH:mm:ss"
+        );
+      });
     },
 
     // 分页参数

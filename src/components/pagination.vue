@@ -1,17 +1,14 @@
 <template>
   <div class="pagination">
     <div class="pagination_con">
-      <el-switch v-model="value" style="float: left; visibility: hidden;"></el-switch>
       <el-pagination
         background
         :page-size="pagerow"
         :pager-count="11"
-        :current-page.sync="pagenum"
+        :current-page.sync="num"
         :total="total"
         layout="total, prev, pager, next, jumper"
-        @current-change="handleCurrentChange"
-        @size-change="handleSizeChange"
-        :hide-on-single-page="value"
+        :hide-on-single-page="true"
       ></el-pagination>
     </div>
   </div>
@@ -19,11 +16,6 @@
 
 <script>
 export default {
-  data() {
-    return {
-      value: false
-    };
-  },
   props: {
     pagenum: {
       type: Number,
@@ -38,17 +30,14 @@ export default {
       required: true
     }
   },
-  methods: {
-    handleCurrentChange(val) {
-      this.$emit("paginationEvent", val);
-    },
-    handleSizeChange(val) {
-      this.$emit("paginationEvent", val);
-    }
-  },
-  mounted() {
-    if (this.pagenum === 1) {
-      this.value = true;
+  computed: {
+    num: {
+      get() {
+        return this.pagenum;
+      },
+      set(val) {
+        this.$emit("paginationEvent", val);
+      }
     }
   }
 };

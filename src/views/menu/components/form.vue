@@ -161,7 +161,7 @@ export default {
 
   methods: {
     async onOpen() {
-      const result = await routeService.index();
+      const result = await routeService.options();
       this.routeOptions = result.data;
     },
 

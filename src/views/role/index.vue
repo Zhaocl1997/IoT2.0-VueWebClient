@@ -54,6 +54,7 @@
         />
         <el-table-column
           prop="createdAt"
+          width="200"
           label="创建时间"
           align="center"
           show-overflow-tooltip
@@ -63,6 +64,7 @@
         />
         <el-table-column
           prop="updatedAt"
+          width="200"
           label="更新时间"
           align="center"
           show-overflow-tooltip
@@ -72,6 +74,7 @@
         />
         <el-table-column
           prop="status"
+          width="100"
           label="角色状态"
           align="center"
           show-overflow-tooltip
@@ -150,7 +153,7 @@ export default {
 
     // 状态改变
     async onStatus(id, status) {
-      const result = await roleService.update({ _id: id, status });
+      const result = await roleService.updateStatus({ _id: id, status });
       if (result === true) {
         tip.uS();
       }

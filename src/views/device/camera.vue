@@ -64,10 +64,10 @@ export default {
   },
   methods: {
     async init() {
-      const result = await dataService.index({
+      const result = await dataService.indexByMac({
         pagerow: 1,
-        type: "byMac",
-        condition: { macAddress: this.macAddress }
+        pagenum: 1,
+        macAddress: this.macAddress
       });
       if (result.data.length === 0) return;
 

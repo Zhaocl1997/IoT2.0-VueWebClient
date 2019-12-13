@@ -40,6 +40,14 @@ async function update(params) {
     }
 }
 
+async function updateNeedLogin(params) {
+    const url = '/api/v1/route/updateNeedLogin'
+    const result = await axios.post(url, params)
+    if (result.status === true) {
+        return result.status
+    }
+}
+
 async function del(params) {
     const url = '/api/v1/route/delete'
     const result = await axios.post(url, params)
@@ -54,5 +62,6 @@ export const routeService = {
     create,
     read,
     update,
+    updateNeedLogin,
     del
 }

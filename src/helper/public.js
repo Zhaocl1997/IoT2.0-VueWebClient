@@ -158,6 +158,6 @@ export function getNow() {
     let minutes = date_ob.getMinutes()
     let seconds = date_ob.getSeconds()
     // let mseconds = date_ob.getMilliseconds()
-    let result = year + "/" + month + "/" + date + " " + hours + ":" + minutes + ":" + seconds
+    let result = year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds
     return result
 }

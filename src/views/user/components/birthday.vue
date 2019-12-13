@@ -8,15 +8,24 @@
     >
       <el-option v-for="item in years" :key="item.value" :label="item.label" :value="item.value"></el-option>
     </el-select>
+
     <el-select
       v-model="monthsModel"
       @change="onDateChange(2)"
       placeholder="请选择"
       style="width:100px;"
+      v-if="yearsModel"
     >
       <el-option v-for="item in months" :key="item.value" :label="item.label" :value="item.value"></el-option>
     </el-select>
-    <el-select v-model="daysModel" @change="onDateChange(3)" placeholder="请选择" style="width:100px;">
+
+    <el-select
+      v-model="daysModel"
+      @change="onDateChange(3)"
+      placeholder="请选择"
+      style="width:100px;"
+      v-if="monthsModel"
+    >
       <el-option v-for="item in days" :key="item.value" :label="item.label" :value="item.value"></el-option>
     </el-select>
   </div>

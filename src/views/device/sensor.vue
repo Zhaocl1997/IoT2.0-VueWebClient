@@ -160,12 +160,11 @@ export default {
   methods: {
     // 初始化
     async init() {
-      const result = await dataService.index({
+      const result = await dataService.indexByMac({
         pagerow: 20,
-        type: "byMac",
-        condition: { macAddress: this.macAddress }
+        pagenum: 1,
+        macAddress: this.macAddress
       });
-
       if (result.data.length === 0) return;
 
       // 最新数据

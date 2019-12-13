@@ -18,6 +18,15 @@ async function index(params) {
     }
 }
 
+// 返回设备数据
+async function indexByMac(params) {
+    const url = '/api/v1/data/indexByMac'
+    const result = await axios.post(url, params)
+    if (result.status === true) {
+        return result.data
+    }
+}
+
 // 下行数据
 async function onLED(params) {
     const url = '/api/v1/data/onLED'
@@ -39,6 +48,7 @@ async function del(params) {
 export const dataService = {
     options,
     index,
+    indexByMac,
     onLED,
     del
 }

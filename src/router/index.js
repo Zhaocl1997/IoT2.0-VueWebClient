@@ -110,13 +110,13 @@ const routes = [
         component: () => import(/* webpackChunkName: "datamanage" */ '../views/data/index.vue')
       },
       {
-        path: 'logmanage',
-        name: 'logmanage',
+        path: 'loggermanage',
+        name: 'loggermanage',
         meta: {
           title: '日志管理',
           needLogin: true
         },
-        component: () => import(/* webpackChunkName: "logmanage" */ '../views/log/index.vue')
+        component: () => import(/* webpackChunkName: "loggermanage" */ '../views/logger/index.vue')
       },
       {
         path: 'routemanage',
@@ -127,15 +127,24 @@ const routes = [
         },
         component: () => import(/* webpackChunkName: "routemanage" */ '../views/route/index.vue')
       },
-      // {
-      //   path: 'articlemanange',
-      //   name: 'articlemanange',
-      //   meta: {
-      //     title: '文章管理',
-      //     needLogin: true
-      //   },
-      //   component: () => import(/* webpackChunkName: "articlemanange" */ '../views/article/index.vue')
-      // },
+      {
+        path: 'backupmanage',
+        name: 'backupmanage',
+        meta: {
+          title: '数据备份管理',
+          needLogin: true
+        },
+        component: () => import(/* webpackChunkName: "backupmanage" */ '../views/backup/index.vue')
+      },
+      {
+        path: 'articlemanage',
+        name: 'articlemanage',
+        meta: {
+          title: '文章管理',
+          needLogin: true
+        },
+        component: () => import(/* webpackChunkName: "articlemanange" */ '../views/article/index.vue')
+      },
       {
         path: 'sensorData',
         name: 'sensorData',

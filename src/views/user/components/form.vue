@@ -35,7 +35,7 @@
 
       <el-form-item label="用户身份：" prop="role">
         <el-radio-group v-model="dialogFormData.role" placeholder="请选择用户身份">
-          <el-radio v-for="item in options" :key="item.name" :label="item.name">{{ item.describe }}</el-radio>
+          <el-radio v-for="item in options" :key="item._id" :label="item._id">{{ item.describe }}</el-radio>
         </el-radio-group>
       </el-form-item>
     </el-form>

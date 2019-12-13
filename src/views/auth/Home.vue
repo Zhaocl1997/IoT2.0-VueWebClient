@@ -11,14 +11,8 @@
 </template>
 
 <script>
-import { getIP2 } from "@/helper/public";
-
 export default {
-  name: "home",
-  mounted() {
-    getIP2();
-    localStorage.setItem("ip", window.returnCitySN["cip"]);
-  }
+  name: "home"
 };
 </script>
 

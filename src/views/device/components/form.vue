@@ -61,7 +61,7 @@ export default {
       rules: {
         name: [
           { required: true, message: "设备名称不能为空", trigger: "blur" },
-          { min: 5, max: 12, message: "设备名称长度在5到12位", trigger: "blur" }
+          { min: 2, max: 12, message: "设备名称长度在2到12位", trigger: "blur" }
         ],
         macAddress: [
           { required: true, message: "mac地址不能为空", trigger: "blur" },

@@ -63,6 +63,7 @@
 import vcode from "./components/verifycode";
 import { mapActions } from "vuex";
 import { aes } from "@/helper/crypto";
+import { getIP2 } from "@/helper/public";
 
 export default {
   name: "login",
@@ -116,6 +117,10 @@ export default {
   },
   mounted() {
     this.getCookie();
+    getIP2();
+    setTimeout(() => {
+      localStorage.setItem("ip", window.returnCitySN["cip"]);
+    }, 1000);
   },
   components: {
     vcode

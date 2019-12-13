@@ -39,21 +39,19 @@
         />
         <el-table-column
           prop="createdAt"
+          width="200"
           label="创建时间"
           align="center"
           show-overflow-tooltip
           :formatter="onTimeFormat"
-          sortable
-          :sort-orders="['ascending', 'descending']"
         />
         <el-table-column
           prop="updatedAt"
+          width="200"
           label="更新时间"
           align="center"
           show-overflow-tooltip
           :formatter="onTimeFormat"
-          sortable
-          :sort-orders="['ascending', 'descending']"
         />
 
         <el-table-column label="操作" align="center" width="180">

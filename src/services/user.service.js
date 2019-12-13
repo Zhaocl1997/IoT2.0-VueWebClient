@@ -106,6 +106,22 @@ async function update(params) {
     }
 }
 
+async function updateInfo(params) {
+    const url = '/api/v1/user/updateInfo'
+    const result = await axios.post(url, params)
+    if (result.status === true) {
+        return result.status
+    }
+}
+
+async function updateStatus(params) {
+    const url = '/api/v1/user/updateStatus'
+    const result = await axios.post(url, params)
+    if (result.status === true) {
+        return result.status
+    }
+}
+
 // 删除指定用户
 async function del(params) {
     const url = '/api/v1/user/delete'
@@ -128,5 +144,7 @@ export const userService = {
     create,
     read,
     update,
+    updateStatus,
+    updateInfo,
     del,
 }

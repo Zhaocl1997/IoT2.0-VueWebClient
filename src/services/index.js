@@ -6,3 +6,5 @@ export * from './device.service';
 export * from './data.service';
 export * from './route.service';
 export * from './article.service';
+export * from './db.service';
+export * from './logger.service';

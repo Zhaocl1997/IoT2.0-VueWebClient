@@ -56,6 +56,7 @@
         />
         <el-table-column
           prop="type"
+          min-width="100"
           label="设备种类"
           align="center"
           show-overflow-tooltip
@@ -64,6 +65,7 @@
         />
         <el-table-column
           prop="createdBy.name"
+          min-width="100"
           label="所有者"
           align="center"
           show-overflow-tooltip
@@ -72,6 +74,7 @@
         />
         <el-table-column
           prop="createdAt"
+          width="200"
           label="创建时间"
           align="center"
           :formatter="onTimeFormat"
@@ -81,6 +84,7 @@
         />
         <el-table-column
           prop="updatedAt"
+          width="200"
           label="更新时间"
           align="center"
           :formatter="onTimeFormat"
@@ -90,6 +94,7 @@
         />
         <el-table-column
           prop="status"
+          width="100"
           label="设备状态"
           align="center"
           :resizable="false"
@@ -167,7 +172,7 @@ export default {
 
     // 状态改变
     async onStatus(id, status) {
-      const result = await deviceService.update({ _id: id, status });
+      const result = await deviceService.updateStatus({ _id: id, status });
       if (result === true) {
         tip.uS();
       }

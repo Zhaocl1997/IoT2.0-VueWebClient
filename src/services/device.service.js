@@ -45,6 +45,14 @@ async function update(params) {
     }
 }
 
+async function updateStatus(params) {
+    const url = '/api/v1/device/updateStatus'
+    const result = await axios.post(url, params)
+    if (result.status === true) {
+        return result.status
+    }
+}
+
 // 删除设备
 async function del(params) {
     const url = '/api/v1/device/delete'
@@ -60,5 +68,6 @@ export const deviceService = {
     create,
     read,
     update,
+    updateStatus,
     del,
 }

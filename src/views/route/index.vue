@@ -6,7 +6,7 @@
         style="width: 25%; margin-right: 10px;"
         v-model="reqData.filters"
         @input="onFilter"
-        placeholder="输入查询信息"
+        placeholder="可按路由名称，路径和标题查询"
         maxlength="10"
         clearable
         prefix-icon="el-icon-search"
@@ -51,8 +51,6 @@
             label="是否需要登录"
             align="center"
             show-overflow-tooltip
-            sortable
-            :sort-orders="['ascending', 'descending']"
           >
             <template slot-scope="scope">
               <el-switch
@@ -69,6 +67,7 @@
 
         <el-table-column
           prop="createdAt"
+          width="200"
           label="创建时间"
           align="center"
           :formatter="onTimeFormat"
@@ -78,6 +77,7 @@
         />
         <el-table-column
           prop="updatedAt"
+          width="200"
           label="更新时间"
           align="center"
           :formatter="onTimeFormat"
@@ -157,7 +157,7 @@ export default {
 
     // 状态改变
     async onStatus(id, meta) {
-      const result = await routeService.update({
+      const result = await routeService.updateNeedLogin({
         _id: id,
         meta: {
           title: meta.title,

@@ -86,7 +86,8 @@ export default {
     onSubmitInfo() {
       this.$refs.infoForm.validate().then(result => {
         if (result === true) {
-          userService.update(this.form).then(res => {
+          delete this.form.avatar;
+          userService.updateInfo(this.form).then(res => {
             if (res === true) {
               this.$store.state.dataState.b = new Date().valueOf();
               tip.uS();

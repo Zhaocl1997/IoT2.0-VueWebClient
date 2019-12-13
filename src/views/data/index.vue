@@ -8,6 +8,7 @@
         placeholder="请选择用户"
         @change="onSelectChange(0)"
         @focus="onFocus(0)"
+        @clear="onClear(0)"
         size="mini"
         style="width:120px"
       >
@@ -21,6 +22,7 @@
         placeholder="请选择类型"
         @change="onSelectChange(1)"
         @focus="onFocus(1)"
+        @clear="onClear(1)"
         size="mini"
         style="width:120px"
         v-if="user"
@@ -40,6 +42,7 @@
         placeholder="请选择设备"
         @change="onSelectChange(2)"
         @focus="onFocus(2)"
+        @clear="onClear(2)"
         size="mini"
         style="width:120px"
         v-if="type"
@@ -58,13 +61,18 @@
         :editable="false"
         size="mini"
         type="datetimerange"
-        start-placeholder="开始时间"
-        end-placeholder="结束时间"
+        start-placeholder="双击创建时间"
+        end-placeholder="双击创建时间"
         v-if="device"
         @change="onSelectChange(3)"
         format="yyyy/MM/dd HH:mm:ss"
         style="width:300px;"
+        :picker-options="pickerOptions"
       ></el-date-picker>
+      <span
+        style="font-size:12px;margin-right:5px;margin-left:5px;"
+        v-if="device"
+      >提示：首次双击创建时间即选中开始时间，再次双击即为结束时间</span>
 
       <el-button
         style="margin-left:20px;"
@@ -93,31 +101,27 @@
         @sort-change="onSort"
         @cell-mouse-enter="onHover"
         @cell-mouse-leave="onLeave"
+        @cell-dblclick="onDoubleClick"
         @selection-change="onSelectionChange"
       >
         <el-table-column type="selection" width="40" />
-        <el-table-column type="index" label="序号" align="center" :resizable="false">
-          <template slot-scope="scope">
-            <span>{{ (reqData.pagenum - 1) * reqData.pagerow + scope.$index + 1 }}</span>
-          </template>
-        </el-table-column>
-
         <el-table-column
-          prop="createdBy.createdBy.name"
+          prop="username"
           label="用户名称"
           align="center"
           show-overflow-tooltip
           width="150px"
+          :resizable="false"
         />
         <el-table-column
-          prop="createdBy.type"
+          prop="devicetype"
           label="设备类型"
           align="center"
           show-overflow-tooltip
           width="80px"
         />
         <el-table-column
-          prop="createdBy.name"
+          prop="devicename"
           label="设备名称"
           align="center"
           show-overflow-tooltip
@@ -200,6 +204,12 @@ export default {
       tableData: [], // table数据
       total: 1, // 数据数量
 
+      pickerOptions: {
+        disabledDate(time) {
+          return time.getTime() > Date.now();
+        }
+      },
+
       // 请求数据
       reqData: {
         pagenum: 1, // 页号
@@ -215,7 +225,7 @@ export default {
       user: "", // 用户ID
       type: "", // 设备类型
       device: "", // 设备ID
-      time: "",
+      time: [], // 时间
 
       userOptions: [], // 用户选项
       typeOptions: [], // 设备类型选项
@@ -241,6 +251,19 @@ export default {
     },
     device() {
       this.time = "";
+    },
+    time() {
+      if (
+        this.time &&
+        this.time.length === 2 &&
+        this.time[0] !== this.time[1]
+      ) {
+        this.onSelectChange(3);
+      } else if (!this.time && this.device) {
+        this.onClear(3);
+        this.init();
+        this.time = [];
+      }
     }
   },
   methods: {
@@ -286,8 +309,8 @@ export default {
 
     // 摄像头div显示
     onHover(row, column) {
-      if (row.data.url && column.label === "详细数据") {
-        this.camera_src = row.data.url;
+      if (row.data.data.url && column.label === "详细数据") {
+        this.camera_src = row.data.data.url;
         this.camera_img = true;
       }
     },
@@ -297,28 +320,55 @@ export default {
       this.camera_img = false;
     },
 
+    // 点击时间单元格
+    onDoubleClick(row, column) {
+      if (this.time && this.time.length === 2 && this.time[0] !== this.time[1])
+        return;
+
+      if (
+        this.time.length === 0 &&
+        this.device &&
+        row.data.createdAt &&
+        column.label === "创建时间"
+      ) {
+        let arr = [];
+        arr.push(row.data.createdAt);
+        arr.push(row.data.createdAt);
+        this.time = arr;
+      } else if (
+        this.time.length === 2 &&
+        this.time[0] === this.time[1] &&
+        this.device &&
+        row.data.createdAt &&
+        column.label === "创建时间"
+      ) {
+        this.time.splice(1, 1);
+        this.time.push(row.data.createdAt);
+      }
+    },
+
     // 处理格式化显示
     onFormat(row, column) {
       // 列格式化
       switch (column.label) {
         case "创建时间":
-          return format(row.createdAt, "YYYY/MM/DD HH:mm:ss");
+          return format(row.data.createdAt, "YYYY/MM/DD HH:mm:ss");
 
         case "更新时间":
-          return format(row.updatedAt, "YYYY/MM/DD HH:mm:ss");
+          return format(row.data.updatedAt, "YYYY/MM/DD HH:mm:ss");
 
         default:
           break;
       }
 
       // 行格式化
-      switch (row.createdBy.type) {
+      switch (row.devicetype) {
         case "sensor":
-          return `温度：${row.data.t}℃, 湿度：${row.data.h}%`;
+          return `温度：${row.data.data.t}℃, 湿度：${row.data.data.h}%`;
 
         case "camera":
-          return `状态：${row.data.status}, 大小：${Number.parseInt(
-            row.data.size / 1024
+          return `状态：${row.data.data.status}, 大小：${Number.parseInt(
+            row.data.data.size / 1024
           )}KB`;
 
         default:
@@ -456,6 +506,30 @@ export default {
             time: this.time
           };
           this.init();
+          break;
+
+        default:
+          break;
+      }
+    },
+
+    // select clear 事件
+    onClear(val) {
+      switch (val) {
+        case 0:
+          this.reqData.type = "byInit";
+          break;
+
+        case 1:
+          this.reqData.type = "byUser";
+          break;
+
+        case 2:
+          this.reqData.type = "byType";
+          break;
+
+        case 3:
+          this.reqData.type = "byDevice";
           break;
 
         default:

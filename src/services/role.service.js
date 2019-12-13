@@ -44,6 +44,14 @@ async function update(params) {
     }
 }
 
+async function updateStatus(params) {
+    const url = '/api/v1/role/updateStatus'
+    const result = await axios.post(url, params)
+    if (result.status === true) {
+        return result.status
+    }
+}
+
 // 删除角色
 async function del(params) {
     const url = '/api/v1/role/delete'
@@ -58,6 +66,7 @@ export const roleService = {
     create,
     read,
     update,
+    updateStatus,
     del,
     options
 }

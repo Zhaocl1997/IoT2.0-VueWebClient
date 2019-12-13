@@ -1,12 +1,14 @@
 import Message from 'element-ui/packages/message';
 import MessageBox from 'element-ui/packages/message-box';
+import { getNow } from "../helper/public";
 
 // 确认消息
-export function checkBox(content) {
-  return MessageBox
+export async function checkBox(content) {
+  return await MessageBox
     .confirm(content, '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
+      closeOnClickModal: false,
       type: 'warning'
     })
     .then(action => {
@@ -21,15 +23,18 @@ export function checkBox(content) {
 }
 
 // 提示消息
-export function alertBox(content, title) {
-  return MessageBox
+export async function alertBox(content, title) {
+  return await MessageBox
     .alert(content, title, {
-      confirmButtonText: '确定'
-    }).then(action => {
+      confirmButtonText: '确定',
+      closeOnClickModal: false
+    })
+    .then(action => {
       if (action == 'confirm') {
         return true;
       }
-    }).catch(error => {
+    })
+    .catch(error => {
       if (error == "cancel") {
         return false;
       }
@@ -56,4 +61,19 @@ export const tip = {
   cancel() {
     return Message.info('已取消操作')
   }
+}
+
+// 备份专用
+export async function prompt(content, title, size) {
+  return await MessageBox
+    .prompt(content, title, {
+      inputValue: getNow() + '__' + size + '.json',
+      closeOnClickModal: false
+    })
+    .then(({ value }) => {
+      return { status: true, value };
+    })
+    .catch(() => {
+      return { status: false }
+    })
 }
