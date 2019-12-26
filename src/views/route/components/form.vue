@@ -3,10 +3,12 @@
     center
     top="20vh"
     width="30%"
-    @close="onCancel"
+    @before-close="onCancel"
     :title="dialogTitle"
     :close-on-click-modal="false"
+    :modal-append-to-body="false"
     :visible="dialogVisible"
+    :z-index="1000"
   >
     <el-form
       ref="dialogform"
@@ -46,8 +48,8 @@
 
 <script>
 import { routeService } from "@/services";
-import { tip } from "@/components/MessageBox";
 import { formMixins } from "@/mixins";
+import { action } from "@/helper/public";
 
 export default {
   mixins: [formMixins],
@@ -75,32 +77,12 @@ export default {
   },
   methods: {
     // 请求
-    async onAction() {
-      const form = {
-        name: this.dialogFormData.name,
-        path: this.dialogFormData.path,
-        meta: {
-          title: this.dialogFormData.title,
-          needLogin: this.dialogFormData.needLogin
-        },
-        package: this.dialogFormData.package,
-        component: this.dialogFormData.component
-      };
-
-      if (this.dialogTitle == "编辑路由") {
-        form._id = this.dialogFormData._id;
-        const result = await routeService.update(form);
-        if (result === true) {
-          tip.uS();
-          return result;
-        }
-      } else if (this.dialogTitle == "新建路由") {
-        const result = await routeService.create(form);
-        if (result === true) {
-          tip.cS();
-          return result;
-        }
-      }
+    onAction() {
+      return action(
+        { t: this.dialogTitle, d: this.dialogFormData },
+        "路由",
+        routeService
+      );
     }
   }
 };

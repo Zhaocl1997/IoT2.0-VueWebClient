@@ -35,21 +35,18 @@
         @selection-change="onSelectionChange"
       >
         <el-table-column type="selection" width="40" />
-        <el-table-column type="index" label="序号" align="center" :resizable="false">
-          <template slot-scope="scope">
-            <span>{{ (reqData.pagenum - 1) * reqData.pagerow + scope.$index + 1 }}</span>
-          </template>
-        </el-table-column>
+
         <el-table-column
           prop="method"
           width="100"
           label="请求方法"
           align="center"
+          :resizable="false"
           show-overflow-tooltip
           sortable
           :sort-orders="['ascending', 'descending']"
         />
-        <el-table-column prop="url" label="请求地址" align="center" show-overflow-tooltip />
+        <el-table-column prop="url" width="200" label="请求地址" align="center" show-overflow-tooltip />
         <el-table-column
           prop="httpVersion"
           width="100"
@@ -69,15 +66,22 @@
         <el-table-column prop="referrer" label="客户地址" align="center" show-overflow-tooltip />
         <el-table-column
           prop="userAgent"
-          width="200"
+          width="150"
           label="客户信息"
           align="center"
           show-overflow-tooltip
         />
         <el-table-column
           prop="remoteAddress"
-          width="100"
+          width="150"
           label="客户IP"
+          align="center"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          prop="username"
+          width="200"
+          label="用户昵称"
           align="center"
           show-overflow-tooltip
         />
@@ -140,6 +144,7 @@ export default {
   methods: {
     // 初始化
     async init() {
+      this.reqData.sortField = "requestTime";
       this.reqData.pagerow = countLineNum();
       const result = await loggerService.index(this.reqData);
       this.tableData = result.data;

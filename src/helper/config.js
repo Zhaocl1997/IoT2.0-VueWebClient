@@ -1,3 +1,5 @@
+'use strict'
+
 const config = {
     //apiUrl: "https://api.zhaocl.net/",
     apiUrl: "http://localhost:3000/",

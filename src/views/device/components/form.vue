@@ -3,10 +3,11 @@
     center
     top="20vh"
     width="30%"
-    @close="onCancel"
+    @before-close="onCancel"
     :title="dialogTitle"
     :close-on-click-modal="false"
     :visible="dialogVisible"
+    :z-index="1000"
   >
     <el-form
       ref="dialogform"
@@ -40,7 +41,7 @@
 
 <script>
 import { deviceService } from "@/services";
-import { tip } from "@/components/MessageBox";
+import { action } from "@/helper/public";
 import { formMixins } from "@/mixins";
 
 export default {
@@ -78,20 +79,12 @@ export default {
 
   methods: {
     // 请求
-    async onAction() {
-      if (this.dialogTitle == "编辑设备") {
-        const result = await deviceService.update(this.dialogFormData);
-        if (result === true) {
-          tip.uS();
-          return result;
-        }
-      } else if (this.dialogTitle == "新建设备") {
-        const result = await deviceService.create(this.dialogFormData);
-        if (result === true) {
-          tip.cS();
-          return result;
-        }
-      }
+    onAction() {
+      return action(
+        { t: this.dialogTitle, d: this.dialogFormData },
+        "设备",
+        deviceService
+      );
     }
   }
 };

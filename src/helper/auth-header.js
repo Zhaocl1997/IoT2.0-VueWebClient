@@ -1,3 +1,5 @@
+'use strict'
+
 export function authHeader() {
 
     let user = JSON.parse(localStorage.getItem('p1'));

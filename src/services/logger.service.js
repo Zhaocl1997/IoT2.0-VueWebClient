@@ -1,20 +1,9 @@
-import axios from '../helper/axioshttp'
+'use strict'
 
-async function index(params) {
-    const url = '/api/v1/logger/index'
-    const result = await axios.post(url, params)
-    if (result.status === true) {
-        return result.data
-    }
-}
+import base_api from "./base_api";
 
-async function del(params) {
-    const url = '/api/v1/logger/delete'
-    const result = await axios.post(url, params)
-    if (result.status === true) {
-        return result.status
-    }
-}
+const index = base_api('logger', 'index')
+const del = base_api('logger', 'delete')
 
 export const loggerService = {
     index,

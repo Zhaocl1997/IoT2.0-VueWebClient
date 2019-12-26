@@ -1,3 +1,5 @@
+'use strict'
+
 import axiosOriginal from 'axios'
 import config from '../helper/config'
 import { authHeader } from '../helper/auth-header'
@@ -16,11 +18,14 @@ const axios = axiosOriginal.create({
 axios.interceptors.request.use(
   config => {
     config.headers = authHeader()
+    config.headers.clientip = localStorage.getItem('ip')
+      ? localStorage.getItem('ip') : '127.0.0.1'
     return config;
   },
   error => {
     return Promise.reject(error);
-  });
+  }
+)
 
 /**
 * get方式请求，url传参
@@ -28,9 +33,10 @@ axios.interceptors.request.use(
 * @param params 参数
 * @param level 0:无加密，1：参数加密，2: 签名+时间戳； 默认0
 */
-const get = (url, params, module, level) => axios(getConfig(url, 'get', true, params, module, level))
-  .then(res => successback(res))
-  .catch(error => errback(error));
+const get = (url, params, module, level) =>
+  axios(getConfig(url, 'get', true, params, module, level))
+    .then(res => successback(res))
+    .catch(error => errback(error));
 
 
 /**
@@ -39,9 +45,10 @@ const get = (url, params, module, level) => axios(getConfig(url, 'get', true, pa
 * @param params 参数
 * @param level 0:无加密，1：参数加密，2: 签名+时间戳； 默认0
 */
-const post = (url, params, level) => axios(getConfig(url, 'post', true, params, level))
-  .then(res => successback(res))
-  .catch(error => errback(error));
+const post = (url, params, level) =>
+  axios(getConfig(url, 'post', true, params, level))
+    .then(res => successback(res))
+    .catch(error => errback(error));
 
 
 // 参数转换
@@ -79,7 +86,7 @@ const errback = error => {
     error.message = '未知错误（' + error.message + '）'
   }
 
-  if (error.message === '操作失败（您在进行未认证访问哦）') {
+  if (error.code === '888888') {
     router.push('/')
   }
 
@@ -93,6 +100,9 @@ const successback = res => {
     switch (res.data.code) {
       case "000000":
         return Promise.resolve({ status: true, data: res.data.data })
+
+      case "888888":
+        return Promise.reject({ code: "888888", message: res.data.message })
 
       case "999999":
         return Promise.reject({ status: false, message: res.data.message })

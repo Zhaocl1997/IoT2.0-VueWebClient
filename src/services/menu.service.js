@@ -1,59 +1,13 @@
-import axios from '../helper/axioshttp'
+'use strict'
 
-// 获取所有菜单
-async function options(params) {
-    const url = '/api/v1/menu/options'
-    const result = await axios.post(url, params)
-    if (result.status === true) {
-        return result.data
-    }
-}
+import base_api from "./base_api";
 
-
-// 获取指定用户菜单
-async function index(params) {
-    const url = '/api/v1/menu/index'
-    const result = await axios.post(url, params)
-    if (result.status === true) {
-        return result.data
-    }
-}
-
-// 创建新菜单
-async function create(params) {
-    const url = '/api/v1/menu/create'
-    const result = await axios.post(url, params)
-    if (result.status === true) {
-        return result.status
-    }
-}
-
-// 查询菜单信息
-async function read(params) {
-    const url = '/api/v1/menu/read'
-    const result = await axios.post(url, params)
-    if (result.status === true) {
-        return result.data
-    }
-}
-
-// 更新菜单信息
-async function update(params) {
-    const url = '/api/v1/menu/update'
-    const result = await axios.post(url, params)
-    if (result.status === true) {
-        return result.status
-    }
-}
-
-// 删除菜单
-async function del(params) {
-    const url = '/api/v1/menu/delete'
-    const result = await axios.post(url, params)
-    if (result.status === true) {
-        return result.status
-    }
-}
+const options = base_api('menu', 'options')
+const index = base_api('menu', 'index')
+const create = base_api('menu', 'create')
+const read = base_api('menu', 'read')
+const update = base_api('menu', 'update')
+const del = base_api('menu', 'delete')
 
 export const menuService = {
     options,

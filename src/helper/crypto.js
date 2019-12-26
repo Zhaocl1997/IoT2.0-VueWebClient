@@ -1,3 +1,5 @@
+'use strict'
+
 /**
 * 通过crypto-js实现 加解密工具
 * AES、HASH(MD5、SHA256)、base64

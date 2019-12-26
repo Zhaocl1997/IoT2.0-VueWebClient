@@ -94,7 +94,9 @@ export default {
       formData.append("avatar", this.imgData);
       userService.avatar(formData).then(res => {
         if (res === true) {
-          this.$store.state.dataState.a = new Date().valueOf();
+          this.$store.dispatch("dataState/setData", [
+            { a: new Date().valueOf() }
+          ]);
           tip.success("上传成功");
         }
       });

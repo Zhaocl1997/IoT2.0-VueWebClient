@@ -75,26 +75,23 @@ export default {
       sidebarCollapse: false,
       onVXDiv: false,
       onSKYDiv: false,
-      nowTemp: ""
+      nowTemp: "" || "获取失败"
     };
   },
   components: {
     vWeather
   },
   computed: {
-    userIP() {
-      return localStorage.getItem("ip");
-    },
     userrole() {
       return JSON.parse(localStorage.getItem("p1")).role;
     },
     onNameChange() {
-      return this.$store.state.dataState.b;
+      return this.$store.getters["dataState/getData"].n;
     }
   },
   watch: {
     onNameChange: function(val, oldVal) {
-      if (val != 0 && val !== oldVal) {
+      if (val !== "" && val !== oldVal) {
         this.getName();
       }
     }
@@ -134,8 +131,6 @@ export default {
         checkBox("您真的要退出吗?").then(action => {
           if (action === true) {
             this.logout();
-            this.$store.state.dataState.a = "";
-            this.$store.state.dataState.b = "";
           }
         });
       }

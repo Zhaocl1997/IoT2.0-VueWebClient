@@ -1,6 +1,24 @@
-import axios from '../helper/axioshttp'
+'use strict'
 
-// 获取天气
+import axios from '../helper/axioshttp'
+import { socketService } from "../services";
+import store from "../store";
+import base_api from "./base_api";
+
+const options = base_api('user', 'options')
+const index = base_api('user', 'index')
+const create = base_api('user', 'create')
+const read = base_api('user', 'read')
+const update = base_api('user', 'update')
+const updateStatus = base_api('user', 'updateStatus')
+const del = base_api('user', 'delete')
+
+/**
+ * @method weather
+ * @param { Object } 
+ * @returns { data }
+ * @description 获取天气数据 
+ */
 async function weather(params) {
     const url = '/api/v1/user/weather'
     const result = await axios.post(url, params)
@@ -9,7 +27,12 @@ async function weather(params) {
     }
 }
 
-// 上传头像
+/**
+ * @method avatar
+ * @param { Object } 
+ * @returns { Boolean }
+ * @description 上传头像 
+ */
 async function avatar(params) {
     const url = '/api/v1/user/avatar'
     const result = await axios.post(url, params)
@@ -18,7 +41,12 @@ async function avatar(params) {
     }
 }
 
-// 注册 封装到vuex
+/**
+ * @method register
+ * @param { Object } 
+ * @returns { Boolean }
+ * @description 注册 封装到vuex
+ */
 async function register(params) {
     const url = '/api/v1/user/register'
     const result = await axios.post(url, params)
@@ -27,32 +55,49 @@ async function register(params) {
     }
 }
 
-// 登录 封装到vuex
+/**
+ * @method login
+ * @param { Object } 
+ * @returns { data }
+ * @description 登录 封装到vuex id/token/role 存储到local
+ */
 async function login(params) {
     const url = '/api/v1/user/login'
     const result = await axios.post(url, params)
     if (result.status === true) {
-        // 把基础信息存到local
         const user = {
             id: result.data.user._id,
             token: result.data.token,
             role: result.data.user.role.name
         }
         localStorage.setItem('p1', JSON.stringify(user))
-        return result
+        return user
     }
 }
 
-// 登出 封装到vuex
+/**
+ * @method logout
+ * @param { null } 
+ * @returns { Boolean }
+ * @description 登出 封装到vuex 清空local/清空vuex/断开socket
+ */
 async function logout() {
     const url = '/api/v1/user/logout'
     const result = await axios.post(url)
     if (result.status === true) {
-        localStorage.removeItem('p1')
+        localStorage.clear()
+        store.dispatch("dataState/clearData", ["u", "t", "h", "m1", "m2", "a", "n"]);
+        socketService.closeSocket();
+        return result.status
     }
 }
 
-// 获取验证码
+/**
+ * @method captcha
+ * @param { null } 
+ * @returns { data }
+ * @description 获取验证码
+ */
 async function captcha() {
     const url = "/api/v1/user/captcha"
     const result = await axios.post(url)
@@ -61,70 +106,14 @@ async function captcha() {
     }
 }
 
-// 获取用户options
-async function options(params) {
-    const url = '/api/v1/user/options'
-    const result = await axios.post(url, params)
-    if (result.status === true) {
-        return result.data
-    }
-}
-
-// 获取所有用户信息
-async function index(params) {
-    const url = '/api/v1/user/index'
-    const result = await axios.post(url, params)
-    if (result.status === true) {
-        return result.data
-    }
-}
-
-// 新建用户
-async function create(params) {
-    const url = '/api/v1/user/create'
-    const result = await axios.post(url, params)
-    if (result.status === true) {
-        return result.status
-    }
-}
-
-// 获取指定用户信息
-async function read(params) {
-    const url = '/api/v1/user/read'
-    const result = await axios.post(url, params)
-    if (result.status === true) {
-        return result.data
-    }
-}
-
-// 更新指定用户信息
-async function update(params) {
-    const url = '/api/v1/user/update'
-    const result = await axios.post(url, params)
-    if (result.status === true) {
-        return result.status
-    }
-}
-
+/**
+ * @method updateInfo
+ * @param { Object } 
+ * @returns { Boolean }
+ * @description 更新用户信息(admin)
+ */
 async function updateInfo(params) {
     const url = '/api/v1/user/updateInfo'
-    const result = await axios.post(url, params)
-    if (result.status === true) {
-        return result.status
-    }
-}
-
-async function updateStatus(params) {
-    const url = '/api/v1/user/updateStatus'
-    const result = await axios.post(url, params)
-    if (result.status === true) {
-        return result.status
-    }
-}
-
-// 删除指定用户
-async function del(params) {
-    const url = '/api/v1/user/delete'
     const result = await axios.post(url, params)
     if (result.status === true) {
         return result.status

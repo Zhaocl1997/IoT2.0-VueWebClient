@@ -1,72 +1,21 @@
-import axios from '../helper/axioshttp'
+'use strict'
 
-async function options() {
-    const url = '/api/v1/role/options'
-    const result = await axios.post(url)
-    if (result.status === true) {
-        return result.data
-    }
-}
+import base_api from "./base_api";
 
-// 获取角色
-async function index(params) {
-    const url = '/api/v1/role/index'
-    const result = await axios.post(url, params)
-    if (result.status === true) {
-        return result.data
-    }
-}
-
-// 创建新角色
-async function create(params) {
-    const url = '/api/v1/role/create'
-    const result = await axios.post(url, params)
-    if (result.status === true) {
-        return result.status
-    }
-}
-
-// 查询角色信息
-async function read(params) {
-    const url = '/api/v1/role/read'
-    const result = await axios.post(url, params)
-    if (result.status === true) {
-        return result.data
-    }
-}
-
-// 更新角色信息
-async function update(params) {
-    const url = '/api/v1/role/update'
-    const result = await axios.post(url, params)
-    if (result.status === true) {
-        return result.status
-    }
-}
-
-async function updateStatus(params) {
-    const url = '/api/v1/role/updateStatus'
-    const result = await axios.post(url, params)
-    if (result.status === true) {
-        return result.status
-    }
-}
-
-// 删除角色
-async function del(params) {
-    const url = '/api/v1/role/delete'
-    const result = await axios.post(url, params)
-    if (result.status === true) {
-        return result.status
-    }
-}
+const options = base_api('role', 'options')
+const index = base_api('role', 'index')
+const create = base_api('role', 'create')
+const read = base_api('role', 'read')
+const update = base_api('role', 'update')
+const updateStatus = base_api('role', 'updateStatus')
+const del = base_api('role', 'delete')
 
 export const roleService = {
+    options,
     index,
     create,
     read,
     update,
     updateStatus,
-    del,
-    options
+    del
 }

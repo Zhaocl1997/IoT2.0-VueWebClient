@@ -1,4 +1,6 @@
-import { format } from "../helper/public";
+'use strict'
+
+import { format, debounce } from "../helper/public";
 
 export const tableMixins = {
     data() {
@@ -24,6 +26,7 @@ export const tableMixins = {
     },
     mounted() {
         this.init();
+        this.debouncedInit = debounce(this.init, 600) // 防抖
     },
     methods: {
         // 分页参数
@@ -34,7 +37,7 @@ export const tableMixins = {
         // 查询参数
         onFilter(data) {
             this.reqData.filters = data;
-            this.init();
+            this.debouncedInit()
         },
         // 排序参数
         onSort(e) {
@@ -73,13 +76,16 @@ export const tableMixins = {
         },
         // 处理窗体保存
         onSave() {
+            this.dialogData = {}
             this.dialogVisible = false
             this.init();
+            this.$store.dispatch("dataState/clearData", ["m1"]);
         },
         // 处理窗体取消
         onCancel() {
             this.dialogData = {}
             this.dialogVisible = false
+            this.$store.dispatch("dataState/clearData", ["m1"]);
         },
         // 处理格式化显示
         onTimeFormat(row, column) {

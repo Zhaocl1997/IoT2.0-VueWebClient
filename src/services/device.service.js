@@ -1,66 +1,15 @@
-import axios from '../helper/axioshttp'
+'use strict'
 
-// 选项
-async function options(params) {
-    const url = '/api/v1/device/options'
-    const result = await axios.post(url, params)
-    if (result.status === true) {
-        return result.data
-    }
-}
+import base_api from "./base_api";
 
-// 获取指定用户所有设备信息
-async function index(params) {
-    const url = '/api/v1/device/index'
-    const result = await axios.post(url, params)
-    if (result.status === true) {
-        return result.data
-    }
-}
-
-// 添加设备
-async function create(params) {
-    const url = '/api/v1/device/create'
-    const result = await axios.post(url, params)
-    if (result.status === true) {
-        return result.status
-    }
-}
-
-// 查询设备信息
-async function read(params) {
-    const url = '/api/v1/device/read'
-    const result = await axios.post(url, params)
-    if (result.status === true) {
-        return result.data
-    }
-}
-
-// 修改设备信息
-async function update(params) {
-    const url = '/api/v1/device/update'
-    const result = await axios.post(url, params)
-    if (result.status === true) {
-        return result.status
-    }
-}
-
-async function updateStatus(params) {
-    const url = '/api/v1/device/updateStatus'
-    const result = await axios.post(url, params)
-    if (result.status === true) {
-        return result.status
-    }
-}
-
-// 删除设备
-async function del(params) {
-    const url = '/api/v1/device/delete'
-    const result = await axios.post(url, params)
-    if (result.status === true) {
-        return result.status
-    }
-}
+const options = base_api('device', 'options')
+const index = base_api('device', 'index')
+const create = base_api('device', 'create')
+const read = base_api('device', 'read')
+const update = base_api('device', 'update')
+const updateStatus = base_api('device', 'updateStatus')
+const del = base_api('device', 'delete')
+const delMany = base_api('device', 'deleteMany')
 
 export const deviceService = {
     options,
@@ -70,4 +19,5 @@ export const deviceService = {
     update,
     updateStatus,
     del,
+    delMany
 }

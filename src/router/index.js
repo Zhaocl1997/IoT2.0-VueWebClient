@@ -1,9 +1,12 @@
+'use strict'
+
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import NProgress from 'nprogress' // 进度条
 import 'nprogress/nprogress.css'
 
 import { localTake } from "../helper/public";
+import { userService } from '../services'
 
 NProgress.inc(0.2)
 NProgress.configure({ easing: 'ease', speed: 500, showSpinner: false })
@@ -146,6 +149,15 @@ const routes = [
         component: () => import(/* webpackChunkName: "articlemanange" */ '../views/article/index.vue')
       },
       {
+        path: 'categorymanage',
+        name: 'categorymanage',
+        meta: {
+          title: '分类管理',
+          needLogin: true
+        },
+        component: () => import(/* webpackChunkName: "categorymanage" */ '../views/category/index.vue')
+      },
+      {
         path: 'sensorData',
         name: 'sensorData',
         meta: {
@@ -171,7 +183,16 @@ const routes = [
           needLogin: true
         },
         component: () => import(/* webpackChunkName: "cameraDataMore" */ '../views/data/camera.vue')
-      }
+      },
+      {
+        path: 'test',
+        name: 'test',
+        meta: {
+          title: 'test',
+          needLogin: true
+        },
+        component: () => import(/* webpackChunkName: "test" */ '../views/test.vue')
+      },
     ]
   },
   {
@@ -195,6 +216,13 @@ router.beforeEach((to, from, next) => {
   NProgress.start()
 
   let isLogin = localTake('p1')
+
+  if (isLogin) {
+    if (to.path === '/' || to.path === '/login' || to.path === '/register') {
+      userService.logout()
+    }
+  }
+
   if (to.meta.needLogin) {  // 判断该路由是否需要登录权限
     if (isLogin) { // 判断是否已经登录
       next()

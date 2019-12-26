@@ -5,10 +5,11 @@
         background
         :page-size="pagerow"
         :pager-count="11"
-        :current-page.sync="num"
+        :current-page="pagenum"
         :total="total"
         layout="total, prev, pager, next, jumper"
         :hide-on-single-page="true"
+        @current-change="onCurrentChange"
       ></el-pagination>
     </div>
   </div>
@@ -30,20 +31,18 @@ export default {
       required: true
     }
   },
-  computed: {
-    num: {
-      get() {
-        return this.pagenum;
-      },
-      set(val) {
-        this.$emit("paginationEvent", val);
-      }
+  methods: {
+    onCurrentChange(val) {
+      this.$emit("paginationEvent", val);
     }
   }
 };
 </script>
 
 <style scoped>
+.pagination {
+  height: 100%;
+}
 .pagination_con {
   /* margin: 20px 0; */
   margin-bottom: 10px;

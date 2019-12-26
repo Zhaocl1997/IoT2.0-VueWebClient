@@ -1,76 +1,17 @@
-import axios from '../helper/axioshttp'
+'use strict'
 
+import base_api from "./base_api";
 
-//返回所有数据
-async function index(params) {
-
-    let url = '/api/v1/article/index'
-    let item = {
-        pagenum: params.currentPage,
-        pagerow: params.limit,
-        keyword: params.name
-
-    };
-
-    let result = await axios.post(url, item)
-
-    if (result.status === true) {
-        return result.data
-    }
-}
-
-// 
-async function read(id) {
-
-    let url = "/api/v1/article/read";
-
-    let result = await axios.post(url, { questionid: id });
-
-    if (result.status === true) {
-        return result.data;
-    }
-}
-
-async function createAndUpdate(item, action) {
-
-    let url
-    let question
-    if (action === "add") {
-        url = '/api/v1/article/create'
-        question = item
-    } else {
-        url = '/api/v1/article/update'
-        question = {
-            "questionid": item._id,
-            "topic": item.topic,
-            "answer": item.answer,
-            "category": item.category
-        };
-    }
-
-
-    let result = await axios.post(url, question);
-
-    if (result.status === true) {
-        return result.data;
-    }
-}
-
-
-async function del(id) {
-
-    let url = '/api/v1/article/delete'
-
-    let result = await axios.post(url, id)
-
-    if (result.status === true) {
-        return "success"
-    }
-}
+const index = base_api('article', 'index')
+const create = base_api('article', 'create')
+const read = base_api('article', 'read')
+const update = base_api('article', 'update')
+const del = base_api('article', 'delete')
 
 export const articleService = {
-    read,
-    createAndUpdate,
     index,
-    del
-};
+    create,
+    read,
+    update,
+    del,
+}

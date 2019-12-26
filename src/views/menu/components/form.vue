@@ -4,10 +4,11 @@
     top="20vh"
     width="30%"
     @open="onOpen"
-    @close="onCancel"
+    @before-close="onCancel"
     :title="dialogTitle"
     :close-on-click-modal="false"
     :visible="dialogVisible"
+    :z-index="1000"
   >
     <el-form
       ref="dialogform"
@@ -30,13 +31,20 @@
           placeholder="请输入菜单名称"
           size="small"
           @change="onTitleSelect"
+          style="width:100%;"
         >
           <el-option v-for="item in routeOptions" :key="item._id" :value="item.meta.title"></el-option>
         </el-select>
       </el-form-item>
 
       <el-form-item label="图标路径：" prop="icon">
-        <el-select v-model="dialogFormData.icon" clearable placeholder="请输入图标路径" size="small">
+        <el-select
+          v-model="dialogFormData.icon"
+          clearable
+          placeholder="请输入图标路径"
+          size="small"
+          style="width:100%;"
+        >
           <el-option
             v-for="item in iconOptions"
             :key="item.value"
@@ -59,6 +67,7 @@
           placeholder="请输入页面路由"
           size="small"
           @change="onIndexChange"
+          style="width:100%;"
         >
           <el-option v-for="item in routeOptions" :key="item._id" :value="item.path"></el-option>
         </el-select>
@@ -75,7 +84,7 @@
 <script>
 import { menuService, routeService } from "@/services";
 import { formMixins } from "@/mixins";
-import { tip } from "@/components/MessageBox";
+import { action } from "@/helper/public";
 
 export default {
   mixins: [formMixins],
@@ -160,6 +169,7 @@ export default {
   },
 
   methods: {
+    // 绑定路由数据
     async onOpen() {
       const result = await routeService.options();
       this.routeOptions = result.data;
@@ -184,20 +194,12 @@ export default {
     },
 
     // 请求
-    async onAction() {
-      if (this.dialogTitle == "编辑菜单") {
-        const result = await menuService.update(this.dialogFormData);
-        if (result === true) {
-          tip.uS();
-          return result;
-        }
-      } else if (this.dialogTitle == "新建菜单") {
-        const result = await menuService.create(this.dialogFormData);
-        if (result === true) {
-          tip.cS();
-          return result;
-        }
-      }
+    onAction() {
+      return action(
+        { t: this.dialogTitle, d: this.dialogFormData },
+        "菜单",
+        menuService
+      );
     }
   }
 };

@@ -1,27 +1,52 @@
+'use strict'
+
 let state = {
-    f: '', // camera图片名
-    t: '0', // DHT11温度
-    h: '0', // DHT11湿度
-    a: '',
-    b: ''
+    u: '', // camera url
+    t: '', // DHT11温度
+    h: '', // DHT11湿度
+
+    a: '', // 头像修改
+    n: '', // 名称修改
+
+    m1: '', // 新设备接入
+    m2: '', // 新设备添加
+}
+
+const getters = {
+    getData: state => {
+        return state
+    },
 }
 
 const actions = {
-    saveDataInfo({ commit }, item) {
-        commit('saveDataInfoSuccess', item)
+    setData({ commit }, arr) {
+        commit('setDataSuccess', arr)
+    },
+    clearData({ commit }, arr) {
+        commit('clearDataSuccess', arr)
     }
 }
 
 const mutations = {
-    saveDataInfoSuccess(state, item) {
-        state.n = item.n
-        state.m = item.m
+    setDataSuccess(state, arr) {
+        for (let i = 0; i < arr.length; i++) {
+            const e = arr[i];
+            const key = Object.keys(e)
+            state[key] = e[key]
+        }
+    },
+    clearDataSuccess(state, arr) {
+        for (let i = 0; i < arr.length; i++) {
+            const e = arr[i];
+            state[e] = ""
+        }
     }
 }
 
 export const dataState = {
     namespaced: true,
     state,
+    getters,
     actions,
     mutations,
 };

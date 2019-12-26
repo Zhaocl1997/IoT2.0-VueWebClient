@@ -6,7 +6,7 @@
         style="width: 25%; margin-right: 10px;"
         v-model="reqData.filters"
         @input="onFilter"
-        placeholder="输入查询信息"
+        placeholder="可按角色名称和描述查询"
         maxlength="10"
         clearable
         prefix-icon="el-icon-search"
@@ -132,8 +132,8 @@ import vPage from "@/components/pagination";
 import vDialog from "./components/form.vue";
 import { roleService } from "@/services";
 import { tableMixins } from "@/mixins";
-import { checkBox, tip } from "@/components/MessageBox";
-import { countLineNum } from "@/helper/public";
+import { tip } from "@/components/MessageBox";
+import { countLineNum, singleDelete } from "@/helper/public";
 
 export default {
   mixins: [tableMixins],
@@ -183,18 +183,7 @@ export default {
 
     // 处理单个删除
     onSingleDel(id) {
-      checkBox("是否删除该角色?").then(action => {
-        if (action === true) {
-          roleService.del({ _id: id }).then(value => {
-            if (value === true) {
-              tip.dS();
-              this.init();
-            }
-          });
-        } else {
-          tip.cancel();
-        }
-      });
+      singleDelete("角色", roleService, id, this.init);
     },
 
     // 处理格式化显示

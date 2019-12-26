@@ -1,3 +1,5 @@
+'use strict'
+
 import 'element-ui/lib/theme-chalk/index.css'
 import {
     Pagination,
@@ -75,6 +77,7 @@ import {
     // CascaderPanel,
     Avatar,
     Loading,
+    Drawer,
 } from 'element-ui';
 
 const Element = {
@@ -153,6 +156,7 @@ const Element = {
         // Vue.use(PageHeader);
         // Vue.use(CascaderPanel);
         Vue.use(Avatar);
+        Vue.use(Drawer)
         Vue.use(Loading.directive);
     }
 }

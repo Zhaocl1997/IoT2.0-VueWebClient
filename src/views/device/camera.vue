@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import { format } from "@/helper/public";
+import { format, getNow } from "@/helper/public";
 import { dataService, socketService } from "@/services";
 
 export default {
@@ -39,20 +39,20 @@ export default {
     return {
       macAddress: "",
       url: "" || "/img/none.jpg",
-      time: "" || format(new Date(), "YYYY/MM/DD HH:mm:ss"),
+      time: "" || getNow(),
       size: "" || 0
     };
   },
   computed: {
     newUrl() {
-      // 监听新的f
-      return this.$store.state.dataState.f;
+      // 监听新的u
+      return this.$store.getters["dataState/getData"].u;
     }
   },
   watch: {
     // 检测数据变化
     newUrl: function(val, oldVal) {
-      if (val != 0 && val !== oldVal) {
+      if (val !== undefined && val !== oldVal) {
         this.init();
       }
     }
@@ -60,7 +60,7 @@ export default {
   mounted() {
     this.macAddress = this.$route.query.macAddress;
     this.init();
-    socketService.initSocket({ macAddress: this.macAddress });
+    socketService.newData({ macAddress: this.macAddress });
   },
   methods: {
     async init() {
@@ -69,15 +69,16 @@ export default {
         pagenum: 1,
         macAddress: this.macAddress
       });
+
       if (result.data.length === 0) return;
 
       const data = result.data[0];
 
       // 最新数据
-      this.url = data.data.url;
+      this.url =
+        "https://iot--camera.oss-cn-hangzhou.aliyuncs.com/" + data.data.url;
       this.size = Number.parseInt(data.data.size / 1024);
-      this.time = format(data.createdAt, "YYYY/MM/DD HH:mm:ss");
-      this.macAddress = data.macAddress;
+      this.time = format(data.cA, "YYYY/MM/DD HH:mm:ss");
     }
   }
 };

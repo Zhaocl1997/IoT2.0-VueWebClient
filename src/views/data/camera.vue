@@ -50,7 +50,7 @@ export default {
     this.reqData.macAddress = this.$route.query.macAddress;
     this.reqData.pagerow = countPicNum();
     this.init(this.reqData);
-    socketService.initSocket({ macAddress: this.reqData.macAddress });
+    socketService.newData({ macAddress: this.reqData.macAddress });
   },
   methods: {
     // 初始化

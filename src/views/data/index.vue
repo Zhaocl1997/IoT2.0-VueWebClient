@@ -11,6 +11,7 @@
         @clear="onClear(0)"
         size="mini"
         style="width:120px"
+        :disabled="!!(this.user)"
       >
         <el-option v-for="item in userOptions" :key="item._id" :label="item.name" :value="item._id"></el-option>
       </el-select>
@@ -88,6 +89,7 @@
         @click="onToggleSelection()"
         icon="el-icon-remove-outline"
       >取消</el-button>
+      <el-button size="small" type="text" @click="onMultipleDel" icon="el-icon-delete">删除</el-button>
     </div>
 
     <div class="table-main" id="table-main">
@@ -97,6 +99,7 @@
         size="small"
         :data="tableData"
         ref="multipleTable"
+        v-loading="loading"
         tooltip-effect="dark"
         @sort-change="onSort"
         @cell-mouse-enter="onHover"
@@ -128,13 +131,6 @@
           width="80px"
         />
         <el-table-column
-          prop="macAddress"
-          label="mac地址"
-          align="center"
-          show-overflow-tooltip
-          width="150px"
-        />
-        <el-table-column
           prop="data"
           label="详细数据"
           align="center"
@@ -142,18 +138,8 @@
           :formatter="onFormat"
         />
         <el-table-column
-          prop="createdAt"
+          prop="cA"
           label="创建时间"
-          align="center"
-          show-overflow-tooltip
-          :formatter="onFormat"
-          sortable
-          :sort-orders="['ascending', 'descending']"
-          width="150px"
-        />
-        <el-table-column
-          prop="updatedAt"
-          label="更新时间"
           align="center"
           show-overflow-tooltip
           :formatter="onFormat"
@@ -167,7 +153,7 @@
             <el-button
               size="small"
               type="text"
-              @click="onSingleDel(scope.row._id)"
+              @click="onSingleDel(scope.row.data._id)"
               icon="el-icon-delete"
             >删除</el-button>
           </template>
@@ -192,7 +178,7 @@
 import vPage from "@/components/pagination";
 import { userService, deviceService, dataService } from "@/services";
 import { checkBox, tip } from "@/components/MessageBox";
-import { countLineNum, format } from "@/helper/public";
+import { countLineNum, format, singleDelete } from "@/helper/public";
 
 export default {
   name: "v-data",
@@ -200,6 +186,8 @@ export default {
     return {
       camera_img: false, // 图片div是否显示
       camera_src: "", // 图片src
+
+      loading: true,
 
       tableData: [], // table数据
       total: 1, // 数据数量
@@ -210,19 +198,6 @@ export default {
         }
       },
 
-      // 请求数据
-      reqData: {
-        pagenum: 1, // 页号
-        pagerow: 1, // 每页记录数
-
-        sortField: "createdAt", // 排序字段
-        sortOrder: "descending", // 排序顺序
-
-        condition: {}, // 条件
-        type: "byInit" // 类型
-      },
-
-      user: "", // 用户ID
       type: "", // 设备类型
       device: "", // 设备ID
       time: [], // 时间
@@ -237,6 +212,35 @@ export default {
   },
   mounted() {
     this.init();
+  },
+  computed: {
+    role() {
+      return JSON.parse(localStorage.getItem("p1")).role;
+    },
+    id() {
+      return JSON.parse(localStorage.getItem("p1")).id;
+    },
+    user() {
+      return this.role === "user" ? this.id : "";
+    },
+    reqType() {
+      return this.user === "" ? "byInit" : "byUser";
+    },
+    // 请求数据
+    reqData() {
+      return {
+        pagenum: 1, // 页号
+        pagerow: 1, // 每页记录数
+
+        sortField: "cA", // 排序字段
+        sortOrder: "descending", // 排序顺序
+
+        condition: {
+          userID: this.user
+        }, // 条件
+        type: this.reqType // 类型
+      };
+    }
   },
   watch: {
     // 监听变化
@@ -273,6 +277,7 @@ export default {
       const result = await dataService.index(this.reqData);
       this.tableData = result.data;
       this.total = result.total;
+      this.loading = false;
     },
 
     // 分页参数
@@ -328,22 +333,22 @@ export default {
       if (
         this.time.length === 0 &&
         this.device &&
-        row.data.createdAt &&
+        row.data.cA &&
         column.label === "创建时间"
       ) {
         let arr = [];
-        arr.push(row.data.createdAt);
-        arr.push(row.data.createdAt);
+        arr.push(row.data.cA);
+        arr.push(row.data.cA);
         this.time = arr;
       } else if (
         this.time.length === 2 &&
         this.time[0] === this.time[1] &&
         this.device &&
-        row.data.createdAt &&
+        row.data.cA &&
         column.label === "创建时间"
       ) {
         this.time.splice(1, 1);
-        this.time.push(row.data.createdAt);
+        this.time.push(row.data.cA);
       }
     },
 
@@ -352,10 +357,7 @@ export default {
       // 列格式化
       switch (column.label) {
         case "创建时间":
-          return format(row.data.createdAt, "YYYY/MM/DD HH:mm:ss");
-
-        case "更新时间":
-          return format(row.data.updatedAt, "YYYY/MM/DD HH:mm:ss");
+          return format(row.data.cA, "YYYY/MM/DD HH:mm:ss");
 
         default:
           break;
@@ -378,18 +380,7 @@ export default {
 
     // 处理单个删除
     onSingleDel(id) {
-      checkBox("是否删除该数据?").then(action => {
-        if (action === true) {
-          dataService.del({ _id: id }).then(value => {
-            if (value === true) {
-              tip.dS();
-              this.init();
-            }
-          });
-        } else {
-          tip.cancel();
-        }
-      });
+      singleDelete("数据", dataService, id, this.init);
     },
 
     // 处理多选删除
@@ -398,7 +389,7 @@ export default {
       checkBox("是否删除这些数据?").then(action => {
         if (action === true) {
           this.multipleSelection.forEach(item => {
-            dataService.del({ _id: item["_id"] }).then(value => {
+            dataService.del({ _id: item.data["_id"] }).then(value => {
               if (value === true) {
                 count = count + 1;
                 if (this.multipleSelection.length === count) {

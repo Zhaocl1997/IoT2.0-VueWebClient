@@ -1,31 +1,40 @@
 <template>
   <div id="app">
-    <router-view v-if="isRouterAlive"></router-view>
+    <router-view></router-view>
+    <!-- <router-view v-if="isRouterAlive"></router-view> -->
   </div>
 </template>
 
 <script>
+import { getIP2 } from "./helper/public";
+
 export default {
   name: "app",
-  provide() {
-    return {
-      reload: this.reload
-    };
-  },
-  data() {
-    return {
-      isRouterAlive: true
-    };
-  },
-  methods: {
-    // 刷新
-    reload() {
-      this.isRouterAlive = false;
-      this.$nextTick(function() {
-        this.isRouterAlive = true;
-      });
+  mounted() {
+    if (this.$store.getters["userState/getUserInfo"] !== null) {
+      this.$router.push("/main/default");
     }
+    getIP2();
   }
+  // provide() {
+  //   return {
+  //     reload: this.reload
+  //   };
+  // },
+  // data() {
+  //   return {
+  //     isRouterAlive: true
+  //   };
+  // },
+  // methods: {
+  //   // 刷新
+  //   reload() {
+  //     this.isRouterAlive = false;
+  //     this.$nextTick(function() {
+  //       this.isRouterAlive = true;
+  //     });
+  //   }
+  // }
 };
 </script>
 

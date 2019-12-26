@@ -6,7 +6,7 @@
         style="width: 25%; margin-right: 10px;"
         v-model="reqData.filters"
         @input="onFilter"
-        placeholder="输入查询信息"
+        placeholder="可按标题查询"
         maxlength="10"
         clearable
       />
@@ -16,14 +16,7 @@
         @click="onDialog(0, 'add')"
         icon="el-icon-circle-plus-outline"
       >新建</el-button>
-      <el-button
-        size="small"
-        type="text"
-        @click="onToggleSelection"
-        icon="el-icon-remove-outline"
-      >取消</el-button>
       <el-button size="small" type="text" @click="onFresh" icon="el-icon-refresh">刷新</el-button>
-      <el-button size="small" type="text" @click="onMultipleDel" icon="el-icon-delete">删除</el-button>
     </div>
 
     <div class="table-main" id="table-main">
@@ -36,18 +29,50 @@
         tooltip-effect="dark"
         @sort-change="onSort"
         :row-class-name="tableRowClassName"
-        @selection-change="onSelectionChange"
       >
-        <el-table-column type="selection" width="40" />
         <el-table-column type="index" label="序号" align="center" :resizable="false">
           <template slot-scope="scope">
             <span>{{ (reqData.pagenum - 1) * reqData.pagerow + scope.$index + 1 }}</span>
           </template>
         </el-table-column>
 
-        <el-table-column prop="title" label="标题" align="center"></el-table-column>
-        <el-table-column prop="content" label="内容" align="center"></el-table-column>
-        <el-table-column prop="category" label="分类" align="center"></el-table-column>
+        <el-table-column prop="title" label="文章标题" align="center" show-overflow-tooltip></el-table-column>
+        <el-table-column
+          prop="content"
+          label="文章内容"
+          align="center"
+          show-overflow-tooltip
+          :formatter="onFormat"
+        ></el-table-column>
+        <el-table-column
+          prop="tag"
+          label="文章标签"
+          align="center"
+          show-overflow-tooltip
+          :formatter="onFormat"
+        ></el-table-column>
+        <el-table-column prop="category.name" label="文章分类" align="center" show-overflow-tooltip></el-table-column>
+        <el-table-column prop="author.name" label="文章作者" align="center" show-overflow-tooltip></el-table-column>
+        <el-table-column prop="solve" width="50" label="点赞" align="center" show-overflow-tooltip></el-table-column>
+        <el-table-column prop="unsolve" width="50" label="点踩" align="center" show-overflow-tooltip></el-table-column>
+
+        <el-table-column
+          prop="createdAt"
+          width="100"
+          label="创建时间"
+          align="center"
+          show-overflow-tooltip
+          :formatter="onTimeFormat"
+        />
+        <el-table-column
+          prop="updatedAt"
+          width="100"
+          label="更新时间"
+          align="center"
+          show-overflow-tooltip
+          :formatter="onTimeFormat"
+          :resizable="false"
+        />
 
         <el-table-column label="操作" align="center" width="200">
           <template slot-scope="scope">
@@ -56,12 +81,14 @@
               type="text"
               @click="onDialog(scope.row, 'edit')"
               icon="el-icon-edit"
+              :disabled="isOwner(scope.row.author._id)"
             >编辑</el-button>
             <el-button
               size="small"
               type="text"
               @click="onSingleDel(scope.row._id)"
               icon="el-icon-delete"
+              :disabled="isOwner(scope.row.author._id)"
             >删除</el-button>
             <el-button size="small" type="text" @click="onCheck(scope.row)" icon="el-icon-view">查看</el-button>
           </template>
@@ -83,16 +110,23 @@
       @cancel="onCancel"
       @save="onSave"
     />
+
+    <el-drawer title="我是标题" :visible.sync="drawer" :with-header="false" size="50%">
+      <div class="ql-container ql-snow">
+        <div class="ql-editor" v-html="article"></div>
+      </div>
+    </el-drawer>
   </div>
 </template>
 
 <script>
+import "quill/dist/quill.snow.css";
+
 import vPage from "@/components/pagination";
 import vDialog from "./components/form.vue";
 import { articleService } from "@/services";
 import { tableMixins } from "@/mixins";
-import { checkBox, tip } from "@/components/MessageBox";
-import { countLineNum } from "@/helper/public";
+import { countLineNum, sizeOfStr, singleDelete } from "@/helper/public";
 
 export default {
   mixins: [tableMixins],
@@ -101,7 +135,18 @@ export default {
     vDialog,
     vPage
   },
+  data() {
+    return {
+      drawer: false,
+      article: ""
+    };
+  },
   methods: {
+    // 判断文章作者
+    isOwner(id) {
+      return id !== JSON.parse(localStorage.getItem("p1")).id;
+    },
+
     // 初始化
     async init() {
       this.reqData.pagerow = countLineNum();
@@ -114,19 +159,22 @@ export default {
     onDialog(index, operation) {
       switch (operation) {
         case "add":
-          this.dialogTitle = "新建设备";
+          this.dialogTitle = "新建文章";
           this.dialogVisible = true;
-          this.dialogData = {};
+          this.dialogData = {
+            tag: []
+          };
           break;
 
         case "edit":
-          this.dialogTitle = "编辑设备";
+          this.dialogTitle = "编辑文章";
           this.dialogVisible = true;
           this.dialogData = {
             _id: index._id,
-            name: index.name,
-            macAddress: index.macAddress,
-            type: index.type
+            title: index.title,
+            category: index.category._id,
+            tag: index.tag,
+            content: index.content
           };
           break;
       }
@@ -134,70 +182,23 @@ export default {
 
     // 处理单个删除
     onSingleDel(id) {
-      checkBox("是否删除该设备?").then(action => {
-        if (action === true) {
-          articleService.del({ _id: id }).then(value => {
-            if (value === true) {
-              tip.dS();
-              this.init();
-            }
-          });
-        } else {
-          tip.cancel();
-        }
-      });
+      singleDelete("文章", articleService, id, this.init);
     },
 
-    // 处理多选删除
-    onMultipleDel() {
-      let count = 0;
-      checkBox("是否删除这些设备?").then(action => {
-        if (action === true) {
-          this.multipleSelection.forEach(item => {
-            articleService.del({ _id: item["_id"] }).then(value => {
-              if (value === true) {
-                count = count + 1;
-                if (this.multipleSelection.length === count) {
-                  tip.dS();
-                  this.init();
-                }
-              }
-            });
-          });
-        } else {
-          tip.cancel();
-          this.$refs.multipleTable.clearSelection();
-        }
-      });
-    },
-
-    // 显示数据页面
-    onCheck(e) {
-      switch (e.type) {
-        case "sensor":
-          this.$router.push({
-            path: "/main/sensorData",
-            query: { name: e.name, macAddress: e.macAddress }
-          });
-          break;
-
-        case "camera":
-          this.$router.push({
-            path: "/main/cameraData",
-            query: { name: e.name, macAddress: e.macAddress }
-          });
-          break;
-
-        default:
-          break;
-      }
+    // 显示文章页面
+    onCheck(val) {
+      this.article = val.content;
+      this.drawer = true;
     },
 
     // 处理格式化显示
     onFormat(row, column) {
       switch (column.label) {
-        case "数据数量":
-          return `${row.dataCount} 条数据`;
+        case "文章内容":
+          return `${sizeOfStr(row.content)}个字节`;
+
+        case "文章标签":
+          return `${row.tag[0]}等${row.tag.length}个标签`;
       }
     }
   }

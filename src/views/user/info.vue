@@ -45,6 +45,30 @@
         </el-form>
       </div>
     </div>
+
+    <!-- <div class="info_iframe-video-con">
+      <iframe
+        class="info_iframe-video"
+        src="//player.bilibili.com/player.html?aid=30166715&page=1"
+        scrolling="no"
+        border="0"
+        frameborder="no"
+        framespacing="0"
+        allowfullscreen="true"
+      ></iframe>
+    </div>
+
+    <div class="info_iframe-music-con">
+      <iframe
+        frameborder="no"
+        border="0"
+        marginwidth="0"
+        marginheight="0"
+        width="330"
+        height="86"
+        src="//music.163.com/outchain/player?type=2&id=5270312&auto=1&height=66"
+      ></iframe>
+    </div> -->
   </div>
 </template>
 
@@ -89,7 +113,9 @@ export default {
           delete this.form.avatar;
           userService.updateInfo(this.form).then(res => {
             if (res === true) {
-              this.$store.state.dataState.b = new Date().valueOf();
+              this.$store.dispatch("dataState/setData", [
+                { n: new Date().valueOf() }
+              ]);
               tip.uS();
             }
           });
@@ -101,14 +127,33 @@ export default {
 </script>
 
 <style scoped>
+.info {
+  margin-top: 30px;
+  width: 500px;
+}
 .info_avatar {
-  position: fixed;
+  position: absolute;
   top: 150px;
-  right: 20%;
+  left: 463px;
 }
 .info_form {
   margin: 0 auto;
   width: 500px;
   padding: 40px;
+}
+.info_iframe-video-con {
+  position: absolute;
+  top: 120px;
+  right: 50px;
+}
+.info_iframe-video {
+  width: 800px;
+  height: 600px;
+  max-width: 100%;
+}
+.info_iframe-music-con {
+  position: absolute;
+  bottom: 77px;
+  left: 48px;
 }
 </style>

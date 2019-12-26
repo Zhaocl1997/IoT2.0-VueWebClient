@@ -127,8 +127,8 @@ import vPage from "@/components/pagination";
 import vDialog from "./components/form.vue";
 import { routeService } from "@/services";
 import { tableMixins } from "@/mixins";
-import { checkBox, tip } from "@/components/MessageBox";
-import { countLineNum } from "@/helper/public";
+import { tip } from "@/components/MessageBox";
+import { countLineNum, singleDelete } from "@/helper/public";
 
 export default {
   mixins: [tableMixins],
@@ -150,6 +150,7 @@ export default {
     // 初始化
     async init() {
       this.reqData.pagerow = countLineNum();
+      this.reqData.sortField = "meta.needLogin";
       const result = await routeService.index(this.reqData);
       this.tableData = result.data;
       this.total = result.total;
@@ -159,10 +160,8 @@ export default {
     async onStatus(id, meta) {
       const result = await routeService.updateNeedLogin({
         _id: id,
-        meta: {
-          title: meta.title,
-          needLogin: meta.needLogin
-        }
+        title: meta.title,
+        needLogin: meta.needLogin
       });
       if (result === true) {
         tip.uS();
@@ -198,18 +197,7 @@ export default {
 
     // 处理单个删除
     onSingleDel(id) {
-      checkBox("是否删除该路由?").then(action => {
-        if (action === true) {
-          routeService.del({ _id: id }).then(value => {
-            if (value === true) {
-              tip.dS();
-              this.init();
-            }
-          });
-        } else {
-          tip.cancel();
-        }
-      });
+      singleDelete("路由", routeService, id, this.init);
     }
   }
 };

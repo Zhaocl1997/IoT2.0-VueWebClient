@@ -1,3 +1,5 @@
+'use strict'
+
 import { userService } from "../services";
 import { addUrlTimeStamp } from "../helper/public";
 
@@ -13,15 +15,15 @@ export const avatarMixins = {
     },
     computed: {
         onAvatarFirstChange() {
-            return this.$store.state.dataState.a ? true : false;
+            return this.$store.getters["dataState/getData"].a ? true : false;
         },
         onAvatarMoreChange() {
-            return this.$store.state.dataState.a;
+            return this.$store.getters["dataState/getData"].a;
         }
     },
     watch: {
         onAvatarMoreChange: function (val, oldVal) {
-            if (val != 0 && val !== oldVal) {
+            if (val !== "" && val !== oldVal) {
                 this.init();
             }
         }

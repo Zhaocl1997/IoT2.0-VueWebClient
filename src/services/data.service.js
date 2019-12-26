@@ -1,24 +1,12 @@
+'use strict'
+
 import axios from '../helper/axioshttp'
+import base_api from "./base_api";
 
-// 选项
-async function options(params) {
-    const url = '/api/v1/data/options'
-    const result = await axios.post(url, params)
-    if (result.status === true) {
-        return result.data
-    }
-}
+const index = base_api('data', 'index')
+const del = base_api('data', 'delete')
 
-// 返回设备数据
-async function index(params) {
-    const url = '/api/v1/data/index'
-    const result = await axios.post(url, params)
-    if (result.status === true) {
-        return result.data
-    }
-}
-
-// 返回设备数据
+// 通过mac获取数据
 async function indexByMac(params) {
     const url = '/api/v1/data/indexByMac'
     const result = await axios.post(url, params)
@@ -27,7 +15,7 @@ async function indexByMac(params) {
     }
 }
 
-// 下行数据
+// 开关LED
 async function onLED(params) {
     const url = '/api/v1/data/onLED'
     const result = await axios.post(url, params)
@@ -36,17 +24,7 @@ async function onLED(params) {
     }
 }
 
-// 删除
-async function del(params) {
-    const url = '/api/v1/data/delete'
-    const result = await axios.post(url, params)
-    if (result.status === true) {
-        return result.status
-    }
-}
-
 export const dataService = {
-    options,
     index,
     indexByMac,
     onLED,

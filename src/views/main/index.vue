@@ -26,13 +26,56 @@ import vFoot from "./footer";
 import vSidebar from "./sidebar";
 import vTags from "./tags";
 
+import { socketService } from "@/services";
+import Notification from "element-ui/packages/notification";
+
 export default {
   name: "v-main",
   data() {
     return {
       tagsList: [],
-      sidebarCollapse: false
+      sidebarCollapse: false,
+      noti: ""
     };
+  },
+  computed: {
+    newDevice() {
+      return this.$store.getters["dataState/getData"].m1;
+    }
+  },
+  watch: {
+    // 新设备
+    newDevice: function(val, oldVal) {
+      if (val !== "" && val !== oldVal) {
+        const h = this.$createElement;
+
+        this.noti = Notification({
+          title: "检测到新设备接入",
+          dangerouslyUseHTMLString: true,
+          duration: 0,
+          offset: 80,
+          showClose: false,
+          customClass: "noti-style",
+          message: h(
+            "el-button",
+            {
+              on: {
+                click: this.onNewDevice
+              },
+              attrs: {
+                size: "small",
+                type: "primary"
+              }
+            },
+            `${val}`
+          )
+        });
+      }
+
+      if (val === "") {
+        this.noti.close();
+      }
+    }
   },
   components: {
     vHead,
@@ -41,6 +84,8 @@ export default {
     vTags
   },
   mounted() {
+    socketService.initSocket();
+    socketService.newDevice();
     this.createBeforeunloadHandler();
   },
   beforeDestroy() {
@@ -64,6 +109,17 @@ export default {
     });
   },
   methods: {
+    // 新设备
+    onNewDevice() {
+      this.$router.push("/main/devicemanage");
+      this.noti.close();
+      setTimeout(() => {
+        this.$store.dispatch("dataState/setData", [
+          { m2: new Date().valueOf() }
+        ]);
+      }, 500);
+    },
+
     // 添加beforeunload监听事件
     createBeforeunloadHandler() {
       window.addEventListener("beforeunload", e => {
@@ -91,6 +147,10 @@ export default {
 </script>
 
 <style scoped>
+.noti-style {
+  width: 250px !important;
+}
+
 .main_wrapper {
   width: 100%;
   height: 100%;

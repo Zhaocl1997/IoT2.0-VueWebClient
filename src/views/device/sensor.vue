@@ -33,7 +33,7 @@
 
 <script>
 import Chart from "chart.js";
-import { format } from "@/helper/public";
+import { format, getNow } from "@/helper/public";
 import { dataService, socketService } from "@/services";
 
 export default {
@@ -44,7 +44,7 @@ export default {
       macAddress: "",
       temp: "" || 0,
       humi: "" || 0,
-      time: "" || format(new Date(), "YYYY/MM/DD HH:mm:ss"),
+      time: "" || getNow(),
 
       // chart视图数据
       planetChartData: {
@@ -127,8 +127,8 @@ export default {
     newTempAndHumi() {
       // 监听新的temp和humi
       return {
-        temp: this.$store.state.dataState.t,
-        humi: this.$store.state.dataState.h
+        temp: this.$store.getters["dataState/getData"].t,
+        humi: this.$store.getters["dataState/getData"].h
       };
     }
   },
@@ -155,7 +155,7 @@ export default {
   mounted() {
     this.macAddress = this.$route.query.macAddress;
     this.init();
-    socketService.initSocket({ macAddress: this.macAddress });
+    socketService.newData({ macAddress: this.macAddress });
   },
   methods: {
     // 初始化
@@ -170,7 +170,7 @@ export default {
       // 最新数据
       this.temp = result.data[0].data.t;
       this.humi = result.data[0].data.h;
-      this.time = format(result.data[0].createdAt, "YYYY/MM/DD HH:mm:ss");
+      this.time = format(result.data[0].cA, "YYYY/MM/DD HH:mm:ss");
       this.macAddress = result.data[0].macAddress;
 
       // 数据反转
@@ -179,10 +179,10 @@ export default {
       // 绑定数据
       data.forEach(item => {
         // 格式化时间
-        item["createdAt"] = format(item["createdAt"], "HH:mm:ss");
+        item["cA"] = format(item["cA"], "HH:mm:ss");
 
         // x轴时间
-        this.planetChartData.data.labels.push(item.createdAt);
+        this.planetChartData.data.labels.push(item.cA);
         // y轴温度
         this.planetChartData.data.datasets[0].data.push(item.data.t);
         // y轴湿度

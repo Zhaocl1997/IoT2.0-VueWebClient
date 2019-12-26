@@ -1,3 +1,8 @@
+'use strict'
+
+import { isEmpty } from "../helper/public";
+import { checkBox } from "../components/MessageBox";
+
 export const formMixins = {
     data() {
         return {
@@ -20,9 +25,18 @@ export const formMixins = {
     },
     methods: {
         // 取消
-        onCancel() {
-            this.$refs.dialogform.clearValidate();
-            this.$emit("cancel");
+        onCancel() {            
+            if (isEmpty(this.dialogFormData)) {
+                this.$refs.dialogform.clearValidate();
+                this.$emit("cancel");
+            } else {
+                checkBox('当前表单还有内容,确认要关闭窗口吗?').then(action => {
+                    if (action === true) {
+                        this.$refs.dialogform.clearValidate();
+                        this.$emit("cancel");
+                    }
+                })
+            }
         },
         // 确定
         onConfirm() {

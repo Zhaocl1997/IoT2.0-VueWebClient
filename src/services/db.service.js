@@ -1,13 +1,11 @@
+'use strict'
+
 import axios from '../helper/axioshttp'
+import base_api from "./base_api";
 
-async function index(params) {
-    const url = '/api/v1/db/index'
-    const result = await axios.post(url, params)
-    if (result.status === true) {
-        return result.data
-    }
-}
+const index = base_api('db', 'index')
 
+// 备份
 async function exportDB(params) {
     const url = '/api/v1/db/export'
     const result = await axios.post(url, params)
@@ -16,6 +14,7 @@ async function exportDB(params) {
     }
 }
 
+// 还原
 async function importDB(params) {
     const url = '/api/v1/db/import'
     const result = await axios.post(url, params)
@@ -24,7 +23,7 @@ async function importDB(params) {
     }
 }
 
-
+// 还原清单
 async function list(params) {
     const url = '/api/v1/db/list'
     const result = await axios.post(url, params)

@@ -25,7 +25,7 @@
               <template v-for="subItem in item.subs">
                 <!-- 有三级标题 -->
                 <el-submenu v-if="subItem.subs" :index="subItem.index" :key="subItem._id">
-                  <template slot="title">{{ subItem.title }}</template>
+                  <template slot="title" class="siderbar_con-title">{{ subItem.title }}</template>
                   <el-menu-item
                     v-for="(threeItem,i) in subItem.subs"
                     :key="i"

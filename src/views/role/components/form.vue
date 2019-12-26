@@ -4,10 +4,11 @@
     top="20vh"
     width="30%"
     @open="onOpen"
-    @close="onClose"
+    @before-close="onClose"
     :title="dialogTitle"
     :close-on-click-modal="false"
     :visible="dialogVisible"
+    :z-index="1000"
   >
     <el-form
       ref="dialogform"
@@ -54,8 +55,7 @@
 <script>
 import { roleService, menuService } from "@/services";
 import { formMixins } from "@/mixins";
-import { tip } from "@/components/MessageBox";
-import { arr_diffA } from "@/helper/public";
+import { arr_diffA, action } from "@/helper/public";
 
 export default {
   mixins: [formMixins],
@@ -136,20 +136,12 @@ export default {
     },
 
     // 请求
-    async onAction() {
-      if (this.dialogTitle == "编辑角色") {
-        const result = await roleService.update(this.dialogFormData);
-        if (result === true) {
-          tip.uS();
-          return result;
-        }
-      } else if (this.dialogTitle == "新建角色") {
-        const result = await roleService.create(this.dialogFormData);
-        if (result === true) {
-          tip.cS();
-          return result;
-        }
-      }
+    onAction() {
+      return action(
+        { t: this.dialogTitle, d: this.dialogFormData },
+        "角色",
+        roleService
+      );
     }
   }
 };

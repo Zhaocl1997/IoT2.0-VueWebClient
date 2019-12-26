@@ -1,3 +1,5 @@
+'use strict'
+
 import Message from 'element-ui/packages/message';
 import MessageBox from 'element-ui/packages/message-box';
 import { getNow } from "../helper/public";
@@ -15,7 +17,8 @@ export async function checkBox(content) {
       if (action == 'confirm') {
         return true;
       }
-    }).catch(error => {
+    })
+    .catch(error => {
       if (error == "cancel") {
         return false;
       }

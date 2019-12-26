@@ -6,7 +6,7 @@
         style="width: 25%; margin-right: 10px;"
         v-model="reqData.filters"
         @input="onFilter"
-        placeholder="输入查询信息"
+        placeholder="可按用户名，手机号和邮箱查询"
         maxlength="10"
         clearable
         prefix-icon="el-icon-search"
@@ -135,7 +135,7 @@ import vDialog from "./components/form.vue";
 import { userService } from "@/services";
 import { tableMixins } from "@/mixins";
 import { checkBox, tip } from "@/components/MessageBox";
-import { countLineNum } from "@/helper/public";
+import { countLineNum, singleDelete } from "@/helper/public";
 
 export default {
   mixins: [tableMixins],
@@ -186,18 +186,7 @@ export default {
 
     // 处理单个删除
     onSingleDel(id) {
-      checkBox("是否删除该用户?").then(action => {
-        if (action === true) {
-          userService.del({ _id: id }).then(value => {
-            if (value === true) {
-              tip.dS();
-              this.init();
-            }
-          });
-        } else {
-          tip.cancel();
-        }
-      });
+      singleDelete("用户", userService, id, this.init);
     },
 
     // 处理多选删除
@@ -222,6 +211,7 @@ export default {
         }
       });
     },
+
     // 处理格式化显示
     onFormat(row, column) {
       switch (column.label) {

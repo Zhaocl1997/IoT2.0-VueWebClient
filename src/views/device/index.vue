@@ -6,7 +6,7 @@
         style="width: 25%; margin-right: 10px;"
         v-model="reqData.filters"
         @input="onFilter"
-        placeholder="输入查询信息"
+        placeholder="可按设备名称和mac地址查询"
         maxlength="10"
         clearable
         prefix-icon="el-icon-search"
@@ -34,6 +34,7 @@
         size="small"
         :data="tableData"
         ref="multipleTable"
+        v-loading="loading"
         tooltip-effect="dark"
         @sort-change="onSort"
         :row-class-name="tableRowClassName"
@@ -151,8 +152,8 @@ import vPage from "@/components/pagination";
 import vDialog from "./components/form.vue";
 import { deviceService } from "@/services";
 import { tableMixins } from "@/mixins";
-import { checkBox, tip } from "@/components/MessageBox";
-import { countLineNum } from "@/helper/public";
+import { tip } from "@/components/MessageBox";
+import { countLineNum, singleDelete, mutipleDelete } from "@/helper/public";
 
 export default {
   mixins: [tableMixins],
@@ -161,6 +162,23 @@ export default {
     vDialog,
     vPage
   },
+  data() {
+    return {
+      loading: true // 加载
+    };
+  },
+  computed: {
+    newDevice() {
+      return this.$store.getters["dataState/getData"].m2;
+    }
+  },
+  watch: {
+    newDevice: function(val, oldVal) {
+      if (val !== "" && val !== oldVal) {
+        this.onDialog({}, "add");
+      }
+    }
+  },
   methods: {
     // 初始化
     async init() {
@@ -168,6 +186,7 @@ export default {
       const result = await deviceService.index(this.reqData);
       this.tableData = result.data;
       this.total = result.total;
+      this.loading = false;
     },
 
     // 状态改变
@@ -182,9 +201,16 @@ export default {
     onDialog(index, operation) {
       switch (operation) {
         case "add":
-          this.dialogTitle = "新建设备";
-          this.dialogVisible = true;
-          this.dialogData = {};
+          {
+            this.dialogTitle = "新建设备";
+            this.dialogVisible = true;
+            const mac = this.$store.getters["dataState/getData"].m1;
+            if (mac) {
+              this.dialogData = {
+                macAddress: mac
+              };
+            }
+          }
           break;
 
         case "edit":
@@ -202,41 +228,12 @@ export default {
 
     // 处理单个删除
     onSingleDel(id) {
-      checkBox("是否删除该设备?").then(action => {
-        if (action === true) {
-          deviceService.del({ _id: id }).then(value => {
-            if (value === true) {
-              tip.dS();
-              this.init();
-            }
-          });
-        } else {
-          tip.cancel();
-        }
-      });
+      singleDelete("设备", deviceService, id, this.init);
     },
 
     // 处理多选删除
     onMultipleDel() {
-      let count = 0;
-      checkBox("是否删除这些设备?").then(action => {
-        if (action === true) {
-          this.multipleSelection.forEach(item => {
-            deviceService.del({ _id: item["_id"] }).then(value => {
-              if (value === true) {
-                count = count + 1;
-                if (this.multipleSelection.length === count) {
-                  tip.dS();
-                  this.init();
-                }
-              }
-            });
-          });
-        } else {
-          tip.cancel();
-          this.$refs.multipleTable.clearSelection();
-        }
-      });
+      mutipleDelete("设备", deviceService, this);
     },
 
     // 显示数据页面

@@ -113,7 +113,7 @@ import { checkStrong } from "@/helper/public";
 
 export default {
   mixins: [userRulesMixins],
-  name: "register",
+  name: "v-register",
   data() {
     const validateCheckPass = (rule, value, callback) => {
       if (value === "") {
@@ -208,6 +208,7 @@ export default {
         { value: "@sogou.com" }
       ];
     },
+    
     onQuerySearch(queryString, callback) {
       let emailOptions = this.emailOptions;
       // 把数组的浅复制换成深复制
@@ -217,6 +218,7 @@ export default {
       }
       callback(results);
     },
+
     onQuerySelect(val) {
       this.registerData.email = val.value;
     }

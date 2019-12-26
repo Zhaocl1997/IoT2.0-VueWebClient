@@ -9,10 +9,12 @@ body,
 #app {
   width: 100%;
   height: 100%;
+  overflow: hidden;
 }
 body {
   /* font-family: 'PingFang SC', "Helvetica Neue", Helvetica, "microsoft yahei", arial, STHeiTi, sans-serif; */
   box-sizing: border-box;
+  font-size: 14px;
   font-family: "Microsoft Yahei", "PingFang SC", Avenir, "Segoe UI", "Hiragino Sans GB", STHeiti, "Microsoft Sans Serif",
     "WenQuanYi Micro Hei", sans-serif;
 }
@@ -36,7 +38,7 @@ ul {
   margin-left: 10px;
 }
 .table-main {
-  height: calc(100% - 82px);
-  height: -webkit-calc(100% - 82px);
-  height: -moz-calc(100% - 82px);
+  height: calc(100% - 70px);
+  height: -webkit-calc(100% - 70px);
+  height: -moz-calc(100% - 70px);
 }

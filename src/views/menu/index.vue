@@ -28,7 +28,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="title" label="菜单名称" align="center" show-overflow-tooltip />
+        <el-table-column prop="title" label="菜单名称" show-overflow-tooltip />
         <el-table-column prop="icon" label="图标路径" align="center" show-overflow-tooltip />
         <el-table-column
           prop="index"
@@ -103,7 +103,7 @@
 import vDialog from "./components/form.vue";
 import { menuService } from "@/services";
 import { tableMixins } from "@/mixins";
-import { checkBox, tip } from "@/components/MessageBox";
+import { singleDelete } from "@/helper/public";
 
 export default {
   mixins: [tableMixins],
@@ -162,18 +162,7 @@ export default {
 
     // 处理单个删除
     onSingleDel(id) {
-      checkBox("是否删除该菜单?").then(action => {
-        if (action === true) {
-          menuService.del({ _id: id }).then(value => {
-            if (value === true) {
-              tip.dS();
-              this.init();
-            }
-          });
-        } else {
-          tip.cancel();
-        }
-      });
+      singleDelete("菜单", menuService, id, this.init);
     }
   }
 };

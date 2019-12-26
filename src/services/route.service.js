@@ -1,55 +1,18 @@
+'use strict'
+
 import axios from '../helper/axioshttp'
+import base_api from "./base_api";
 
-async function options() {
-    const url = '/api/v1/route/options'
-    const result = await axios.post(url)
-    if (result.status === true) {
-        return result.data
-    }
-}
+const options = base_api('route', 'options')
+const index = base_api('route', 'index')
+const create = base_api('route', 'create')
+const read = base_api('route', 'read')
+const update = base_api('route', 'update')
+const del = base_api('route', 'delete')
 
-async function index(params) {
-    const url = '/api/v1/route/index'
-    const result = await axios.post(url, params)
-    if (result.status === true) {
-        return result.data
-    }
-}
-
-async function create(params) {
-    const url = '/api/v1/route/create'
-    const result = await axios.post(url, params)
-    if (result.status === true) {
-        return result.status
-    }
-}
-
-async function read(params) {
-    const url = '/api/v1/route/read'
-    const result = await axios.post(url, params)
-    if (result.status === true) {
-        return result.data
-    }
-}
-
-async function update(params) {
-    const url = '/api/v1/route/update'
-    const result = await axios.post(url, params)
-    if (result.status === true) {
-        return result.status
-    }
-}
-
+// 更新路由是否需要登录
 async function updateNeedLogin(params) {
     const url = '/api/v1/route/updateNeedLogin'
-    const result = await axios.post(url, params)
-    if (result.status === true) {
-        return result.status
-    }
-}
-
-async function del(params) {
-    const url = '/api/v1/route/delete'
     const result = await axios.post(url, params)
     if (result.status === true) {
         return result.status

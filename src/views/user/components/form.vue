@@ -4,10 +4,11 @@
     top="20vh"
     width="30%"
     @open="onOpen"
-    @close="onCancel"
+    @before-close="onCancel"
     :title="dialogTitle"
     :close-on-click-modal="false"
     :visible="dialogVisible"
+    :z-index="1000"
   >
     <el-form
       ref="dialogform"
@@ -49,7 +50,7 @@
 
 <script>
 import { userService, roleService } from "@/services";
-import { tip } from "@/components/MessageBox";
+import { action } from "@/helper/public";
 import { formMixins, userRulesMixins } from "@/mixins";
 
 export default {
@@ -68,20 +69,12 @@ export default {
     },
 
     // 请求
-    async onAction() {
-      if (this.dialogTitle == "编辑用户") {
-        const result = await userService.update(this.dialogFormData);
-        if (result === true) {
-          tip.uS();
-          return result;
-        }
-      } else if (this.dialogTitle == "新建用户") {
-        const result = await userService.create(this.dialogFormData);
-        if (result === true) {
-          tip.cS();
-          return result;
-        }
-      }
+    onAction() {
+      return action(
+        { t: this.dialogTitle, d: this.dialogFormData },
+        "用户",
+        userService
+      );
     }
   }
 };

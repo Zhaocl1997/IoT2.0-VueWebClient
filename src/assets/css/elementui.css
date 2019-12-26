@@ -35,7 +35,6 @@
   background: #f5f6fa;
   font-size: 13px;
   color: black;
-  text-align: center;
 }
 .el-table__body tbody td {
   padding: 0px;
@@ -50,4 +49,9 @@
 }
 .el-menu--popup-right-start {
   margin-left: 0 !important;
+}
+
+.el-drawer__body {
+  margin: 20px;
+  overflow-y: auto;
 }

@@ -62,11 +62,10 @@
 <script>
 import vcode from "./components/verifycode";
 import { mapActions } from "vuex";
-import { aes } from "@/helper/crypto";
-import { getIP2 } from "@/helper/public";
+import { getCookie, setCookie, clearCookie } from "@/helper/public";
 
 export default {
-  name: "login",
+  name: "v-login",
   data() {
     const validateLoginField = (rule, value, callback) => {
       if (value === "") {
@@ -116,11 +115,9 @@ export default {
     };
   },
   mounted() {
-    this.getCookie();
-    getIP2();
-    setTimeout(() => {
-      localStorage.setItem("ip", window.returnCitySN["cip"]);
-    }, 1000);
+    const result = getCookie();
+    this.loginData.loginField = result.loginField;
+    this.loginData.password = result.password;
   },
   components: {
     vcode
@@ -131,84 +128,43 @@ export default {
     // 提交登陆表单
     onLogin() {
       this.$refs["loginForm"].validate(valid => {
-        if (valid) {
-          if (this.loginData.phone !== "") {
-            if (this.checked === true) {
-              // 传入手机号，密码，和保存天数3个参数
-              this.setCookie(this.loginData.phone, this.loginData.password, 1);
-            } else {
-              // 清空Cookie
-              this.clearCookie();
-            }
+        if (!valid) return false;
 
-            this.login({
-              phone: this.loginData.phone,
-              password: this.loginData.password,
-              verifyCode: this.loginData.verifyCode
-            });
+        if (this.loginData.phone !== "") {
+          if (this.checked === true) {
+            // 传入手机号，密码，和保存天数3个参数
+            setCookie(this.loginData.phone, this.loginData.password, 1);
           } else {
-            if (this.checked === true) {
-              // 传入邮箱，密码，和保存天数3个参数
-              this.setCookie(this.loginData.email, this.loginData.password, 1);
-            } else {
-              // 清空Cookie
-              this.clearCookie();
-            }
-
-            this.login({
-              email: this.loginData.email,
-              password: this.loginData.password,
-              verifyCode: this.loginData.verifyCode
-            });
+            // 清空Cookie
+            clearCookie();
           }
+
+          this.login({
+            phone: this.loginData.phone,
+            password: this.loginData.password,
+            verifyCode: this.loginData.verifyCode
+          });
         } else {
-          return false;
+          if (this.checked === true) {
+            // 传入邮箱，密码，和保存天数3个参数
+            setCookie(this.loginData.email, this.loginData.password, 1);
+          } else {
+            // 清空Cookie
+            clearCookie();
+          }
+
+          this.login({
+            email: this.loginData.email,
+            password: this.loginData.password,
+            verifyCode: this.loginData.verifyCode
+          });
         }
       });
     },
 
+    // 改变验证码
     changecode(value) {
       this.loginData.verifyCode = value;
-    },
-
-    // 设置cookie
-    setCookie(field, password, exdays) {
-      const exdate = new Date(); //获取时间
-
-      const userField = aes.en(field);
-      const userPwd = aes.en(password);
-
-      exdate.setTime(exdate.getTime() + 24 * 60 * 60 * 1000 * exdays); //保存的天数
-      //字符串拼接cookie
-      window.document.cookie =
-        "userField" +
-        "=" +
-        userField +
-        ";path=/;expires=" +
-        exdate.toGMTString();
-      window.document.cookie =
-        "userPwd" + "=" + userPwd + ";path=/;expires=" + exdate.toGMTString();
-    },
-
-    // 读取cookie
-    getCookie: function() {
-      if (document.cookie.length > 0) {
-        const arr = document.cookie.split("; "); // 这里显示的格式需要切割一下自己可输出看下
-        for (let i = 0; i < arr.length; i++) {
-          const arr2 = arr[i].split("="); // 再次切割
-          // 判断查找相对应的值
-          if (arr2[0] == "userField") {
-            this.loginData.loginField = aes.de(arr2[1]); // 保存到保存数据的地方
-          } else if (arr2[0] == "userPwd") {
-            this.loginData.password = aes.de(arr2[1]);
-          }
-        }
-      }
-    },
-
-    // 清除cookie
-    clearCookie: function() {
-      this.setCookie("", "", -1); // 修改2值都为空，天数为负1天就好了
     }
   }
 };
