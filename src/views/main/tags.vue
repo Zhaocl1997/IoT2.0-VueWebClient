@@ -106,12 +106,14 @@ export default {
           this.tagsList.shift();
         }
 
-        this.tagsList.push({
-          title: route.meta.title,
-          path: route.fullPath,
-          name: route.name,
-          component: route.matched[1].components.default.name
-        });
+        if (route.name !== "lock-up") {
+          this.tagsList.push({
+            title: route.meta.title,
+            path: route.fullPath,
+            name: route.name,
+            component: route.matched[1].components.default.name
+          });
+        }
       }
       // 发布tags事件
       bus.$emit("tags", this.tagsList);

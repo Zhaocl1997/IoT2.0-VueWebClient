@@ -17,6 +17,13 @@ const getters = {
             return null
         }
     },
+    getStatus: state => {
+        if (state.status) {
+            return state.status
+        } else {
+            return null;
+        }
+    }
 }
 
 const actions = {

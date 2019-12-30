@@ -315,7 +315,7 @@ export default {
     // 摄像头div显示
     onHover(row, column) {
       if (row.data.data.url && column.label === "详细数据") {
-        this.camera_src = row.data.data.url;
+        this.camera_src = `https://iot--camera.oss-cn-hangzhou.aliyuncs.com/${row.data.data.url}`;
         this.camera_img = true;
       }
     },
@@ -384,26 +384,19 @@ export default {
     },
 
     // 处理多选删除
-    onMultipleDel() {
-      let count = 0;
-      checkBox("是否删除这些数据?").then(action => {
-        if (action === true) {
-          this.multipleSelection.forEach(item => {
-            dataService.del({ _id: item.data["_id"] }).then(value => {
-              if (value === true) {
-                count = count + 1;
-                if (this.multipleSelection.length === count) {
-                  tip.dS();
-                  this.init();
-                }
-              }
-            });
-          });
-        } else {
-          tip.cancel();
-          this.$refs.multipleTable.clearSelection();
+    async onMultipleDel() {
+      const id = this.multipleSelection.map(a => a.data._id);
+      const action = await checkBox("是否删除这些数据?");
+      if (action === true) {
+        const result = await dataService.delMany({ _id: id });
+        if (result === true) {
+          tip.dS();
+          this.init();
         }
-      });
+      } else {
+        tip.cancel();
+        this.$refs.multipleTable.clearSelection();
+      }
     },
 
     // 处理多选变化

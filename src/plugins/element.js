@@ -37,8 +37,8 @@ import {
     // BreadcrumbItem,
     Form,
     FormItem,
-    // Tabs,
-    // TabPane,
+    Tabs,
+    TabPane,
     Tag,
     Tree,
     // Alert,
@@ -59,7 +59,7 @@ import {
     // Collapse,
     // // CollapseItem,
     Cascader,
-    // ColorPicker,
+    ColorPicker,
     // Transfer,
     // Container,
     // Header,
@@ -69,7 +69,7 @@ import {
     // Timeline,
     // TimelineItem,
     // Link,
-    // Divider,
+    Divider,
     // Image,
     // Calendar,
     // Backtop,
@@ -117,8 +117,8 @@ const Element = {
         // Vue.use(BreadcrumbItem);
         Vue.use(Form);
         Vue.use(FormItem);
-        // Vue.use(Tabs);
-        // Vue.use(TabPane);
+        Vue.use(Tabs);
+        Vue.use(TabPane);
         Vue.use(Tag);
         Vue.use(Tree);
         // Vue.use(Alert);
@@ -139,7 +139,7 @@ const Element = {
         // Vue.use(Collapse);
         // Vue.use(CollapseItem);
         Vue.use(Cascader);
-        // Vue.use(ColorPicker);
+        Vue.use(ColorPicker);
         // Vue.use(Transfer);
         // Vue.use(Container);
         // Vue.use(Header);
@@ -149,7 +149,7 @@ const Element = {
         // Vue.use(Timeline);
         // Vue.use(TimelineItem);
         // Vue.use(Link);
-        // Vue.use(Divider);
+        Vue.use(Divider);
         // Vue.use(Image);
         // Vue.use(Calendar);
         // Vue.use(Backtop);

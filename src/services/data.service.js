@@ -5,6 +5,7 @@ import base_api from "./base_api";
 
 const index = base_api('data', 'index')
 const del = base_api('data', 'delete')
+const delMany = base_api('data', 'deleteMany')
 
 // 通过mac获取数据
 async function indexByMac(params) {
@@ -28,5 +29,6 @@ export const dataService = {
     index,
     indexByMac,
     onLED,
-    del
+    del,
+    delMany
 }

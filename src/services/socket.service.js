@@ -47,13 +47,13 @@ const newData = (item) => {
     if (!socket) return;
     socket.on(`data:save:${item.macAddress}`, (data) => {
         // 摄像头
-        if (data.data.url) {
-            store.dispatch('dataState/setData', [{ u: data.data.url }])
+        if (data.url) {
+            store.dispatch('dataState/setData', [{ u: data.url }])
         }
 
         // 温湿度传感器
-        if (data.data.t && data.data.h) {
-            store.dispatch('dataState/setData', [{ t: data.data.t }, { h: data.data.h }])
+        if (data.t && data.h) {
+            store.dispatch('dataState/setData', [{ t: data.t }, { h: data.h }])
         }
     })
 }

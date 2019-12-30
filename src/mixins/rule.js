@@ -32,11 +32,11 @@ export const userRulesMixins = {
                     }
                 ],
                 email: [
-                    { required: true, message: "请输入邮箱", trigger: "blur" },
+                    { required: true, message: "请输入邮箱", trigger: "change" },
                     {
-                        pattern: /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/,
+                        pattern: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/,
                         message: "请输入正确的邮箱",
-                        trigger: "blur"
+                        trigger: "change"
                     }
                 ],
                 password: [

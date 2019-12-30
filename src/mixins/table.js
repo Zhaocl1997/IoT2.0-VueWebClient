@@ -43,7 +43,7 @@ export const tableMixins = {
         onSort(e) {
             this.reqData.sortField = e.prop;
             this.reqData.sortOrder = e.order;
-            this.init();
+            this.debouncedInit()
         },
         // 刷新
         onFresh() {

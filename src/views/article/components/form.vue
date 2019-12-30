@@ -4,6 +4,7 @@
     top="10vh"
     width="80%"
     @open="onOpen"
+    @close="onCancel"
     @before-close="onCancel"
     :title="dialogTitle"
     :close-on-click-modal="false"
@@ -30,7 +31,7 @@
           :props="cascader"
           @change="onCategory"
           clearable
-          style="width:300px;"
+          style="width:600px;"
         ></el-cascader>
       </el-form-item>
 
@@ -196,7 +197,7 @@ export default {
 
 <style scoped>
 .el-input {
-  width: 300px;
+  width:300px;
 }
 .el-tag + .el-tag {
   margin-left: 10px;

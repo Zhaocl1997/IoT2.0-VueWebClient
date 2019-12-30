@@ -29,7 +29,9 @@ export function countPicNum() {
 }
 
 // 时间格式转换
-export function format(time, format) {
+export function format(time, format = 'YYYY-MM-DD HH:mm:ss') {
+    if (!time) throw new Error('Time must be provided!')
+
     const t = new Date(time) // 2019-11-09T06:27:57.040Z
     const tf = (i) => { return (i < 10 ? '0' : '') + i }
 
@@ -66,10 +68,11 @@ export function checkStrong(val) {
         case 1:
             return 1
         case 2:
-            return 2
+            return 1
         case 3:
+            return 2
         case 4:
-            return val.length < 12 ? 3 : 4
+            return 3
     }
     return modes
 }

@@ -1,6 +1,6 @@
 <template>
   <div class="header">
-    <div class="header_con">
+    <div class="header_con" id="header">
       <div class="header_con-left">
         <!-- 收起侧面菜单按钮 -->
         <div class="header_con-left-btn" @click="onSidebarCollapse">
@@ -12,6 +12,19 @@
 
       <div class="header_con-right">
         <div class="header-user-con">
+          <!-- 上锁 -->
+          <el-button
+            @click="onLockUp"
+            style="margin-right:20px;"
+            size="mini"
+            type="info"
+            icon="el-icon-lock"
+            circle
+          ></el-button>
+
+          <!-- 主题色选择 -->
+          <el-color-picker v-model="color" @change="onColor" size="mini" style="margin-right:20px;"></el-color-picker>
+
           <div class="header_con-right-weather" @mouseover="onWeather(1)" @mouseout="onWeather(0)">
             <span>实时温度：{{ nowTemp }}</span>
           </div>
@@ -62,7 +75,7 @@ import { mapActions } from "vuex";
 import { checkBox } from "@/components/MessageBox";
 import { avatarMixins } from "@/mixins";
 import { userService } from "@/services";
-import vWeather from "../user/components/weather";
+import vWeather from "../user/components/base/weather";
 
 export default {
   mixins: [avatarMixins],
@@ -75,7 +88,8 @@ export default {
       sidebarCollapse: false,
       onVXDiv: false,
       onSKYDiv: false,
-      nowTemp: "" || "获取失败"
+      nowTemp: "" || "获取失败",
+      color: localStorage.getItem("color") || "#252a2f"
     };
   },
   components: {
@@ -101,10 +115,13 @@ export default {
     if (document.body.clientWidth < 1500) {
       this.onSidebarCollapse();
     }
+    const head = document.getElementById("header");
+    head.style.backgroundColor = this.color;
   },
   methods: {
     ...mapActions("userState", ["logout"]),
 
+    // 获取昵称
     async getName() {
       const result = await userService.read();
       this.username = result.data.name;
@@ -121,6 +138,13 @@ export default {
       bus.$emit("sidebarCollapse", this.sidebarCollapse);
     },
 
+    // 上锁
+    onLockUp() {
+      this.$router.push("/main/lock-up");
+      localStorage.setItem("lock", true);
+    },
+
+    // 点击头像
     onAvatar() {
       this.$router.push("infomanage");
     },
@@ -152,6 +176,14 @@ export default {
       } else {
         this.onVXDiv = false;
       }
+    },
+
+    // 选择主题颜色
+    onColor(val) {
+      const head = document.getElementById("header");
+      head.style.backgroundColor = val;
+      localStorage.setItem("color", val);
+      this.$store.dispatch("dataState/setData", [{ c: new Date().valueOf() }]);
     }
   }
 };

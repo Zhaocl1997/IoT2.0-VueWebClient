@@ -125,17 +125,17 @@ export default {
   },
   computed: {
     newTempAndHumi() {
+      const t = this.$store.getters["dataState/getData"].t;
+      const h = this.$store.getters["dataState/getData"].h;
+
       // 监听新的temp和humi
-      return {
-        temp: this.$store.getters["dataState/getData"].t,
-        humi: this.$store.getters["dataState/getData"].h
-      };
+      return { t, h };
     }
   },
   watch: {
     // 检测数据变化
     newTempAndHumi: function(val, oldVal) {
-      if (val != 0 && val !== oldVal) {
+      if (val !== undefined && val !== oldVal) {
         // 通过清空数据重置视图
         this.planetChartData.data.labels = [];
         this.planetChartData.data.datasets[0].data = [];
@@ -171,7 +171,6 @@ export default {
       this.temp = result.data[0].data.t;
       this.humi = result.data[0].data.h;
       this.time = format(result.data[0].cA, "YYYY/MM/DD HH:mm:ss");
-      this.macAddress = result.data[0].macAddress;
 
       // 数据反转
       const data = result.data.reverse();

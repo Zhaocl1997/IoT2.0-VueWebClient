@@ -12,6 +12,7 @@ const read = base_api('user', 'read')
 const update = base_api('user', 'update')
 const updateStatus = base_api('user', 'updateStatus')
 const del = base_api('user', 'delete')
+const delMany = base_api('user', 'deleteMany')
 
 /**
  * @method weather
@@ -68,7 +69,8 @@ async function login(params) {
         const user = {
             id: result.data.user._id,
             token: result.data.token,
-            role: result.data.user.role.name
+            role: result.data.user.role.name,
+            avatar: result.data.user.avatar
         }
         localStorage.setItem('p1', JSON.stringify(user))
         return user
@@ -85,9 +87,65 @@ async function logout() {
     const url = '/api/v1/user/logout'
     const result = await axios.post(url)
     if (result.status === true) {
-        localStorage.clear()
+        localStorage.removeItem('p1')
         store.dispatch("dataState/clearData", ["u", "t", "h", "m1", "m2", "a", "n"]);
         socketService.closeSocket();
+        return result.status
+    }
+}
+
+/**
+ * @method changePass
+ * @param { Object } 
+ * @returns { Boolean }
+ * @description 更改密码
+ */
+async function changePass(params) {
+    const url = '/api/v1/user/changePass'
+    const result = await axios.post(url, params)
+    if (result.status === true) {
+        return result.status
+    }
+}
+
+/**
+ * @method findpass
+ * @param { Object } 
+ * @returns { Boolean }
+ * @description 找回密码
+ */
+async function findpass(params) {
+    const url = '/api/v1/user/findpass'
+    const result = await axios.post(url, params)
+    if (result.status === true) {
+        return result.status
+    }
+}
+
+/**
+ * @method gencode
+ * @param { Object } 
+ * @returns { Boolean }
+ * @description 更改密码
+ */
+async function gencode(params) {
+    const url = '/api/v1/user/gencode'
+    const result = await axios.post(url, params)
+    if (result.status === true) {
+        return result.status
+    }
+}
+
+/**
+ * @method unlock
+ * @param { Object } 
+ * @returns { Boolean }
+ * @description 解锁
+ */
+async function unlock(params) {
+    const url = '/api/v1/user/unlock'
+    const result = await axios.post(url, params)
+    if (result.status === true) {
         return result.status
     }
 }
@@ -134,6 +192,11 @@ export const userService = {
     read,
     update,
     updateStatus,
+    changePass,
+    findpass,
+    gencode,
+    unlock,
     updateInfo,
     del,
+    delMany
 }

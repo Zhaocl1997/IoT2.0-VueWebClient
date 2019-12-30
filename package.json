@@ -6,7 +6,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "pub": "vue-cli-service build && node del.js && D:\\projects\\IOT2.0\\command\\uploadClient.bat"
+    "pub": "vue-cli-service build && node client.js"
   },
   "dependencies": {
     "axios": "^0.19.0",
@@ -16,6 +16,7 @@
     "element-ui": "^2.13.0",
     "nprogress": "^0.2.0",
     "socket.io-client": "^2.3.0",
+    "v-mask": "^2.0.2",
     "vue": "^2.6.10",
     "vue-quill-editor": "^3.0.6",
     "vue-router": "^3.1.3",

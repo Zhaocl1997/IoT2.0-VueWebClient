@@ -4,6 +4,7 @@
     top="20vh"
     width="30%"
     @open="onOpen"
+    @close="onCancel"
     @before-close="onClose"
     :title="dialogTitle"
     :close-on-click-modal="false"

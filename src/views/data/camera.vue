@@ -4,7 +4,7 @@
       <div v-for="item in imagesData" :key="item._id" class="pic_con">
         <el-tooltip placement="right-start">
           <div slot="content">
-            拍摄时间：{{ item.createdAt }}
+            拍摄时间：{{ item.cA }}
             <br />
             图片大小：{{ item.data.size }}KB
           </div>
@@ -61,11 +61,13 @@ export default {
       this.imagesData = result.data;
       this.total = result.total;
       this.imagesData.forEach(element => {
+        element.data[
+          "url"
+        ] = `https://iot--camera.oss-cn-hangzhou.aliyuncs.com/${
+          element.data["url"]
+        }`;
         element.data["size"] = Number.parseInt(element.data["size"] / 1024);
-        element["createdAt"] = format(
-          element["createdAt"],
-          "YYYY/MM/DD HH:mm:ss"
-        );
+        element["cA"] = format(element["cA"], "YYYY/MM/DD HH:mm:ss");
       });
     },
 

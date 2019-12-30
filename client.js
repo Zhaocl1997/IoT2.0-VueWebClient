@@ -1,7 +1,7 @@
 'use strict'
 
 const { spawn } = require('child_process')
-const bat = spawn('cmd.exe', ['/c', 'D:\\projects\\IOT2.0\\command\\deleteClient.bat'])
+const bat = spawn('cmd.exe', ['/c', 'D:\\projects\\IOT2.0\\command\\client\\Client.bat'])
 
 bat.stdout.on('data', (data) => {
     console.log(data.toString())

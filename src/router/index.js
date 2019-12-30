@@ -2,11 +2,11 @@
 
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import store from '../store'
 import NProgress from 'nprogress' // 进度条
 import 'nprogress/nprogress.css'
 
 import { localTake } from "../helper/public";
-import { userService } from '../services'
 
 NProgress.inc(0.2)
 NProgress.configure({ easing: 'ease', speed: 500, showSpinner: false })
@@ -42,6 +42,14 @@ const routes = [
     component: () => import(/* webpackChunkName: "register" */ '../views/auth/Register.vue')
   },
   {
+    path: '/findpass',
+    name: 'findpass',
+    meta: {
+      title: '注册'
+    },
+    component: () => import(/* webpackChunkName: "findpass" */ '../views/auth/findpass.vue')
+  },
+  {
     path: '/main',
     name: 'main',
     meta: {
@@ -57,6 +65,24 @@ const routes = [
           needLogin: true
         },
         component: () => import(/* webpackChunkName: "default" */ '../views/default/index.vue')
+      },
+      {
+        path: 'change-pass',
+        name: 'change-pass',
+        meta: {
+          title: '修改密码',
+          needLogin: true
+        },
+        component: () => import(/* webpackChunkName: "changePass" */ '../views/user/components/base/changePass.vue')
+      },
+      {
+        path: 'lock-up',
+        name: 'lock-up',
+        meta: {
+          title: '锁定',
+          needLogin: true
+        },
+        component: () => import(/* webpackChunkName: "lockup" */ '../views/user/components/base/lockup.vue')
       },
       {
         path: 'menumanage',
@@ -215,26 +241,35 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   NProgress.start()
 
-  let isLogin = localTake('p1')
+  // 登录信息
+  const isLogin = localTake('p1')
+  const state = store.getters["userState/getStatus"]
 
-  if (isLogin) {
+  // 未登录状态
+  if (isLogin === false && state === 'logout') {
+    // 如果尝试进入需要登陆的路由，直接跳转到home页面
+    if (to.meta.needLogin) {
+      next('/')
+    }
+  }
+
+  // 已登陆状态
+  if (isLogin === true && state === 'login') {
+    const isLockUp = localTake('lock')
+
+    // 判断是否上锁
+    if (isLockUp === true) {
+      if (to.path !== '/main/lock-up') {
+        next('/main/lock-up')
+      }
+    }
+
+    // 如果在登陆状态下前往以下三个路由视为退出登录
     if (to.path === '/' || to.path === '/login' || to.path === '/register') {
-      userService.logout()
+      store.dispatch('userState/logout')
     }
   }
-
-  if (to.meta.needLogin) {  // 判断该路由是否需要登录权限
-    if (isLogin) { // 判断是否已经登录
-      next()
-    } else {
-      next({
-        path: '/login',
-        query: { redirect: to.fullPath }  // 将跳转的路由path作为参数，登录成功后跳转到该路由
-      })
-    }
-  } else {
-    next()
-  }
+  next()
 })
 
 router.afterEach(() => {

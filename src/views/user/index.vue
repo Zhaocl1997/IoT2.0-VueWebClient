@@ -134,8 +134,8 @@ import vPage from "@/components/pagination";
 import vDialog from "./components/form.vue";
 import { userService } from "@/services";
 import { tableMixins } from "@/mixins";
-import { checkBox, tip } from "@/components/MessageBox";
-import { countLineNum, singleDelete } from "@/helper/public";
+import { tip } from "@/components/MessageBox";
+import { countLineNum, singleDelete, mutipleDelete } from "@/helper/public";
 
 export default {
   mixins: [tableMixins],
@@ -191,25 +191,7 @@ export default {
 
     // 处理多选删除
     onMultipleDel() {
-      let count = 0;
-      checkBox("是否删除这些用户?").then(action => {
-        if (action === true) {
-          this.multipleSelection.forEach(item => {
-            userService.del({ _id: item["_id"] }).then(value => {
-              if (value === true) {
-                count = count + 1;
-                if (this.multipleSelection.length === count) {
-                  tip.dS();
-                  this.init();
-                }
-              }
-            });
-          });
-        } else {
-          tip.cancel();
-          this.$refs.multipleTable.clearSelection();
-        }
-      });
+      mutipleDelete("用户", userService, this);
     },
 
     // 处理格式化显示

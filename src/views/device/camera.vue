@@ -75,8 +75,7 @@ export default {
       const data = result.data[0];
 
       // 最新数据
-      this.url =
-        "https://iot--camera.oss-cn-hangzhou.aliyuncs.com/" + data.data.url;
+      this.url = `https://iot--camera.oss-cn-hangzhou.aliyuncs.com/${data.data.url}`;
       this.size = Number.parseInt(data.data.size / 1024);
       this.time = format(data.cA, "YYYY/MM/DD HH:mm:ss");
     }

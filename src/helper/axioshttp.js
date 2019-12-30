@@ -86,6 +86,7 @@ const errback = error => {
     error.message = '未知错误（' + error.message + '）'
   }
 
+  // 令牌过期
   if (error.code === '888888') {
     router.push('/')
   }

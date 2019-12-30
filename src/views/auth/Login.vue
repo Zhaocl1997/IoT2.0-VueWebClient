@@ -39,7 +39,7 @@
               ></el-input>
             </el-form-item>
 
-            <vcode :imgcode="loginData.verifyCode" @change="changecode"></vcode>
+            <v-cap-code :imgcode="loginData.verifyCode" @change="changecode"></v-cap-code>
 
             <el-checkbox v-model="checked" class="login__main-con-rememberPass">记住密码</el-checkbox>
 
@@ -51,7 +51,8 @@
             >登&nbsp;录</el-button>
 
             <router-link to="/register" class="login__main-con-register">免费注册</router-link>
-            <a to="/modifypwd" class="login__main-con-findpass" :disabled="true">找回密码</a>
+
+            <router-link to="/findpass" class="login__main-con-findpass">找回密码</router-link>
           </el-form>
         </div>
       </div>
@@ -60,12 +61,15 @@
 </template>
 
 <script>
-import vcode from "./components/verifycode";
+import vCapCode from "./components/verifycode";
 import { mapActions } from "vuex";
 import { getCookie, setCookie, clearCookie } from "@/helper/public";
 
 export default {
   name: "v-login",
+  components: {
+    vCapCode
+  },
   data() {
     const validateLoginField = (rule, value, callback) => {
       if (value === "") {
@@ -119,9 +123,7 @@ export default {
     this.loginData.loginField = result.loginField;
     this.loginData.password = result.password;
   },
-  components: {
-    vcode
-  },
+
   methods: {
     ...mapActions("userState", ["login"]),
 

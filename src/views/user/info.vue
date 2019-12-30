@@ -1,12 +1,99 @@
 <template>
   <div class="info">
-    <div class="info_con">
-      <div class="info_avatar">
-        <avatar />
-      </div>
+    <v-lock v-show="check" type="check" @close="onClose"></v-lock>
 
+    <el-tabs :tab-position="'left'" style="height: 800px;">
+      <el-tab-pane label="基本信息">
+        <div class="info_base">
+          <h2>基本信息</h2>
+
+          <el-form ref="infoForm" :model="form" :rules="rules" label-width="100px">
+            <el-form-item label="头像：">
+              <v-avatar />
+            </el-form-item>
+
+            <el-form-item label="昵称：" prop="name">
+              <el-input v-model="form.name" style="width: 300px;" />
+            </el-form-item>
+
+            <el-form-item label="性别：" prop="gender">
+              <el-radio-group v-model="form.gender" style="padding-left: 10px;">
+                <el-radio label="男" />
+                <el-radio label="女" />
+                <el-radio label="保密" />
+              </el-radio-group>
+            </el-form-item>
+
+            <el-form-item label="生日：" prop="birth">
+              <v-birth @birthEvent="onBirth" :birth="form.birth" v-model="form.birth" v-if="flag"></v-birth>
+            </el-form-item>
+
+            <el-form-item label="地区：" prop="area">
+              <el-cascader :options="areaOptions" v-model="form.area" style="width: 300px;"></el-cascader>
+            </el-form-item>
+
+            <el-form-item label="角色：">
+              <span>{{ form.role }}</span>
+            </el-form-item>
+
+            <el-form-item label="创建时间：">
+              <span>{{ form.createdAt }}</span>
+            </el-form-item>
+
+            <el-form-item>
+              <el-button type="primary" @click="onSubmitInfo">保&#32;存</el-button>
+            </el-form-item>
+          </el-form>
+        </div>
+      </el-tab-pane>
+      <el-tab-pane label="安全设置">
+        <div class="info_safe">
+          <h2>安全设置</h2>
+
+          <div class="info_safe-part">
+            <span class="info_safe-span">账户密码</span>
+            <div class="info_safe-btn-no">
+              <el-button size="medium" type="text" @click="onChangePass">修改</el-button>
+            </div>
+          </div>
+
+          <el-divider></el-divider>
+
+          <div class="info_safe-part">
+            <span class="info_safe-span">绑定手机</span>
+            <div class="info_safe-btn">
+              <el-button size="medium" type="text" @click="onPhone">修改</el-button>
+            </div>
+            <span class="info_safe-detail">已绑定手机：{{ form.phone }}</span>
+          </div>
+
+          <el-divider></el-divider>
+
+          <div class="info_safe-part">
+            <span class="info_safe-span">绑定邮箱</span>
+            <div class="info_safe-btn">
+              <el-button size="medium" type="text">修改</el-button>
+            </div>
+            <span class="info_safe-detail">已绑定邮箱：{{ form.email }}</span>
+          </div>
+
+          <el-divider></el-divider>
+
+          <div class="info_safe-part">
+            <span class="info_safe-span">密保问题</span>
+            <div class="info_safe-btn-no">
+              <el-button size="medium" type="text">暂不支持</el-button>
+            </div>
+          </div>
+        </div>
+      </el-tab-pane>
+      <el-tab-pane label="角色管理">角色管理</el-tab-pane>
+      <el-tab-pane label="定时任务补偿">定时任务补偿</el-tab-pane>
+    </el-tabs>
+
+    <div class="info_con">
       <div class="info_form">
-        <el-form ref="infoForm" :model="form" :rules="rules" label-width="80px">
+        <!-- <el-form ref="infoForm" :model="form" :rules="rules" label-width="80px">
           <el-form-item label="角色：" prop="role">
             <el-input :disabled="true" v-model="form.role" style="width: 300px;" />
           </el-form-item>
@@ -42,7 +129,7 @@
           <el-form-item>
             <el-button type="primary" @click="onSubmitInfo">保&#32;存</el-button>
           </el-form-item>
-        </el-form>
+        </el-form>-->
       </div>
     </div>
 
@@ -68,16 +155,18 @@
         height="86"
         src="//music.163.com/outchain/player?type=2&id=5270312&auto=1&height=66"
       ></iframe>
-    </div> -->
+    </div>-->
   </div>
 </template>
 
 <script>
-import avatar from "./components/avatar";
-import birthday from "./components/birthday";
+import vAvatar from "./components/base/avatar";
+import vBirth from "./components/base/birthday";
+import vLock from "./components/base/lockup";
 import { userService } from "@/services";
 import { userRulesMixins } from "@/mixins";
 import areaData from "@/helper/area";
+import { format } from "@/helper/public";
 import { tip } from "@/components/MessageBox";
 
 export default {
@@ -87,36 +176,63 @@ export default {
     return {
       form: {},
       flag: false,
+      check: false,
       areaOptions: [...areaData]
     };
   },
   components: {
-    avatar,
-    birthday
+    vAvatar,
+    vBirth,
+    vLock
   },
   mounted() {
     this.init();
   },
   methods: {
+    // 获取用户基本信息
     async init() {
       const result = await userService.read();
       this.flag = true;
       this.form = result.data;
       this.form.role = result.data.role.name;
+      this.form.createdAt = format(result.data.createdAt);
     },
+
+    // 生日参数
     onBirth(data) {
       this.form.birth = data;
     },
+
+    // 修改密码
+    onChangePass() {
+      this.$router.push("/main/change-pass");
+    },
+
+    // 手机参数
+    onPhone() {
+      this.check = true;
+    },
+
+    onClose(val) {
+      this.check = val;
+    },
+
+    // 提交
     onSubmitInfo() {
       this.$refs.infoForm.validate().then(result => {
         if (result === true) {
           delete this.form.avatar;
+          delete this.form.status;
+          delete this.form.role;
+          delete this.form.createdAt;
+          delete this.form.updatedAt;
           userService.updateInfo(this.form).then(res => {
             if (res === true) {
               this.$store.dispatch("dataState/setData", [
                 { n: new Date().valueOf() }
               ]);
               tip.uS();
+              this.init();
             }
           });
         }
@@ -127,33 +243,44 @@ export default {
 </script>
 
 <style scoped>
-.info {
-  margin-top: 30px;
-  width: 500px;
+.info_base {
+  margin: 30px 50px;
 }
-.info_avatar {
+.info_base h2 {
+  padding-bottom: 20px;
+}
+.info_safe {
+  margin: 30px 50px;
+}
+.info_safe h2 {
+  padding-bottom: 20px;
+}
+.info_safe-part {
+  position: relative;
+}
+.info_safe-span {
+  font-size: 16px;
+  padding-left: 20px;
+}
+.info_safe-detail {
+  word-break: normal;
+  padding-top: 5px;
+  padding-left: 20px;
+  display: block;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow: hidden;
+  font-size: 12px;
+  color: grey;
+}
+.info_safe-btn {
   position: absolute;
-  top: 150px;
-  left: 463px;
+  top: 5px;
+  right: 20px;
 }
-.info_form {
-  margin: 0 auto;
-  width: 500px;
-  padding: 40px;
-}
-.info_iframe-video-con {
+.info_safe-btn-no {
   position: absolute;
-  top: 120px;
-  right: 50px;
-}
-.info_iframe-video {
-  width: 800px;
-  height: 600px;
-  max-width: 100%;
-}
-.info_iframe-music-con {
-  position: absolute;
-  bottom: 77px;
-  left: 48px;
+  top: -8px;
+  right: 20px;
 }
 </style>

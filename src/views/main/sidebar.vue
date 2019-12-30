@@ -6,7 +6,7 @@
         :collapse="sidebarCollapse"
         unique-opened
         router
-        background-color="#252a2f"
+        :background-color="color"
         text-color="#fff"
         active-text-color="#ffd04b"
       >
@@ -64,12 +64,23 @@ export default {
   data() {
     return {
       sidebarCollapse: false,
-      items: []
+      items: [],
+      color: localStorage.getItem("color") || "#252a2f"
     };
   },
   computed: {
     onRoutes() {
       return "";
+    },
+    newColor() {
+      return this.$store.getters["dataState/getData"].c;
+    }
+  },
+  watch: {
+    newColor: function(val, oldVal) {
+      if (val !== undefined && val !== oldVal) {
+        this.color = localStorage.getItem("color");
+      }
     }
   },
   created() {
