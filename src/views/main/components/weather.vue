@@ -1,23 +1,26 @@
 <template>
-  <div class="weather">
-    <template v-for="item in arr">
-      <div class="weather_con" :key="item.id">
+  <div>
+    <div class="weather">
+      <img :src="today" class="weather-icon" @mouseover="onMouseover" @mouseout="onMouseout" />
+    </div>
+
+    <div v-show="isShow" class="weather_con_wrap">
+      <div class="weather_con" v-for="item in arr" :key="item.id">
         <img class="weather_img" :src="item.src" />
         <div class="weather_info">{{ item.weather }}</div>
       </div>
-    </template>
+    </div>
   </div>
 </template>
 
 <script>
-import { userService } from "@/services";
-
 export default {
   name: "v-weather",
   data() {
     return {
       arr: [],
-      nowTemp: ""
+      today: "",
+      isShow: false
     };
   },
   computed: {
@@ -25,19 +28,25 @@ export default {
       return new Date().getMonth() + 1 > 12 ? 1 : new Date().getMonth() + 1;
     },
     ip() {
-      return localStorage.getItem("ip");
+      return this.$ls.get("ip").ip;
     }
   },
+
   mounted() {
-    this.getWeather();
+    this.init();
   },
   methods: {
-    async getWeather() {
-      const result = await userService.weather({ IP: this.ip });
-      const data = result.data.forecast;
-      this.nowTemp = result.data.wendu + "℃";
+    onMouseover() {
+      this.isShow = true;
+    },
+    onMouseout() {
+      this.isShow = false;
+    },
+    async init() {
+      const result = await this.$api.userService.weather({ IP: this.ip });
+      this.$ls.set("city", { city: result.data.city });
 
-      this.$emit("nowTemp", this.nowTemp);
+      const data = result.data.forecast;
 
       for (let i = 0; i < data.length; i++) {
         const one = data[i];
@@ -102,6 +111,10 @@ export default {
             src = "/icon/sky/snow_rain.png";
             break;
 
+          case "霾":
+            src = "/icon/sky/haze.png";
+            break;
+
           default:
             break;
         }
@@ -112,6 +125,8 @@ export default {
           weather: `${date}` + `\n${temp}` + `\n${type}` + `\n${feng}`
         });
       }
+
+      this.today = this.arr[0].src;
     }
   }
 };
@@ -119,31 +134,53 @@ export default {
 
 <style scoped>
 .weather {
+  height: 29px;
+  width: 29px;
+
+  margin-right: 10px;
+
+  border: 1px solid #dcdfe6;
+  border-radius: 3px;
+  border-color: #909399;
+
+  cursor: pointer;
+}
+.weather-icon {
+  height: 22px;
+  width: 22px;
+
+  position: relative;
+  top: 2px;
+  left: 2px;
+}
+
+.weather_con_wrap {
   position: absolute;
   top: 50px;
-  right: 0px;
+  right: 30px;
+  z-index: 2000;
+  display: flex;
 }
 .weather_con {
-  z-index: 8888;
+  height: 140px;
+  width: 110px;
   font-size: 14px;
   background-color: lightblue;
-  border-radius: 10px;
-  position: relative;
-  display: inline-block;
-  height: 140px;
+
+  z-index: 1000;
+
   border: 1px solid gray;
+  border-radius: 5px;
   box-shadow: 5px 5px 5px #888888;
 }
 .weather_img {
   position: relative;
   top: 3px;
-  right: -32px;
+  right: -30px;
   width: 48px;
   height: 48px;
 }
 .weather_info {
-  position: relative;
-  margin: 5px;
   text-align: center;
   white-space: pre-wrap;
   color: black;

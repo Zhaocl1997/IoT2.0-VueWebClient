@@ -1,57 +1,61 @@
 <template>
-  <div class="default">
-    <div class="default_con">
-      <div class="default_con-title">
-        <h1>Welcome</h1>
-      </div>
+  <div class="de">
+    <div style="margin:30px;">
+      <el-row :gutter="50">
+        <el-col :span="4">
+          <div class="de-col">
+            <v-base></v-base>
+          </div>
+        </el-col>
 
-      <div class="default_con-main">
-        <el-carousel indicator-position="outside" height="480px">
-          <el-carousel-item v-for="item in img" :key="item">
-            <img :src="item" />
-          </el-carousel-item>
-        </el-carousel>
-      </div>
+        <el-col :span="4">
+          <div class="de-col" style="height:250px;">
+            <v-time></v-time>
+          </div>
+        </el-col>
 
-      <div class="default_con-foot">
-        <a href="https://github.com/Zhaocl1997" target="_Blank">
-          <img src="/icon/github.png" style="cursor: pointer" />
-        </a>
-      </div>
+        <!-- <el-col :span="8">
+          <div class="de-col">
+            
+          </div>
+        </el-col>-->
+      </el-row>
+    </div>
+
+    <div class="de-foot">
+      <a href="https://github.com/Zhaocl1997" target="_Blank">
+        <img src="/icon/github.png" style="cursor: pointer" />
+      </a>
     </div>
   </div>
 </template>
 
 <script>
+import vBase from "./components/base";
+import vTime from "./components/time";
+
 export default {
   name: "v-default",
-  data() {
-    return {
-      img: [
-        "/img/d1.jpg",
-        "/img/d2.jpg",
-        "/img/d3.jpg",
-        "/img/d4.jpg",
-        "/img/d5.jpg",
-        "/img/d6.jpg"
-      ]
-    };
+  components: {
+    vBase,
+    vTime
   }
 };
 </script>
 
 <style scoped>
-.default_con-title {
-  text-align: center;
-  margin: 20px;
+.de-col {
+  min-width: 200px;
+  padding: 20px;
+  background-color: rgb(211, 211, 211);
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2);
+  border-radius: 20px;
 }
-.default_con-main {
-  padding-top: 50px;
-  margin: 0 auto;
-  width: 640px;
-}
-.default_con-foot {
-  margin-top: 20px;
-  text-align: center;
+
+.de-foot {
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  transform: translate(-50%, -50%);
 }
 </style>

@@ -1,9 +1,10 @@
 'use strict'
 
-import { userService } from "../services";
 import { addUrlTimeStamp } from "../helper/public";
+import { isLoginMixins } from './isLogin'
 
 export const avatarMixins = {
+    mixins: [isLoginMixins],
     data() {
         return {
             imgURL: "", // 带时间戳的头像地址
@@ -11,7 +12,9 @@ export const avatarMixins = {
         }
     },
     mounted() {
-        this.init();
+        if (this.isLogin) {
+            this.init();
+        }
     },
     computed: {
         onAvatarFirstChange() {
@@ -31,9 +34,9 @@ export const avatarMixins = {
     methods: {
         // 获取头像URL
         async init() {
-            const result = await userService.read();
+            const result = await this.$api.userService.read();
             this.avatarURL = result.data.avatar;
             this.imgURL = addUrlTimeStamp(this.avatarURL);
-        },
+        }
     }
 }

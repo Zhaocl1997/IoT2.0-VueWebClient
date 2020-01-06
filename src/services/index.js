@@ -9,3 +9,4 @@ export * from './article.service';
 export * from './category.service';
 export * from './db.service';
 export * from './logger.service';
+export * from './user_like_article.service';

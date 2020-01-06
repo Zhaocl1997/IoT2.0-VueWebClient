@@ -3,10 +3,11 @@
 import io from 'socket.io-client'
 import store from '../store'
 import config from '../helper/config'
+import ls from '../helper/localStorage'
 
 // 初始化socket
 const initSocket = () => {
-    const token = JSON.parse(localStorage.getItem('p1')).token
+    const token = ls.get('p1').token
     const socket = io(config.apiUrl, {
         'query': 'token=' + token
     })

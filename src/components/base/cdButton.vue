@@ -26,33 +26,26 @@ export default {
     };
   },
   props: {
-    text: {
-      type: String,
-      default: "发送验证码"
-    },
-    delay: {
-      type: Number,
-      default: 10
-    },
-    type: {
-      type: String,
-      default: "primary"
-    },
-    size: {
-      type: String,
-      default: "medium"
-    },
-    width: {
-      type: Number,
-      default: 120
-    },
-    round: {
-      type: Boolean,
-      default: false
-    }
+    text: { type: String, default: "发送验证码" },
+    delay: { type: Number, default: 60 },
+    type: { type: String, default: "info" },
+    size: { type: String, default: "medium" },
+    width: { type: Number, default: 120 },
+    round: { type: Boolean, default: false }
   },
   methods: {
     onClick() {
+      const el = this.$parent.$parent.$parent.$parent.$parent.$parent;
+
+      if (el.$refs.registerForm) {
+        el.validate().then(() => {
+          this.send();
+        });
+      } else {
+        this.send();
+      }
+    },
+    send() {
       this.disabled = true;
       let interval = window.setInterval(() => {
         this.btntext = `${this.btndelay}秒后重发`;
@@ -64,7 +57,7 @@ export default {
           window.clearInterval(interval);
         }
       }, 1000);
-      this.$emit("sendEmail");
+      this.$emit("send");
     }
   }
 };

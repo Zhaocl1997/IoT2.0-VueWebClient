@@ -150,10 +150,8 @@
 <script>
 import vPage from "@/components/pagination";
 import vDialog from "./components/form.vue";
-import { deviceService } from "@/services";
 import { tableMixins } from "@/mixins";
-import { tip } from "@/components/MessageBox";
-import { countLineNum, singleDelete, mutipleDelete } from "@/helper/public";
+import { countLineNum } from "@/helper/public";
 
 export default {
   mixins: [tableMixins],
@@ -183,7 +181,7 @@ export default {
     // 初始化
     async init() {
       this.reqData.pagerow = countLineNum();
-      const result = await deviceService.index(this.reqData);
+      const result = await this.$api.deviceService.index(this.reqData);
       this.tableData = result.data;
       this.total = result.total;
       this.loading = false;
@@ -191,9 +189,12 @@ export default {
 
     // 状态改变
     async onStatus(id, status) {
-      const result = await deviceService.updateStatus({ _id: id, status });
+      const result = await this.$api.deviceService.updateStatus({
+        _id: id,
+        status
+      });
       if (result === true) {
-        tip.uS();
+        this.$info.tip.uS();
       }
     },
 
@@ -228,12 +229,18 @@ export default {
 
     // 处理单个删除
     onSingleDel(id) {
-      singleDelete("设备", deviceService, id, this.init);
+      this.$CRUD.singleDel(
+        "设备",
+        this.$api.deviceService,
+        this.$info,
+        id,
+        this.init
+      );
     },
 
     // 处理多选删除
     onMultipleDel() {
-      mutipleDelete("设备", deviceService, this);
+      this.$CRUD.mutipleDel("设备", this.$api.deviceService, this.$info, this);
     },
 
     // 显示数据页面

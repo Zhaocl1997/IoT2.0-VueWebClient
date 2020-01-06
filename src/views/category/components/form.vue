@@ -46,9 +46,7 @@
 </template>
 
 <script>
-import { categoryService } from "@/services";
 import { formMixins } from "@/mixins";
-import { tip } from "@/components/MessageBox";
 
 export default {
   mixins: [formMixins],
@@ -69,21 +67,23 @@ export default {
     // 请求
     async onAction() {
       if (this.dialogTitle == "编辑分类") {
-        const result = await categoryService.update(this.dialogFormData);
+        const result = await this.$api.categoryService.update(
+          this.dialogFormData
+        );
         if (result === true) {
-          tip.uS();
+          this.$info.tip.uS();
           return result;
         }
       } else if (this.dialogTitle == "新建分类") {
         const parentID = this.dialogFormData._id;
         delete this.dialogFormData._id;
 
-        const result = await categoryService.create({
+        const result = await this.$api.categoryService.create({
           ...this.dialogFormData,
           parentID
         });
         if (result === true) {
-          tip.cS();
+          this.$info.tip.cS();
           return result;
         }
       }

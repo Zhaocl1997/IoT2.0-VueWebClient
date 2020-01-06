@@ -11,9 +11,6 @@ import { getIP2 } from "./helper/public";
 export default {
   name: "app",
   mounted() {
-    if (this.$store.getters["userState/getUserInfo"] !== null) {
-      this.$router.push("/main/default");
-    }
     getIP2();
   }
   // provide() {

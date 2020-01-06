@@ -1,5 +1,5 @@
 <template>
-  <div class="tag" v-if="showTags">
+  <div class="tag">
     <div class="tag_con" v-for="(item, index) in tagsList" :key="index">
       <ul>
         <li
@@ -50,19 +50,27 @@ export default {
       tagsList: []
     };
   },
-  computed: {
-    // 标签数大于0就返回true
-    showTags() {
-      return this.tagsList.length >= 0;
+  mounted() {
+    // mounted的时候加载taglist
+    const routes = this.$ls.get("route");
+    if (routes) {
+      this.tagsList = routes;
+    } else {
+      this.tagsList.push({
+        title: this.$route.meta.title,
+        path: this.$route.fullPath,
+        name: this.$route.name,
+        component: this.$route.matched[1].components.default.name
+      });
     }
   },
   watch: {
     $route: function(newVal) {
       this.setTags(newVal);
+      // 将当前有的选项卡存到local
+      // localStorage.setItem("route", JSON.stringify(this.tagsList));
+      this.$ls.set("route", this.tagsList);
     }
-  },
-  created() {
-    this.setTags(this.$route);
   },
   methods: {
     isActive(path) {
@@ -98,9 +106,19 @@ export default {
 
     // 设置标签
     setTags(route) {
+      if (route.name !== "lock-up") {
+        this.$ls.set("open", {
+          title: route.meta.title,
+          path: route.fullPath,
+          name: route.name,
+          component: route.matched[1].components.default.name
+        });
+      }
+
       const isExist = this.tagsList.some(item => {
         return item.path === route.fullPath;
       });
+
       if (!isExist) {
         if (this.tagsList.length >= 18) {
           this.tagsList.shift();

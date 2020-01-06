@@ -2,7 +2,7 @@
   <el-dialog
     center
     top="10vh"
-    width="80%"
+    width="780px"
     @open="onOpen"
     @close="onCancel"
     @before-close="onCancel"
@@ -20,7 +20,19 @@
       :label-position="labelPosition"
     >
       <el-form-item label="文章标题：" prop="title">
-        <el-input v-model="dialogFormData.title" placeholder="请输入文章标题" />
+        <el-input v-model="dialogFormData.title" placeholder="请输入文章标题" style="width:600px;" />
+      </el-form-item>
+
+      <el-form-item label="文章简述：" prop="intro">
+        <el-input
+          v-model="dialogFormData.intro"
+          placeholder="请输入文章简述"
+          type="textarea"
+          :rows="4"
+          maxlength="100"
+          show-word-limit
+          style="width:600px;"
+        />
       </el-form-item>
 
       <el-form-item label="文章分类：" prop="category">
@@ -56,18 +68,7 @@
       </el-form-item>
 
       <el-form-item label="文章内容：" prop="content">
-        <div class="quill-con">
-          <quill-editor
-            id="myQuillEditor"
-            v-model="dialogFormData.content"
-            :options="editorOptions"
-            ref="myQuillEditor"
-            style="height: 380px; margin-bottom: 54px"
-            @blur="onEditorBlur($event)"
-            @focus="onEditorFocus($event)"
-            @ready="onEditorReady($event)"
-          ></quill-editor>
-        </div>
+        <v-quill v-model="dialogFormData.content"></v-quill>
       </el-form-item>
     </el-form>
 
@@ -79,34 +80,26 @@
 </template>
 
 <script>
-import "quill/dist/quill.core.css";
-import "quill/dist/quill.snow.css";
-import "quill/dist/quill.bubble.css";
-import "@/assets/quill.css";
-import { quillEditor } from "vue-quill-editor";
-
-import { categoryService, articleService } from "@/services";
-import { titleConfig, editorOptions, addQuillTitle } from "@/helper/quill";
 import { formMixins } from "@/mixins";
-import { action } from "@/helper/public";
-import { tip } from "@/components/MessageBox";
+import vQuill from "./quill";
 
 export default {
   mixins: [formMixins],
   name: "articleForm",
+  components: {
+    vQuill
+  },
   data() {
     return {
       // 级联属性
       cascader: {
         expandTrigger: "hover",
-        checkStrictly: true,
         children: "subs",
         value: "_id",
         label: "name"
       },
 
       catOptions: [], // 级联数据
-      editorOptions, // 编辑器配置
 
       inputVisible: false, // 标签输入框是否可见
       inputValue: "", // 标签输入框值
@@ -115,8 +108,16 @@ export default {
         title: [
           { required: true, message: "文章标题不能为空", trigger: "blur" }
         ],
+        intro: [
+          { required: true, message: "文章简述不能为空", trigger: "blur" }
+        ],
+        tag: [{ required: true, message: "文章标签不能为空", trigger: "blur" }],
         category: [
-          { required: true, message: "文章分类不能为空", trigger: "blur" }
+          {
+            required: true,
+            message: "文章分类不能为空",
+            trigger: "blur"
+          }
         ],
         content: [
           { required: true, message: "文章内容不能为空", trigger: "blur" }
@@ -129,24 +130,10 @@ export default {
       return this.dialogFormData.tag ? this.dialogFormData.tag : [];
     }
   },
-  components: {
-    quillEditor
-  },
   methods: {
-    onEditorBlur() {
-      // console.log("editor blur!", quill);
-    },
-    onEditorFocus() {
-      // console.log("editor focus!", quill);
-    },
-    onEditorReady() {
-      // console.log("editor ready!", quill);
-    },
-
     // 打开时绑定分类数据
     async onOpen() {
-      addQuillTitle(titleConfig);
-      const result = await categoryService.options();
+      const result = await this.$api.categoryService.options();
       this.catOptions = result.data;
     },
 
@@ -169,7 +156,7 @@ export default {
       const isSame = this.dialogFormData.tag.includes(inputValue);
       if (inputValue) {
         if (isSame) {
-          return tip.error("标签重复");
+          return this.$info.tip.error("标签重复");
         }
         this.dialogFormData.tag.push(inputValue);
       }
@@ -185,11 +172,10 @@ export default {
 
     // 请求
     onAction() {
-      return action(
-        { t: this.dialogTitle, d: this.dialogFormData },
-        "文章",
-        articleService
-      );
+      return this.$CRUD.action("文章", this.$api.articleService, this.$info, {
+        t: this.dialogTitle,
+        d: this.dialogFormData
+      });
     }
   }
 };
@@ -197,7 +183,7 @@ export default {
 
 <style scoped>
 .el-input {
-  width:300px;
+  width: 300px;
 }
 .el-tag + .el-tag {
   margin-left: 10px;
@@ -214,8 +200,5 @@ export default {
   margin-left: 10px;
   vertical-align: bottom;
 }
-.quill-con {
-  height: 400px;
-  overflow-y: auto;
-}
+
 </style>

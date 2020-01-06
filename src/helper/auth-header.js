@@ -1,8 +1,10 @@
 'use strict'
 
+import ls from './localStorage'
+
 export function authHeader() {
 
-    let user = JSON.parse(localStorage.getItem('p1'));
+    let user = ls.get('p1')
     if (user && user.token) {
         return {
             'Authorization': 'Bearer ' + user.token

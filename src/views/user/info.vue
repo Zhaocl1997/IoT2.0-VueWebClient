@@ -1,6 +1,6 @@
 <template>
   <div class="info">
-    <v-lock v-show="check" type="check" @close="onClose"></v-lock>
+    <v-lock v-show="check" type="check" @close="onMaskClose" @check="onCheck"></v-lock>
 
     <el-tabs :tab-position="'left'" style="height: 800px;">
       <el-tab-pane label="基本信息">
@@ -25,7 +25,7 @@
             </el-form-item>
 
             <el-form-item label="生日：" prop="birth">
-              <v-birth @birthEvent="onBirth" :birth="form.birth" v-model="form.birth" v-if="flag"></v-birth>
+              <v-birth v-model="form.birth" v-if="flag"></v-birth>
             </el-form-item>
 
             <el-form-item label="地区：" prop="area">
@@ -62,9 +62,10 @@
           <div class="info_safe-part">
             <span class="info_safe-span">绑定手机</span>
             <div class="info_safe-btn">
-              <el-button size="medium" type="text" @click="onPhone">修改</el-button>
+              <el-button size="medium" type="text" @click="onMaskShow">修改</el-button>
             </div>
-            <span class="info_safe-detail">已绑定手机：{{ form.phone }}</span>
+            <span class="info_safe-detail" v-if="form.phone">已绑定手机：{{ form.phone }}</span>
+            <span class="info_safe-detail" v-else>未绑定手机</span>
           </div>
 
           <el-divider></el-divider>
@@ -72,9 +73,10 @@
           <div class="info_safe-part">
             <span class="info_safe-span">绑定邮箱</span>
             <div class="info_safe-btn">
-              <el-button size="medium" type="text">修改</el-button>
+              <el-button size="medium" type="text" @click="onMaskShow">修改</el-button>
             </div>
-            <span class="info_safe-detail">已绑定邮箱：{{ form.email }}</span>
+            <span class="info_safe-detail" v-if="form.email">已绑定邮箱：{{ form.email }}</span>
+            <span class="info_safe-detail" v-else>未绑定邮箱</span>
           </div>
 
           <el-divider></el-divider>
@@ -88,50 +90,8 @@
         </div>
       </el-tab-pane>
       <el-tab-pane label="角色管理">角色管理</el-tab-pane>
-      <el-tab-pane label="定时任务补偿">定时任务补偿</el-tab-pane>
+      <el-tab-pane label="系统设置">系统设置</el-tab-pane>
     </el-tabs>
-
-    <div class="info_con">
-      <div class="info_form">
-        <!-- <el-form ref="infoForm" :model="form" :rules="rules" label-width="80px">
-          <el-form-item label="角色：" prop="role">
-            <el-input :disabled="true" v-model="form.role" style="width: 300px;" />
-          </el-form-item>
-
-          <el-form-item label="昵称：" prop="name">
-            <el-input v-model="form.name" style="width: 300px;" />
-          </el-form-item>
-
-          <el-form-item label="手机：" prop="phone">
-            <el-input v-model="form.phone" style="width: 300px;" />
-          </el-form-item>
-
-          <el-form-item label="邮箱：" prop="email">
-            <el-input v-model="form.email" style="width: 300px;" />
-          </el-form-item>
-
-          <el-form-item label="性别：" prop="gender">
-            <el-radio-group v-model="form.gender" style="padding-left: 10px;">
-              <el-radio label="男" />
-              <el-radio label="女" />
-              <el-radio label="保密" />
-            </el-radio-group>
-          </el-form-item>
-
-          <el-form-item label="生日：" prop="birth">
-            <birthday @birthEvent="onBirth" :birth="form.birth" v-model="form.birth" v-if="flag"></birthday>
-          </el-form-item>
-
-          <el-form-item label="地区：" prop="area">
-            <el-cascader :options="areaOptions" v-model="form.area" style="width: 300px;"></el-cascader>
-          </el-form-item>
-
-          <el-form-item>
-            <el-button type="primary" @click="onSubmitInfo">保&#32;存</el-button>
-          </el-form-item>
-        </el-form>-->
-      </div>
-    </div>
 
     <!-- <div class="info_iframe-video-con">
       <iframe
@@ -163,11 +123,8 @@
 import vAvatar from "./components/base/avatar";
 import vBirth from "./components/base/birthday";
 import vLock from "./components/base/lockup";
-import { userService } from "@/services";
 import { userRulesMixins } from "@/mixins";
 import areaData from "@/helper/area";
-import { format } from "@/helper/public";
-import { tip } from "@/components/MessageBox";
 
 export default {
   mixins: [userRulesMixins],
@@ -191,16 +148,11 @@ export default {
   methods: {
     // 获取用户基本信息
     async init() {
-      const result = await userService.read();
-      this.flag = true;
+      const result = await this.$api.userService.read();
       this.form = result.data;
       this.form.role = result.data.role.name;
-      this.form.createdAt = format(result.data.createdAt);
-    },
-
-    // 生日参数
-    onBirth(data) {
-      this.form.birth = data;
+      this.form.createdAt = this.$time.format(result.data.createdAt);
+      this.flag = true;
     },
 
     // 修改密码
@@ -208,13 +160,24 @@ export default {
       this.$router.push("/main/change-pass");
     },
 
-    // 手机参数
-    onPhone() {
+    // 显示
+    onMaskShow() {
       this.check = true;
     },
 
-    onClose(val) {
-      this.check = val;
+    // 关闭
+    onMaskClose() {
+      this.check = false;
+    },
+
+    // 验证
+    onCheck(val) {
+      if (val === true) {
+        this.$info.tip.success("认证成功");
+        setTimeout(() => {
+          this.check = false;
+        }, 500);
+      }
     },
 
     // 提交
@@ -226,12 +189,12 @@ export default {
           delete this.form.role;
           delete this.form.createdAt;
           delete this.form.updatedAt;
-          userService.updateInfo(this.form).then(res => {
+          this.$api.userService.updateInfo(this.form).then(res => {
             if (res === true) {
               this.$store.dispatch("dataState/setData", [
                 { n: new Date().valueOf() }
               ]);
-              tip.uS();
+              this.$info.tip.uS();
               this.init();
             }
           });

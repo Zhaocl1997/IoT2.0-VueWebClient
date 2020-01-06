@@ -1,58 +1,57 @@
 <template>
   <div class="code">
-    <el-input
-      v-model="code"
-      :placeholder="placeholder"
-      prefix-icon="el-icon-collection-tag"
-      clearable
-      minlength="4"
-      maxlength="6"
-      @input="onCode"
-      slot="reference"
-      :style="`width:${inputWidth}px;`"
-    >
-      <!-- <el-button slot="append" @click="onGetCode" :style="`width:${btnWidth}px;`">获取验证码</el-button> -->
-
-      <v-cd-btn slot="append" :delay="60" type="info" @sendEmail="onsendEmail"></v-cd-btn>
-    </el-input>
+    <el-form :model="ruleForm" :rules="rules" ref="code" @submit.native.prevent>
+      <el-form-item prop="code">
+        <el-input
+          v-model="ruleForm.code"
+          @input="onCode"
+          :placeholder="placeholder"
+          clearable
+          minlength="4"
+          maxlength="6"
+          :style="`width:${inputWidth}px;`"
+          prefix-icon="el-icon-collection-tag"
+        >
+          <v-cd-btn slot="append" @send="onSend"></v-cd-btn>
+        </el-input>
+      </el-form-item>
+    </el-form>
   </div>
 </template>
 
 <script>
 import vCdBtn from "@/components/base/cdButton";
-import { userService } from "@/services";
-import { tip } from "@/components/MessageBox";
 
 export default {
   name: "v-code",
   data() {
     return {
-      code: this.value,
-      email: this.validataEmail
+      ruleForm: { code: this.value },
+      rules: {
+        code: [
+          {
+            required: true,
+            message: "请输入验证码",
+            trigger: "blur"
+          }
+        ]
+      }
     };
   },
   components: {
     vCdBtn
   },
   props: {
+    // value
     value: String,
-    placeholder: {
-      type: String,
-      default: "请输入验证码"
-    },
-    inputWidth: {
-      type: Number,
-      default: 330
-    },
-    btnWidth: {
-      type: Number,
-      default: 120
-    },
-    append: {
-      type: Boolean,
-      default: false
-    },
-    validataEmail: String
+
+    // 获取验证码的类型和相应的手机或邮箱
+    type: { type: String, required: true },
+    info: { type: String, required: true },
+
+    // 占位符和输入框的宽度
+    placeholder: { type: String, default: "请输入验证码" },
+    inputWidth: { type: Number, default: 330 }
   },
   model: {
     prop: "value",
@@ -64,14 +63,21 @@ export default {
       this.$emit("code", val);
     },
 
-    // 发送验证码
-    async onsendEmail() {
-      const valEmail = this.$parent.$parent.$parent.$refs.vEmail.value;
-      if (valEmail === "") return;
+    // 验证
+    validate() {
+      return this.$refs["code"].validate();
+    },
 
-      const result = await userService.gencode({ email: valEmail });
+    // 发送验证码
+    async onSend() {
+      const type = this.type;
+      const info = this.info;
+
+      if (!type || !info) return;
+
+      const result = await this.$api.userService.sendCode({ type, info });
       if (result === true) {
-        tip.success("发送成功");
+        this.$info.tip.success("获取验证码成功");
       }
     }
   }
@@ -79,7 +85,4 @@ export default {
 </script>
 
 <style scoped>
-.code {
-  margin: 0 auto;
-}
 </style>

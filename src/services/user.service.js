@@ -4,6 +4,7 @@ import axios from '../helper/axioshttp'
 import { socketService } from "../services";
 import store from "../store";
 import base_api from "./base_api";
+import ls from '../helper/localStorage'
 
 const options = base_api('user', 'options')
 const index = base_api('user', 'index')
@@ -14,45 +15,21 @@ const updateStatus = base_api('user', 'updateStatus')
 const del = base_api('user', 'delete')
 const delMany = base_api('user', 'deleteMany')
 
-/**
- * @method weather
- * @param { Object } 
- * @returns { data }
- * @description 获取天气数据 
- */
-async function weather(params) {
-    const url = '/api/v1/user/weather'
-    const result = await axios.post(url, params)
-    if (result.status === true) {
-        return result.data
-    }
-}
-
-/**
- * @method avatar
- * @param { Object } 
- * @returns { Boolean }
- * @description 上传头像 
- */
-async function avatar(params) {
-    const url = '/api/v1/user/avatar'
-    const result = await axios.post(url, params)
-    if (result.status === true) {
-        return result.status
-    }
-}
-
-/**
- * @method register
- * @param { Object } 
- * @returns { Boolean }
- * @description 注册 封装到vuex
- */
+// 注册
 async function register(params) {
     const url = '/api/v1/user/register'
     const result = await axios.post(url, params)
     if (result.status === true) {
         return result.status
+    }
+}
+
+// 验证码
+async function captcha() {
+    const url = "/api/v1/user/captcha"
+    const result = await axios.post(url)
+    if (result.status === true) {
+        return result.data
     }
 }
 
@@ -70,9 +47,10 @@ async function login(params) {
             id: result.data.user._id,
             token: result.data.token,
             role: result.data.user.role.name,
-            avatar: result.data.user.avatar
+            avatar: result.data.user.avatar,
+            name: result.data.user.name
         }
-        localStorage.setItem('p1', JSON.stringify(user))
+        ls.set('p1', user)
         return user
     }
 }
@@ -87,61 +65,67 @@ async function logout() {
     const url = '/api/v1/user/logout'
     const result = await axios.post(url)
     if (result.status === true) {
-        localStorage.removeItem('p1')
+        ls.remove('p1')
+        ls.remove('route')
+        ls.remove('open')
         store.dispatch("dataState/clearData", ["u", "t", "h", "m1", "m2", "a", "n"]);
         socketService.closeSocket();
         return result.status
     }
 }
 
-/**
- * @method changePass
- * @param { Object } 
- * @returns { Boolean }
- * @description 更改密码
- */
-async function changePass(params) {
-    const url = '/api/v1/user/changePass'
+// 天气
+async function weather(params) {
+    const url = '/api/v1/user/weather'
+    const result = await axios.post(url, params)
+    if (result.status === true) {
+        return result.data
+    }
+}
+
+// 头像
+async function avatar(params) {
+    const url = '/api/v1/user/avatar'
     const result = await axios.post(url, params)
     if (result.status === true) {
         return result.status
     }
 }
 
-/**
- * @method findpass
- * @param { Object } 
- * @returns { Boolean }
- * @description 找回密码
- */
-async function findpass(params) {
-    const url = '/api/v1/user/findpass'
+/* findpass */
+async function checkExist(params) {
+    const url = '/api/v1/user/checkExist'
     const result = await axios.post(url, params)
     if (result.status === true) {
         return result.status
     }
 }
 
-/**
- * @method gencode
- * @param { Object } 
- * @returns { Boolean }
- * @description 更改密码
- */
-async function gencode(params) {
-    const url = '/api/v1/user/gencode'
+async function sendCode(params) {
+    const url = '/api/v1/user/sendCode'
     const result = await axios.post(url, params)
     if (result.status === true) {
         return result.status
     }
 }
 
-/**
- * @method unlock
- * @param { Object } 
- * @returns { Boolean }
- * @description 解锁
- */
+async function checkCode(params) {
+    const url = '/api/v1/user/checkCode'
+    const result = await axios.post(url, params)
+    if (result.status === true) {
+        return result.status
+    }
+}
+
+async function resetPass(params) {
+    const url = '/api/v1/user/resetPass'
+    const result = await axios.post(url, params)
+    if (result.status === true) {
+        return result.status
+    }
+}
+
+// 解锁
 async function unlock(params) {
     const url = '/api/v1/user/unlock'
     const result = await axios.post(url, params)
@@ -150,26 +134,16 @@ async function unlock(params) {
     }
 }
 
-/**
- * @method captcha
- * @param { null } 
- * @returns { data }
- * @description 获取验证码
- */
-async function captcha() {
-    const url = "/api/v1/user/captcha"
-    const result = await axios.post(url)
+// 修改密码
+async function changePass(params) {
+    const url = '/api/v1/user/changePass'
+    const result = await axios.post(url, params)
     if (result.status === true) {
-        return result.data
+        return result.status
     }
 }
 
-/**
- * @method updateInfo
- * @param { Object } 
- * @returns { Boolean }
- * @description 更新用户信息(admin)
- */
+// 更新个人信息
 async function updateInfo(params) {
     const url = '/api/v1/user/updateInfo'
     const result = await axios.post(url, params)
@@ -179,12 +153,19 @@ async function updateInfo(params) {
 }
 
 export const userService = {
-    weather,
-    avatar,
     register,
     login,
     logout,
     captcha,
+
+    checkExist,
+    sendCode,
+    checkCode,
+    resetPass,
+
+    weather,
+    avatar,
+    changePass,
 
     options,
     index,
@@ -192,9 +173,6 @@ export const userService = {
     read,
     update,
     updateStatus,
-    changePass,
-    findpass,
-    gencode,
     unlock,
     updateInfo,
     del,

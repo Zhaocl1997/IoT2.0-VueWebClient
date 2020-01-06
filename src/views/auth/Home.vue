@@ -1,12 +1,11 @@
 <template>
   <div class="home">
-    <header class="home_main">
-      <div class="home_main-con">
-        <router-link to="/login" class="btn btn--white btn--animated">Discover more</router-link>
-      </div>
-    </header>
+    <div class="home-con">
+      <router-link to="/login" class="btn btn--white btn--animated">Discover more</router-link>
+    </div>
 
     <a href="http://www.beian.miit.gov.cn/" target="_Blank" class="home_beian">黑ICP备19006950号</a>
+    <router-link to="/articles" class="home_article">Article</router-link>
   </div>
 </template>
 
@@ -17,37 +16,40 @@ export default {
 </script>
 
 <style scoped>
-/* 全局 */
 .home {
-  padding: 20px 20px 0;
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  right: 0;
+  background: linear-gradient(
+    to right bottom,
+    rgba(126, 213, 111, 0.6),
+    rgba(40, 180, 133, 0.6)
+  );
+  text-align: center;
 }
-/* 主体 */
-.home_main {
-  height: 95vh;
-  background-image: linear-gradient(
-      to right bottom,
-      rgba(126, 213, 111, 0.6),
-      rgba(40, 180, 133, 0.6)
-    ),
-    url(/img/homebg.jpg);
-  background-size: cover;
-  background-position: bottom;
-  position: relative;
-  -webkit-clip-path: polygon(0 0, 100% 0, 100% 85vh, 0 100%);
-  clip-path: polygon(0 0, 100% 0, 100% 85vh, 0 100%);
-}
-.home_main-con {
+.home-con {
   position: absolute;
-  top: 45%;
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  text-align: center;
 }
 .home_beian {
   font-size: 12px;
   color: rgba(0, 0, 0, 0.8);
   position: absolute;
-  left: 47%;
+  bottom: 3%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.home_article {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.8);
+  position: absolute;
+  bottom: 1%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 .btn,
 .btn:link,
@@ -62,6 +64,7 @@ export default {
   font-size: 20px;
   border: none;
   cursor: pointer;
+  white-space: nowrap;
 }
 .btn:hover {
   transform: translateY(-5px);

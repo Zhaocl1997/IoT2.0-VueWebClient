@@ -1,6 +1,6 @@
 'use strict'
 
-import { format, debounce } from "../helper/public";
+import { debounce } from "../helper/public";
 
 export const tableMixins = {
     data() {
@@ -91,10 +91,10 @@ export const tableMixins = {
         onTimeFormat(row, column) {
             switch (column.label) {
                 case "创建时间":
-                    return format(row.createdAt, "YYYY/MM/DD HH:mm:ss");
+                    return this.$time.format(row.createdAt, "YYYY/MM/DD HH:mm:ss");
 
                 case "更新时间":
-                    return format(row.updatedAt, "YYYY/MM/DD HH:mm:ss");
+                    return this.$time.format(row.updatedAt, "YYYY/MM/DD HH:mm:ss");
             }
         }
     }

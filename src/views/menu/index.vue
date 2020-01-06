@@ -81,13 +81,6 @@
       </el-table>
     </div>
 
-    <!-- <v-page
-      :pagenum="reqData.pagenum"
-      :pagerow="reqData.pagerow"
-      :total="total"
-      @paginationEvent="onPage"
-    />-->
-
     <v-dialog
       :dialogVisible="dialogVisible"
       :dialogFormData="dialogData"
@@ -99,11 +92,8 @@
 </template>
 
 <script>
-// import vPage from "@/components/pagination";
 import vDialog from "./components/form.vue";
-import { menuService } from "@/services";
 import { tableMixins } from "@/mixins";
-import { singleDelete } from "@/helper/public";
 
 export default {
   mixins: [tableMixins],
@@ -129,7 +119,7 @@ export default {
 
     // 初始化
     async init() {
-      const result = await menuService.options();
+      const result = await this.$api.menuService.options();
       this.tableData = result.data;
     },
 
@@ -162,7 +152,13 @@ export default {
 
     // 处理单个删除
     onSingleDel(id) {
-      singleDelete("菜单", menuService, id, this.init);
+      this.$CRUD.singleDel(
+        "菜单",
+        this.$api.menuService,
+        this.$info,
+        id,
+        this.init
+      );
     }
   }
 };

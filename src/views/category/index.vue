@@ -56,7 +56,7 @@
           :formatter="onTimeFormat"
         />
 
-        <el-table-column label="操作" align="center" width="180">
+        <el-table-column label="操作" align="center" width="150">
           <template slot-scope="scope">
             <el-button
               size="mini"
@@ -71,24 +71,10 @@
               @click="onDialog(scope.row, 'edit')"
               icon="el-icon-edit"
             >编辑</el-button>
-            <el-button
-              size="mini"
-              type="text"
-              @click="onSingleDel(scope.row._id)"
-              icon="el-icon-delete"
-              :disabled="!!(scope.row.subs)"
-            >删除</el-button>
           </template>
         </el-table-column>
       </el-table>
     </div>
-
-    <!-- <v-page
-      :pagenum="reqData.pagenum"
-      :pagerow="reqData.pagerow"
-      :total="total"
-      @paginationEvent="onPage"
-    />-->
 
     <v-dialog
       :dialogVisible="dialogVisible"
@@ -101,11 +87,8 @@
 </template>
 
 <script>
-// import vPage from "@/components/pagination";
 import vDialog from "./components/form.vue";
-import { categoryService } from "@/services";
 import { tableMixins } from "@/mixins";
-import { singleDelete } from "@/helper/public";
 
 export default {
   mixins: [tableMixins],
@@ -117,10 +100,9 @@ export default {
   },
   components: {
     vDialog
-    // vPage
   },
   methods: {
-    // 一级分类显示浅绿色,二级分类显示浅米色
+    // 有子分类显示浅绿色, 没有子分类显示浅米色
     tableRowClassName({ row }) {
       if (row.subs.length !== 0) {
         return "on-row";
@@ -131,7 +113,7 @@ export default {
 
     // 初始化
     async init() {
-      const result = await categoryService.index();
+      const result = await this.$api.categoryService.index();
       this.tableData = result.data;
     },
 
@@ -161,11 +143,7 @@ export default {
       }
     },
 
-    // 处理单个删除
-    onSingleDel(id) {
-      singleDelete("分类", categoryService, id, this.init);
-    },
-
+    // 格式化
     onFormat(row, column) {
       switch (column.label) {
         case "文章数量":

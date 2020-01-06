@@ -130,10 +130,8 @@
 
 <script>
 import vPage from "@/components/pagination";
-import { loggerService } from "@/services";
 import { tableMixins } from "@/mixins";
-import { checkBox, tip } from "@/components/MessageBox";
-import { countLineNum, format } from "@/helper/public";
+import { countLineNum } from "@/helper/public";
 
 export default {
   mixins: [tableMixins],
@@ -146,55 +144,32 @@ export default {
     async init() {
       this.reqData.sortField = "requestTime";
       this.reqData.pagerow = countLineNum();
-      const result = await loggerService.index(this.reqData);
+      const result = await this.$api.loggerService.index(this.reqData);
       this.tableData = result.data;
       this.total = result.total;
     },
 
     // 处理单个删除
     onSingleDel(id) {
-      checkBox("是否删除该条请求记录?").then(action => {
-        if (action === true) {
-          loggerService.del({ _id: id }).then(value => {
-            if (value === true) {
-              tip.dS();
-              this.init();
-            }
-          });
-        } else {
-          tip.cancel();
-        }
-      });
+      this.$CRUD.singleDel(
+        "日志",
+        this.$api.loggerService,
+        this.$info,
+        id,
+        this.init
+      );
     },
 
     // 处理多选删除
     onMultipleDel() {
-      let count = 0;
-      checkBox("是否删除这些请求记录?").then(action => {
-        if (action === true) {
-          this.multipleSelection.forEach(item => {
-            loggerService.del({ _id: item["_id"] }).then(value => {
-              if (value === true) {
-                count = count + 1;
-                if (this.multipleSelection.length === count) {
-                  tip.dS();
-                  this.init();
-                }
-              }
-            });
-          });
-        } else {
-          tip.cancel();
-          this.$refs.multipleTable.clearSelection();
-        }
-      });
+      this.$CRUD.mutipleDel("日志", this.$api.loggerService, this.$info, this);
     },
 
     // 处理格式化显示
     onFormat(row, column) {
       switch (column.label) {
         case "请求时间":
-          return format(row.requestTime, "YYYY-MM-DD HH:mm:ss");
+          return this.$time.format(row.requestTime);
 
         case "响应时间":
           return row.responseTime + "ms";

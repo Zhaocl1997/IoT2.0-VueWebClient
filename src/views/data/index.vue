@@ -3,7 +3,7 @@
     <div class="table-box">
       <span style="font-size:14px;margin-right:5px;">用户:</span>
       <el-select
-        v-model="user"
+        v-model="userID"
         clearable
         placeholder="请选择用户"
         @change="onSelectChange(0)"
@@ -11,12 +11,11 @@
         @clear="onClear(0)"
         size="mini"
         style="width:120px"
-        :disabled="!!(this.user)"
       >
         <el-option v-for="item in userOptions" :key="item._id" :label="item.name" :value="item._id"></el-option>
       </el-select>
 
-      <span style="font-size:14px;margin-right:5px;margin-left:5px;" v-if="user">类型:</span>
+      <span style="font-size:14px;margin-right:5px;margin-left:5px;" v-if="userID">类型:</span>
       <el-select
         v-model="type"
         clearable
@@ -26,7 +25,7 @@
         @clear="onClear(1)"
         size="mini"
         style="width:120px"
-        v-if="user"
+        v-if="userID"
       >
         <el-option
           v-for="item in typeOptions"
@@ -176,9 +175,7 @@
 
 <script>
 import vPage from "@/components/pagination";
-import { userService, deviceService, dataService } from "@/services";
-import { checkBox, tip } from "@/components/MessageBox";
-import { countLineNum, format, singleDelete } from "@/helper/public";
+import { countLineNum } from "@/helper/public";
 
 export default {
   name: "v-data",
@@ -187,7 +184,7 @@ export default {
       camera_img: false, // 图片div是否显示
       camera_src: "", // 图片src
 
-      loading: true,
+      loading: true, // 加载
 
       tableData: [], // table数据
       total: 1, // 数据数量
@@ -198,6 +195,19 @@ export default {
         }
       },
 
+      // 请求数据
+      reqData: {
+        pagenum: 1, // 页号
+        pagerow: 1, // 每页记录数
+
+        sortField: "cA", // 排序字段
+        sortOrder: "descending", // 排序顺序
+
+        condition: {}, // 条件
+        type: "byInit" // 类型
+      },
+
+      userID: "", // 用户ID
       type: "", // 设备类型
       device: "", // 设备ID
       time: [], // 时间
@@ -213,38 +223,9 @@ export default {
   mounted() {
     this.init();
   },
-  computed: {
-    role() {
-      return JSON.parse(localStorage.getItem("p1")).role;
-    },
-    id() {
-      return JSON.parse(localStorage.getItem("p1")).id;
-    },
-    user() {
-      return this.role === "user" ? this.id : "";
-    },
-    reqType() {
-      return this.user === "" ? "byInit" : "byUser";
-    },
-    // 请求数据
-    reqData() {
-      return {
-        pagenum: 1, // 页号
-        pagerow: 1, // 每页记录数
-
-        sortField: "cA", // 排序字段
-        sortOrder: "descending", // 排序顺序
-
-        condition: {
-          userID: this.user
-        }, // 条件
-        type: this.reqType // 类型
-      };
-    }
-  },
   watch: {
     // 监听变化
-    user() {
+    userID() {
       this.type = "";
       this.device = "";
       this.time = "";
@@ -274,7 +255,7 @@ export default {
     // 初始化
     async init() {
       this.reqData.pagerow = countLineNum();
-      const result = await dataService.index(this.reqData);
+      const result = await this.$api.dataService.index(this.reqData);
       this.tableData = result.data;
       this.total = result.total;
       this.loading = false;
@@ -301,7 +282,7 @@ export default {
 
     // 清空条件
     onConDel() {
-      this.user = "";
+      this.userID = "";
       this.device = "";
       this.type = "";
       this.time = "";
@@ -357,7 +338,7 @@ export default {
       // 列格式化
       switch (column.label) {
         case "创建时间":
-          return format(row.data.cA, "YYYY/MM/DD HH:mm:ss");
+          return this.$time.format(row.data.cA, "YYYY/MM/DD HH:mm:ss");
 
         default:
           break;
@@ -380,21 +361,27 @@ export default {
 
     // 处理单个删除
     onSingleDel(id) {
-      singleDelete("数据", dataService, id, this.init);
+      this.$CRUD.singleDel(
+        "数据",
+        this.$api.dataService,
+        this.$info,
+        id,
+        this.init
+      );
     },
 
     // 处理多选删除
     async onMultipleDel() {
       const id = this.multipleSelection.map(a => a.data._id);
-      const action = await checkBox("是否删除这些数据?");
+      const action = await this.$info.checkBox("是否删除这些数据?");
       if (action === true) {
-        const result = await dataService.delMany({ _id: id });
+        const result = await this.$api.dataService.delMany({ _id: id });
         if (result === true) {
-          tip.dS();
+          this.$info.tip.dS();
           this.init();
         }
       } else {
-        tip.cancel();
+        this.$info.tip.cancel();
         this.$refs.multipleTable.clearSelection();
       }
     },
@@ -420,7 +407,7 @@ export default {
       switch (val) {
         case 0: {
           // 获取用户信息
-          const result = await userService.options();
+          const result = await this.$api.userService.options();
           this.userOptions = result.data;
           break;
         }
@@ -436,8 +423,8 @@ export default {
 
         case 2: {
           // 根据用户ID 和 设备类型 获取 相应设备信息
-          const result = await deviceService.options({
-            _id: this.user,
+          const result = await this.$api.deviceService.options({
+            _id: this.userID,
             type: this.type
           });
           this.deviceOptions = result.data;
@@ -455,7 +442,7 @@ export default {
         case 0:
           this.reqData.type = "byUser";
           this.reqData.condition = {
-            userID: this.user
+            userID: this.userID
           };
           this.init();
           break;
@@ -463,7 +450,7 @@ export default {
         case 1:
           this.reqData.type = "byType";
           this.reqData.condition = {
-            userID: this.user,
+            userID: this.userID,
             type: this.type
           };
           this.init();
@@ -472,7 +459,7 @@ export default {
         case 2:
           this.reqData.type = "byDevice";
           this.reqData.condition = {
-            userID: this.user,
+            userID: this.userID,
             type: this.type,
             deviceID: this.device
           };
@@ -484,7 +471,7 @@ export default {
 
           this.reqData.type = "byTime";
           this.reqData.condition = {
-            userID: this.user,
+            userID: this.userID,
             type: this.type,
             deviceID: this.device,
             time: this.time

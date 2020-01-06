@@ -37,6 +37,7 @@
         </el-table-column>
 
         <el-table-column prop="title" label="文章标题" align="center" show-overflow-tooltip></el-table-column>
+        <el-table-column prop="intro" label="文章简述" align="center" show-overflow-tooltip></el-table-column>
         <el-table-column
           prop="content"
           label="文章内容"
@@ -53,8 +54,7 @@
         ></el-table-column>
         <el-table-column prop="category.name" label="文章分类" align="center" show-overflow-tooltip></el-table-column>
         <el-table-column prop="author.name" label="文章作者" align="center" show-overflow-tooltip></el-table-column>
-        <el-table-column prop="solve" width="50" label="点赞" align="center" show-overflow-tooltip></el-table-column>
-        <el-table-column prop="unsolve" width="50" label="点踩" align="center" show-overflow-tooltip></el-table-column>
+        <el-table-column prop="like" width="50" label="点赞" align="center" show-overflow-tooltip></el-table-column>
 
         <el-table-column
           prop="createdAt"
@@ -124,13 +124,12 @@ import "quill/dist/quill.snow.css";
 
 import vPage from "@/components/pagination";
 import vDialog from "./components/form.vue";
-import { articleService } from "@/services";
 import { tableMixins } from "@/mixins";
-import { countLineNum, sizeOfStr, singleDelete } from "@/helper/public";
+import { countLineNum, sizeOfStr } from "@/helper/public";
 
 export default {
   mixins: [tableMixins],
-  name: "v-article",
+  name: "v-articlemanage",
   components: {
     vDialog,
     vPage
@@ -144,13 +143,13 @@ export default {
   methods: {
     // 判断文章作者
     isOwner(id) {
-      return id !== JSON.parse(localStorage.getItem("p1")).id;
+      return id !== this.$ls.get("p1").id;
     },
 
     // 初始化
     async init() {
       this.reqData.pagerow = countLineNum();
-      const result = await articleService.index(this.reqData);
+      const result = await this.$api.articleService.index(this.reqData);
       this.tableData = result.data;
       this.total = result.total;
     },
@@ -172,6 +171,7 @@ export default {
           this.dialogData = {
             _id: index._id,
             title: index.title,
+            intro: index.intro,
             category: index.category._id,
             tag: index.tag,
             content: index.content
@@ -182,7 +182,13 @@ export default {
 
     // 处理单个删除
     onSingleDel(id) {
-      singleDelete("文章", articleService, id, this.init);
+      this.$CRUD.singleDel(
+        "文章",
+        this.$api.articleService,
+        this.$info,
+        id,
+        this.init
+      );
     },
 
     // 显示文章页面

@@ -3,8 +3,9 @@
 import axiosOriginal from 'axios'
 import config from '../helper/config'
 import { authHeader } from '../helper/auth-header'
-import { aes, sign } from '@/helper/crypto';
-import { tip } from '../components/MessageBox';
+import crypto from './crypto';
+import ls from './localStorage'
+import info from '../components/MessageBox';
 import router from "../router";
 
 // 实例化axios对象
@@ -18,8 +19,8 @@ const axios = axiosOriginal.create({
 axios.interceptors.request.use(
   config => {
     config.headers = authHeader()
-    config.headers.clientip = localStorage.getItem('ip')
-      ? localStorage.getItem('ip') : '127.0.0.1'
+    config.headers.clientip = ls.get('ip').ip
+      ? ls.get('ip').ip : '127.0.0.1'
     return config;
   },
   error => {
@@ -91,7 +92,7 @@ const errback = error => {
     router.push('/')
   }
 
-  tip.error(error.message)
+  info.tip.error(error.message)
   return Promise.reject({ status: false, message: error.message })
 };
 
@@ -134,7 +135,7 @@ const getConfig = (url, method, isjson, params, level = 0) => {
 
   // 时间戳
   if (level === 1) { // 加密
-    params = { encrypt: aes.en(JSON.stringify(params)) };
+    params = { encrypt: crypto.aes.en(JSON.stringify(params)) };
   } else if (level === 2) { // 签名
     let timestamp = new Date().getTime();
     // 获取token
@@ -144,7 +145,7 @@ const getConfig = (url, method, isjson, params, level = 0) => {
       this.$store.state.token = token;
     }
     // 签名串
-    let signstr = sign(token, timestamp, params);
+    let signstr = crypto.sign(token, timestamp, params);
     config_.headers = {
       level,
       timestamp,

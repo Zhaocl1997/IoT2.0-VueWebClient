@@ -98,13 +98,6 @@
               @click="onDialog(scope.row, 'edit')"
               icon="el-icon-edit"
             >编辑</el-button>
-            <el-button
-              size="small"
-              type="text"
-              @click="onSingleDel(scope.row._id)"
-              icon="el-icon-delete"
-              :disabled="true"
-            >删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -130,10 +123,8 @@
 <script>
 import vPage from "@/components/pagination";
 import vDialog from "./components/form.vue";
-import { roleService } from "@/services";
 import { tableMixins } from "@/mixins";
-import { tip } from "@/components/MessageBox";
-import { countLineNum, singleDelete } from "@/helper/public";
+import { countLineNum } from "@/helper/public";
 
 export default {
   mixins: [tableMixins],
@@ -146,16 +137,19 @@ export default {
     // 初始化
     async init() {
       this.reqData.pagerow = countLineNum();
-      const result = await roleService.index(this.reqData);
+      const result = await this.$api.roleService.index(this.reqData);
       this.tableData = result.data;
       this.total = result.total;
     },
 
     // 状态改变
     async onStatus(id, status) {
-      const result = await roleService.updateStatus({ _id: id, status });
+      const result = await this.$api.roleService.updateStatus({
+        _id: id,
+        status
+      });
       if (result === true) {
-        tip.uS();
+        this.$info.tip.uS();
       }
     },
 
@@ -179,11 +173,6 @@ export default {
           };
           break;
       }
-    },
-
-    // 处理单个删除
-    onSingleDel(id) {
-      singleDelete("角色", roleService, id, this.init);
     },
 
     // 处理格式化显示

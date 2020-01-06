@@ -2,9 +2,10 @@
 
 import { userService } from '../services'
 import router from '../router'
-import { tip } from '../components/MessageBox'
+import info from '../components/MessageBox'
+import ls from '../helper/localStorage'
 
-let user = JSON.parse(localStorage.getItem('p1'))
+let user = ls.get('p1')
 let state = user
     ? { status: "login", user }
     : { status: "logout", user: null }
@@ -32,7 +33,7 @@ const actions = {
         const result = await userService.login(params)
         if (result) {
             commit('loginSuccess', result)
-            tip.success('登录成功')
+            info.tip.success('登录成功')
             setTimeout(() => {
                 router.push('/main/default')
             }, 2000)
@@ -46,8 +47,8 @@ const actions = {
         const result = await userService.logout()
         if (result === true) {
             commit('logout')
-            tip.success('登出成功')
-            router.push('/login')
+            info.tip.success('登出成功')
+            router.push('/')
         }
     },
 
@@ -56,7 +57,7 @@ const actions = {
         const result = await userService.register(params)
         if (result === true) {
             commit('registerok')
-            tip.success('注册成功')
+            info.tip.success('注册成功')
             setTimeout(() => {
                 router.push('/login')
             }, 2000)

@@ -50,10 +50,10 @@ import {
     // Progress,
     // Spinner,
     // Badge,
-    // Card,
+    Card,
     // Rate,
-    // Steps,
-    // Step,
+    Steps,
+    Step,
     Carousel,
     CarouselItem,
     // Collapse,
@@ -72,12 +72,13 @@ import {
     Divider,
     // Image,
     // Calendar,
-    // Backtop,
+    Backtop,
     // PageHeader,
     // CascaderPanel,
     Avatar,
     Loading,
     Drawer,
+    // InfiniteScroll
 } from 'element-ui';
 
 const Element = {
@@ -130,10 +131,10 @@ const Element = {
         // Vue.use(Progress);
         // Vue.use(Spinner);
         // Vue.use(Badge);
-        // Vue.use(Card);
+        Vue.use(Card);
         // Vue.use(Rate);
-        // Vue.use(Steps);
-        // Vue.use(Step);
+        Vue.use(Steps);
+        Vue.use(Step);
         Vue.use(Carousel);
         Vue.use(CarouselItem);
         // Vue.use(Collapse);
@@ -152,12 +153,13 @@ const Element = {
         Vue.use(Divider);
         // Vue.use(Image);
         // Vue.use(Calendar);
-        // Vue.use(Backtop);
+        Vue.use(Backtop);
         // Vue.use(PageHeader);
         // Vue.use(CascaderPanel);
         Vue.use(Avatar);
-        Vue.use(Drawer)
+        Vue.use(Drawer);
         Vue.use(Loading.directive);
+        // Vue.use(InfiniteScroll);
     }
 }
 

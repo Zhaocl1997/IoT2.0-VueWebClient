@@ -1,17 +1,20 @@
 <template>
   <div class="email">
-    <el-autocomplete
-      prefix-icon="el-icon-message"
-      v-model="email"
-      :fetch-suggestions="onQuerySearch"
-      placeholder="请输入邮箱地址"
-      :trigger-on-focus="false"
-      @select="onEmail"
-      @input="onEmail"
-      clearable
-      :style="`width:${width}px;`"
-      :debounce="100"
-    ></el-autocomplete>
+    <el-form :model="ruleForm" :rules="rules" ref="email" @submit.native.prevent>
+      <el-form-item prop="email">
+        <el-autocomplete
+          v-model="ruleForm.email"
+          @input="onEmail"
+          placeholder="请输入邮箱地址"
+          @select="onEmail"
+          clearable
+          :style="`width:${width}px;`"
+          :debounce="100"
+          :fetch-suggestions="onQuerySearch"
+          prefix-icon="el-icon-message"
+        ></el-autocomplete>
+      </el-form-item>
+    </el-form>
   </div>
 </template>
 
@@ -20,16 +23,29 @@ export default {
   name: "v-email",
   data() {
     return {
-      email: this.value,
-      emailOptions: []
+      ruleForm: {
+        email: this.value
+      },
+      emailOptions: [],
+      rules: {
+        email: [
+          {
+            required: true,
+            message: "请输入邮箱",
+            trigger: ["change", "blur"]
+          },
+          {
+            pattern: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/,
+            message: "请输入正确的邮箱",
+            trigger: ["change", "blur"]
+          }
+        ]
+      }
     };
   },
   props: {
-    width: {
-      type: Number,
-      default: 330
-    },
-    value: String
+    value: String,
+    width: { type: Number, default: 330 }
   },
   model: {
     prop: "value",
@@ -43,6 +59,11 @@ export default {
     onEmail(val) {
       if (val.value === undefined) return;
       this.$emit("email", val.value);
+    },
+
+    // 验证
+    validate() {
+      return this.$refs["email"].validate();
     },
 
     // 备选
@@ -63,11 +84,11 @@ export default {
 
     // 输入时的回显
     onQuerySearch(queryString, callback) {
-      if (queryString.indexOf(".") !== -1) return;
-
-      if (queryString.indexOf("@") !== -1) {
-        queryString = queryString.replace("@", "");
-      }
+      this.emailOptions.forEach(item => {
+        if (queryString.indexOf(item.value) !== -1) {
+          queryString = queryString.replace(item.value, "");
+        }
+      });
 
       let emailOptions = this.emailOptions;
       // 把数组的浅复制换成深复制
@@ -82,7 +103,4 @@ export default {
 </script>
 
 <style scoped>
-.email {
-  margin: 0 auto;
-}
 </style>

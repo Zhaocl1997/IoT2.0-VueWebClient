@@ -41,8 +41,6 @@
 </template>
 
 <script>
-import { deviceService } from "@/services";
-import { action } from "@/helper/public";
 import { formMixins } from "@/mixins";
 
 export default {
@@ -81,11 +79,10 @@ export default {
   methods: {
     // 请求
     onAction() {
-      return action(
-        { t: this.dialogTitle, d: this.dialogFormData },
-        "设备",
-        deviceService
-      );
+      return this.$CRUD.action("设备", this.$api.deviceService, this.$info, {
+        t: this.dialogTitle,
+        d: this.dialogFormData
+      });
     }
   }
 };

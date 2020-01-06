@@ -11,9 +11,9 @@
       </tr>
       <tr align="center">
         <td height="50">照片大小</td>
-        <td>{{ size }}KB</td>
+        <td>{{ size | byteToKB }}KB</td>
         <td>采集时间</td>
-        <td>{{ time }}</td>
+        <td>{{ time | format }}</td>
       </tr>
     </table>
 
@@ -30,16 +30,13 @@
 </template>
 
 <script>
-import { format, getNow } from "@/helper/public";
-import { dataService, socketService } from "@/services";
-
 export default {
   name: "cameraData",
   data() {
     return {
       macAddress: "",
       url: "" || "/img/none.jpg",
-      time: "" || getNow(),
+      time: "" || this.$time.getNow(),
       size: "" || 0
     };
   },
@@ -60,11 +57,11 @@ export default {
   mounted() {
     this.macAddress = this.$route.query.macAddress;
     this.init();
-    socketService.newData({ macAddress: this.macAddress });
+    this.$api.socketService.newData({ macAddress: this.macAddress });
   },
   methods: {
     async init() {
-      const result = await dataService.indexByMac({
+      const result = await this.$api.dataService.indexByMac({
         pagerow: 1,
         pagenum: 1,
         macAddress: this.macAddress
@@ -76,8 +73,8 @@ export default {
 
       // 最新数据
       this.url = `https://iot--camera.oss-cn-hangzhou.aliyuncs.com/${data.data.url}`;
-      this.size = Number.parseInt(data.data.size / 1024);
-      this.time = format(data.cA, "YYYY/MM/DD HH:mm:ss");
+      this.size = data.data.size;
+      this.time = data.cA;
     }
   }
 };

@@ -14,15 +14,8 @@
       :http-request="onAvatarUpload"
       accept=".jpg, .jpeg, .png"
     >
-      <img
-        v-if="!(this.hasAvatarUrl) || !(this.hasAvatarSelected) ||this.onAvatarFirstChange"
-        :src="imgURL"
-        class="avatar"
-      />
-      <i
-        v-if="this.hasAvatarUrl && this.hasAvatarSelected"
-        class="el-icon-plus avatar-uploader-icon"
-      ></i>
+      <img v-if="isAvatarShow" :src="imgURL" class="avatar" />
+      <i v-if="isIconShow" class="el-icon-plus avatar-uploader-icon"></i>
     </el-upload>
     <el-button style="margin-left: 50px;" type="primary" size="small" @click="onSubmitAvatar">上传头像</el-button>
   </div>
@@ -30,10 +23,8 @@
 
 <script>
 import config from "@/helper/config";
-import { userService } from "@/services";
 import { avatarMixins } from "@/mixins";
 import { isEmpty } from "@/helper/public";
-import { tip } from "@/components/MessageBox";
 
 export default {
   mixins: [avatarMixins],
@@ -53,6 +44,16 @@ export default {
     },
     hasAvatarUrl() {
       return isEmpty(this.avatarURL);
+    },
+    isAvatarShow() {
+      return (
+        !this.hasAvatarUrl ||
+        !this.hasAvatarSelected ||
+        this.onAvatarFirstChange
+      );
+    },
+    isIconShow() {
+      return this.hasAvatarUrl && this.hasAvatarSelected;
     }
   },
   methods: {
@@ -80,10 +81,10 @@ export default {
       const isLt1M = this.imgData.size / 1024 / 1024 < 1;
 
       if (!isPic) {
-        tip.error("上传头像图片格式只能是 JPG/JPEG/PNG 格式!");
+        this.$api.tip.error("上传头像图片格式只能是 JPG/JPEG/PNG 格式!");
       }
       if (!isLt1M) {
-        tip.error("上传头像图片大小不能超过 1MB!");
+        this.$api.tip.error("上传头像图片大小不能超过 1MB!");
       }
       return isPic && isLt1M;
     },
@@ -92,12 +93,12 @@ export default {
     onAvatarUpload() {
       const formData = new FormData();
       formData.append("avatar", this.imgData);
-      userService.avatar(formData).then(res => {
+      this.$api.userService.avatar(formData).then(res => {
         if (res === true) {
           this.$store.dispatch("dataState/setData", [
             { a: new Date().valueOf() }
           ]);
-          tip.success("上传成功");
+          this.$api.tip.success("上传成功");
         }
       });
     }

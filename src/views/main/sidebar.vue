@@ -57,21 +57,19 @@
 
 <script>
 import bus from "./bus";
-import { menuService } from "@/services";
+import { isLoginMixins } from "@/mixins";
 
 export default {
+  mixins: [isLoginMixins],
   name: "v-sidebar",
   data() {
     return {
       sidebarCollapse: false,
       items: [],
-      color: localStorage.getItem("color") || "#252a2f"
+      color: this.$ls.get("color").color || "#252a2f"
     };
   },
   computed: {
-    onRoutes() {
-      return "";
-    },
     newColor() {
       return this.$store.getters["dataState/getData"].c;
     }
@@ -79,22 +77,24 @@ export default {
   watch: {
     newColor: function(val, oldVal) {
       if (val !== undefined && val !== oldVal) {
-        this.color = localStorage.getItem("color");
+        this.color = this.$ls.get("color").color;
       }
     }
   },
   created() {
-    this.init();
+    if (this.isLogin) {
+      this.init();
 
-    // 监听来自header的sidebarCollapse事件
-    bus.$on("sidebarCollapse", msg => {
-      this.sidebarCollapse = msg;
-    });
+      // 监听来自header的sidebarCollapse事件
+      bus.$on("sidebarCollapse", msg => {
+        this.sidebarCollapse = msg;
+      });
+    }
   },
   methods: {
     // 获取菜单数据
     async init() {
-      const result = await menuService.index();
+      const result = await this.$api.menuService.index();
       this.items = result;
     }
   }

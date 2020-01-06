@@ -40,9 +40,6 @@ export default {
 </script>
 
 <style scoped>
-.pagination {
-  height: 100%;
-}
 .pagination_con {
   /* margin: 20px 0; */
   margin-bottom: 10px;

@@ -50,8 +50,6 @@
 </template>
 
 <script>
-import { userService, roleService } from "@/services";
-import { action } from "@/helper/public";
 import { formMixins, userRulesMixins } from "@/mixins";
 
 export default {
@@ -65,17 +63,16 @@ export default {
   methods: {
     // 窗口打开时绑定角色option
     async onOpen() {
-      const result = await roleService.options();
+      const result = await this.$api.roleService.options();
       this.options = result.data;
     },
 
     // 请求
     onAction() {
-      return action(
-        { t: this.dialogTitle, d: this.dialogFormData },
-        "用户",
-        userService
-      );
+      return this.$CRUD.action("用户", this.$api.userService, this.$info, {
+        t: this.dialogTitle,
+        d: this.dialogFormData
+      });
     }
   }
 };

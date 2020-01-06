@@ -6,7 +6,8 @@ import store from '../store'
 import NProgress from 'nprogress' // 进度条
 import 'nprogress/nprogress.css'
 
-import { localTake } from "../helper/public";
+import auth from '../helper/auth'
+import ls from '../helper/localStorage'
 
 NProgress.inc(0.2)
 NProgress.configure({ easing: 'ease', speed: 500, showSpinner: false })
@@ -48,6 +49,22 @@ const routes = [
       title: '注册'
     },
     component: () => import(/* webpackChunkName: "findpass" */ '../views/auth/findpass.vue')
+  },
+  {
+    path: '/articles',
+    name: 'articles',
+    meta: {
+      title: '文章列表'
+    },
+    component: () => import(/* webpackChunkName: "articles" */ '../views/auth/articles.vue')
+  },
+  {
+    path: '/article',
+    name: 'article',
+    meta: {
+      title: '文章详情'
+    },
+    component: () => import(/* webpackChunkName: "article" */ '../views/auth/article.vue')
   },
   {
     path: '/main',
@@ -242,9 +259,9 @@ router.beforeEach((to, from, next) => {
   NProgress.start()
 
   // 登录信息
-  const isLogin = localTake('p1')
+  const isLogin = auth.isLogin()
   const state = store.getters["userState/getStatus"]
-
+  
   // 未登录状态
   if (isLogin === false && state === 'logout') {
     // 如果尝试进入需要登陆的路由，直接跳转到home页面
@@ -255,7 +272,7 @@ router.beforeEach((to, from, next) => {
 
   // 已登陆状态
   if (isLogin === true && state === 'login') {
-    const isLockUp = localTake('lock')
+    const isLockUp = ls.get('lock')
 
     // 判断是否上锁
     if (isLockUp === true) {

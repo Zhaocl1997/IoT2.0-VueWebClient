@@ -16,16 +16,11 @@
 
 <script>
 import vPass from "../input/password";
-import { userService } from "@/services";
-import { tip } from "@/components/MessageBox";
 
 export default {
   name: "v-passMask",
   props: {
-    type: {
-      type: String,
-      default: "unlock"
-    }
+    type: { type: String, default: "unlock" }
   },
   mounted() {
     (function() {
@@ -53,22 +48,25 @@ export default {
     }
   },
   methods: {
-    async onUnlock(val) {
-      const result = await userService.unlock({ pass: val });
-      if (result === true) {
-        if (this.type === "unlock") {
-          tip.success("解锁成功");
-          localStorage.removeItem("lock");
-          setTimeout(() => {
-            this.$router.push("/main/default");
-          }, 500);
-        } else if (this.type === "check") {
-          this.$emit("check", true);
+    onUnlock(val) {
+      this.$api.userService.unlock({ pass: val }).then(res => {
+        if (res === true) {
+          if (this.type === "unlock") {
+            this.$info.tip.success("解锁成功");
+            this.$ls.set("lock", { lock: false });
+            // localStorage.removeItem("lock");
+            setTimeout(() => {
+              const open = this.$ls.get("open");
+              this.$router.push(open.path);
+            }, 500);
+          } else if (this.type === "check") {
+            this.$emit("check", true);
+          }
         }
-      }
+      });
     },
     onClose() {
-      this.$emit("close", false);
+      this.$emit("close");
     }
   }
 };
@@ -83,7 +81,11 @@ export default {
   right: 0;
   z-index: 1500;
 
-  background-color: #55c57a;
+  background: linear-gradient(
+    to right bottom,
+    rgba(126, 213, 111),
+    rgba(40, 180, 133)
+  );
 }
 .mask-close {
   cursor: pointer;
@@ -94,15 +96,15 @@ export default {
 }
 .mask-avatar {
   position: absolute;
-  left: 50%; /* 定位父级的50% */
+  left: 50%;
   top: 40%;
-  transform: translate(-50%, -50%); /* 自己的50% */
+  transform: translate(-50%, -50%);
 }
 
 .mask-input {
   position: absolute;
-  left: 50%; /* 定位父级的50% */
+  left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%); /*自己的50% */
+  transform: translate(-50%, -50%);
 }
 </style>

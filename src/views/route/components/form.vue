@@ -48,9 +48,7 @@
 </template>
 
 <script>
-import { routeService } from "@/services";
 import { formMixins } from "@/mixins";
-import { action } from "@/helper/public";
 
 export default {
   mixins: [formMixins],
@@ -79,11 +77,10 @@ export default {
   methods: {
     // 请求
     onAction() {
-      return action(
-        { t: this.dialogTitle, d: this.dialogFormData },
-        "路由",
-        routeService
-      );
+      return this.$CRUD.action("路由", this.$api.routeService, this.$info, {
+        t: this.dialogTitle,
+        d: this.dialogFormData
+      });
     }
   }
 };

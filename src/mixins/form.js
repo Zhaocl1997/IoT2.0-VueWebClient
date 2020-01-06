@@ -1,7 +1,6 @@
 'use strict'
 
 import { isEmpty } from "../helper/public";
-import { checkBox } from "../components/MessageBox";
 
 export const formMixins = {
     data() {
@@ -30,7 +29,7 @@ export const formMixins = {
                 this.$refs.dialogform.clearValidate();
                 this.$emit("cancel");
             } else {
-                checkBox('当前表单还有内容,确认要关闭窗口吗?').then(action => {
+                this.$info.checkBox('当前表单还有内容,确认要关闭窗口吗?').then(action => {
                     if (action === true) {
                         this.$refs.dialogform.clearValidate();
                         this.$emit("cancel");

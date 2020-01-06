@@ -44,21 +44,21 @@
         </el-table-column>
         <el-table-column prop="name" label="路由名称" align="center" show-overflow-tooltip />
         <el-table-column prop="path" label="路由路径" align="center" show-overflow-tooltip />
-        <el-table-column label="路由元信息" align="center">
-          <el-table-column prop="meta.title" label="路由标题" align="center" show-overflow-tooltip></el-table-column>
-          <el-table-column
-            prop="meta.needLogin"
-            label="是否需要登录"
-            align="center"
-            show-overflow-tooltip
-          >
-            <template slot-scope="scope">
-              <el-switch
-                v-model="scope.row.meta.needLogin"
-                @change="onStatus(scope.row._id, scope.row.meta)"
-              />
-            </template>
-          </el-table-column>
+
+        <el-table-column prop="meta.title" label="路由标题" align="center" show-overflow-tooltip></el-table-column>
+        <el-table-column
+          prop="meta.needLogin"
+          label="是否需要登录"
+          align="center"
+          show-overflow-tooltip
+          width="100px"
+        >
+          <template slot-scope="scope">
+            <el-switch
+              v-model="scope.row.meta.needLogin"
+              @change="onStatus(scope.row._id, scope.row.meta)"
+            />
+          </template>
         </el-table-column>
 
         <el-table-column prop="package" label="打包名称" align="center" show-overflow-tooltip />
@@ -125,10 +125,8 @@
 <script>
 import vPage from "@/components/pagination";
 import vDialog from "./components/form.vue";
-import { routeService } from "@/services";
 import { tableMixins } from "@/mixins";
-import { tip } from "@/components/MessageBox";
-import { countLineNum, singleDelete } from "@/helper/public";
+import { countLineNum } from "@/helper/public";
 
 export default {
   mixins: [tableMixins],
@@ -151,20 +149,20 @@ export default {
     async init() {
       this.reqData.pagerow = countLineNum();
       this.reqData.sortField = "meta.needLogin";
-      const result = await routeService.index(this.reqData);
+      const result = await this.$api.routeService.index(this.reqData);
       this.tableData = result.data;
       this.total = result.total;
     },
 
     // 状态改变
     async onStatus(id, meta) {
-      const result = await routeService.updateNeedLogin({
+      const result = await this.$api.routeService.updateNeedLogin({
         _id: id,
         title: meta.title,
         needLogin: meta.needLogin
       });
       if (result === true) {
-        tip.uS();
+        this.$info.tip.uS();
       }
     },
 
@@ -197,7 +195,13 @@ export default {
 
     // 处理单个删除
     onSingleDel(id) {
-      singleDelete("路由", routeService, id, this.init);
+      this.$CRUD.singleDel(
+        "路由",
+        this.$api.routeService,
+        this.$info,
+        id,
+        this.init
+      );
     }
   }
 };

@@ -83,9 +83,7 @@
 </template>
 
 <script>
-import { menuService, routeService } from "@/services";
 import { formMixins } from "@/mixins";
-import { action } from "@/helper/public";
 
 export default {
   mixins: [formMixins],
@@ -172,7 +170,7 @@ export default {
   methods: {
     // 绑定路由数据
     async onOpen() {
-      const result = await routeService.options();
+      const result = await this.$api.routeService.options();
       this.routeOptions = result.data;
     },
 
@@ -196,11 +194,10 @@ export default {
 
     // 请求
     onAction() {
-      return action(
-        { t: this.dialogTitle, d: this.dialogFormData },
-        "菜单",
-        menuService
-      );
+      return this.$CRUD.action("菜单", this.$api.menuService, this.$info, {
+        t: this.dialogTitle,
+        d: this.dialogFormData
+      });
     }
   }
 };

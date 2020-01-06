@@ -4,7 +4,7 @@
     top="20vh"
     width="30%"
     @open="onOpen"
-    @close="onCancel"
+    @close="onClose"
     @before-close="onClose"
     :title="dialogTitle"
     :close-on-click-modal="false"
@@ -54,9 +54,8 @@
 </template>
 
 <script>
-import { roleService, menuService } from "@/services";
 import { formMixins } from "@/mixins";
-import { arr_diffA, action } from "@/helper/public";
+import { arr_diffA } from "@/helper/public";
 
 export default {
   mixins: [formMixins],
@@ -88,7 +87,7 @@ export default {
     // 窗口打开时绑定tree
     async onOpen() {
       // 绑定tree数据
-      const result = await menuService.options();
+      const result = await this.$api.menuService.options();
       this.treeData = result.data;
 
       // 一级菜单ID
@@ -138,11 +137,10 @@ export default {
 
     // 请求
     onAction() {
-      return action(
-        { t: this.dialogTitle, d: this.dialogFormData },
-        "角色",
-        roleService
-      );
+      return this.$CRUD.action("角色", this.$api.roleService, this.$info, {
+        t: this.dialogTitle,
+        d: this.dialogFormData
+      });
     }
   }
 };

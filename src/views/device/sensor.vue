@@ -15,7 +15,7 @@
           <el-switch v-model="LEDstatus" @change="onSwitch(LEDstatus)"></el-switch>
         </td>
         <td>采集时间</td>
-        <td>{{ time }}</td>
+        <td>{{ time | format }}</td>
       </tr>
       <tr align="center">
         <td height="50">实时温度</td>
@@ -33,8 +33,6 @@
 
 <script>
 import Chart from "chart.js";
-import { format, getNow } from "@/helper/public";
-import { dataService, socketService } from "@/services";
 
 export default {
   name: "sensorData",
@@ -44,7 +42,7 @@ export default {
       macAddress: "",
       temp: "" || 0,
       humi: "" || 0,
-      time: "" || getNow(),
+      time: "" || this.$time.getNow(),
 
       // chart视图数据
       planetChartData: {
@@ -155,12 +153,12 @@ export default {
   mounted() {
     this.macAddress = this.$route.query.macAddress;
     this.init();
-    socketService.newData({ macAddress: this.macAddress });
+    this.$api.socketService.newData({ macAddress: this.macAddress });
   },
   methods: {
     // 初始化
     async init() {
-      const result = await dataService.indexByMac({
+      const result = await this.$api.dataService.indexByMac({
         pagerow: 20,
         pagenum: 1,
         macAddress: this.macAddress
@@ -170,7 +168,7 @@ export default {
       // 最新数据
       this.temp = result.data[0].data.t;
       this.humi = result.data[0].data.h;
-      this.time = format(result.data[0].cA, "YYYY/MM/DD HH:mm:ss");
+      this.time = this.$time.format(result.data[0].cA, "YYYY/MM/DD HH:mm:ss");
 
       // 数据反转
       const data = result.data.reverse();
@@ -178,7 +176,7 @@ export default {
       // 绑定数据
       data.forEach(item => {
         // 格式化时间
-        item["cA"] = format(item["cA"], "HH:mm:ss");
+        item["cA"] = this.$time.format(item["cA"], "HH:mm:ss");
 
         // x轴时间
         this.planetChartData.data.labels.push(item.cA);
@@ -204,7 +202,10 @@ export default {
 
     // 改变LED状态
     async onSwitch(value) {
-      await dataService.onLED({ status: value, macAddress: this.macAddress });
+      await this.$api.dataService.onLED({
+        status: value,
+        macAddress: this.macAddress
+      });
     }
   }
 };

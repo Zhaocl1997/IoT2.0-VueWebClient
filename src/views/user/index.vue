@@ -132,10 +132,8 @@
 <script>
 import vPage from "@/components/pagination";
 import vDialog from "./components/form.vue";
-import { userService } from "@/services";
 import { tableMixins } from "@/mixins";
-import { tip } from "@/components/MessageBox";
-import { countLineNum, singleDelete, mutipleDelete } from "@/helper/public";
+import { countLineNum } from "@/helper/public";
 
 export default {
   mixins: [tableMixins],
@@ -148,16 +146,19 @@ export default {
     // 初始化
     async init() {
       this.reqData.pagerow = countLineNum();
-      const result = await userService.index(this.reqData);
+      const result = await this.$api.userService.index(this.reqData);
       this.tableData = result.data;
       this.total = result.total;
     },
 
     // 状态改变
     async onStatus(id, status) {
-      const result = await userService.updateStatus({ _id: id, status });
+      const result = await this.$api.userService.updateStatus({
+        _id: id,
+        status
+      });
       if (result === true) {
-        tip.uS();
+        this.$info.tip.uS();
       }
     },
 
@@ -186,12 +187,18 @@ export default {
 
     // 处理单个删除
     onSingleDel(id) {
-      singleDelete("用户", userService, id, this.init);
+      this.$CRUD.singleDel(
+        "用户",
+        this.$api.userService,
+        this.$info,
+        id,
+        this.init
+      );
     },
 
     // 处理多选删除
     onMultipleDel() {
-      mutipleDelete("用户", userService, this);
+      this.$CRUD.mutipleDel("用户", this.$api.userService, this.$info, this);
     },
 
     // 处理格式化显示

@@ -26,7 +26,6 @@ import vFoot from "./footer";
 import vSidebar from "./sidebar";
 import vTags from "./tags";
 
-import { socketService } from "@/services";
 import Notification from "element-ui/packages/notification";
 
 export default {
@@ -84,9 +83,19 @@ export default {
     vTags
   },
   mounted() {
-    socketService.initSocket();
-    socketService.newDevice();
+    this.$api.socketService.initSocket();
+    this.$api.socketService.newDevice();
     this.createBeforeunloadHandler();
+
+    const open = this.$ls.get("open");
+    if (!open) {
+      this.$ls.set("open", {
+        component: "v-default",
+        name: "default",
+        path: "/main/default",
+        title: "默认页"
+      });
+    }
   },
   beforeDestroy() {
     // 在 beforeDestroy 钩子移除beforeunload事件

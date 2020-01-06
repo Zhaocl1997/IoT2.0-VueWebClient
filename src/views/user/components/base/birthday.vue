@@ -35,17 +35,19 @@
 export default {
   name: "userBirthDay",
   props: {
-    birth: {
-      type: Object
-    }
+    value: Object
+  },
+  model: {
+    prop: "value",
+    event: "birth"
   },
   data() {
     return {
-      yearsModel: "",
+      yearsModel: this.value.year,
       years: [],
-      monthsModel: "",
+      monthsModel: this.value.month,
       months: [],
-      daysModel: "",
+      daysModel: this.value.day,
       days: []
     };
   },
@@ -58,13 +60,6 @@ export default {
       let year = myDate.getFullYear(); // 获取当前年
       let month = myDate.getMonth() + 1; // 获取当前月
       // let day = myDate.getDate(); // 获取当前日
-
-      if (this.birth) {
-        // 有参数传进来绑定传进来的参数
-        this.yearsModel = this.birth.year;
-        this.monthsModel = this.birth.month;
-        this.daysModel = this.birth.day;
-      }
 
       this.initSelectYear(year);
       this.initSelectMonth();
@@ -110,7 +105,7 @@ export default {
         month: this.monthsModel,
         day: this.daysModel
       };
-      this.$emit("birthEvent", obj);
+      this.$emit("birth", obj);
     },
 
     // 获取一个月的天数

@@ -57,8 +57,7 @@
 </template>
 
 <script>
-import { dbService } from "@/services";
-import { checkBox, prompt, tip } from "@/components/MessageBox";
+import MessageBox from "element-ui/packages/message-box";
 
 export default {
   name: "v-db",
@@ -76,14 +75,32 @@ export default {
   methods: {
     // 初始化
     async init() {
-      const result = await dbService.index();
+      const result = await this.$api.dbService.index();
       this.dbname = result.dbname;
       this.tableData = result.data;
     },
 
+    // 轻量化表单
+    async prompt(content, title, inputValue) {
+      return await MessageBox.prompt(content, title, {
+        inputValue,
+        closeOnClickModal: false
+      })
+        .then(({ value }) => {
+          return { status: true, value };
+        })
+        .catch(() => {
+          return { status: false };
+        });
+    },
+
     // 备份
     onBackup(val) {
-      prompt("请输入备份文件名", "提示", val.colsize).then(result => {
+      this.prompt(
+        "请输入备份文件名",
+        "提示",
+        this.$time.getNow() + "__" + val.colsize + ".json"
+      ).then(result => {
         if (result.status === true) {
           const params = {
             colname: val.colname,
@@ -91,9 +108,9 @@ export default {
             dbname: this.dbname
           };
 
-          dbService.exportDB(params).then(res => {
+          this.$api.dbService.exportDB(params).then(res => {
             if (res === true) {
-              tip.success("备份成功");
+              this.$info.tip.success("备份成功");
             }
           });
         }
@@ -102,7 +119,7 @@ export default {
 
     // 列出云端目录
     async onListDir(val) {
-      const result = await dbService.list({
+      const result = await this.$api.dbService.list({
         dbname: this.dbname,
         colname: val
       });
@@ -124,15 +141,17 @@ export default {
         filename: this.cloudFileName
       };
 
-      checkBox(`确定要还原文件 ${this.cloudFileName} 吗?`).then(action => {
-        if (action === true) {
-          dbService.importDB(params).then(res => {
-            if (res === true) {
-              tip.success("还原成功");
-            }
-          });
-        }
-      });
+      this.$info
+        .checkBox(`确定要还原文件 ${this.cloudFileName} 吗?`)
+        .then(action => {
+          if (action === true) {
+            this.$api.dbService.importDB(params).then(res => {
+              if (res === true) {
+                this.$info.tip.success("还原成功");
+              }
+            });
+          }
+        });
     }
   }
 };
